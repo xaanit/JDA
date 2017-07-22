@@ -46,7 +46,7 @@ import java.util.regex.Pattern;
  * <p><b>To update the {@link net.dv8tion.jda.core.entities.Game Game} or {@link net.dv8tion.jda.core.OnlineStatus OnlineStatus}
  * for the current session use the {@link net.dv8tion.jda.core.managers.Presence Presence} instance of the corresponding JDA instance</b>
  */
-public class AccountManagerUpdatable
+public class AccountManagerUpdatable // TODO: document password requirements
 {
     public static final Pattern EMAIL_PATTERN = Pattern.compile(".+@.+");
 
@@ -226,11 +226,11 @@ public class AccountManagerUpdatable
     @CheckReturnValue
     public RestAction<Void> update(String currentPassword)
     {
-        if (isType(AccountType.CLIENT) && (currentPassword == null || currentPassword.isEmpty()))
-            throw new IllegalArgumentException("Provided client account password to be used in auth is null or empty!");
-
         if (!needToUpdate())
             return new RestAction.EmptyRestAction<>(getJDA(), null);
+
+        if (isType(AccountType.CLIENT) && password.shouldUpdate() && (currentPassword == null || currentPassword.isEmpty()))
+            throw new UnsupportedOperationException("updating the password requires the current password");
 
         JSONObject body = new JSONObject();
 
@@ -294,8 +294,6 @@ public class AccountManagerUpdatable
     @CheckReturnValue
     public RestAction<Void> update()
     {
-        if (getJDA().getAccountType() == AccountType.CLIENT)
-            throw new AccountTypeException(AccountType.BOT);
         return update(null);
     }
 

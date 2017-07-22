@@ -29,7 +29,7 @@ import javax.annotation.CheckReturnValue;
  *
  * <p>This decoration allows to modify a single field by automatically building an update {@link net.dv8tion.jda.core.requests.RestAction RestAction}
  */
-public class AccountManager
+public class AccountManager // TODO: document password requirements
 {
     protected final AccountManagerUpdatable updatable;
 
@@ -118,6 +118,7 @@ public class AccountManager
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
     @CheckReturnValue
+    @Deprecated
     public RestAction<Void> setName(String name, String currentPassword)
     {
         return updatable.getNameField().setValue(name).update(currentPassword);
@@ -163,6 +164,7 @@ public class AccountManager
      *         The update RestAction that will set the provided icon as the new avatar or reset the avatar.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @Deprecated
     @CheckReturnValue
     public RestAction<Void> setAvatar(Icon avatar, String currentPassword)
     {
@@ -190,10 +192,36 @@ public class AccountManager
      *         The update RestAction that will set the provided email.
      *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
      */
+    @Deprecated
     @CheckReturnValue
     public RestAction<Void> setEmail(String email, String currentPassword)
     {
         return updatable.getEmailField().setValue(email).update(currentPassword);
+    }
+
+    /**
+     * Sets the email for the currently logged in client account.
+     * <br>More information can be found {@link AccountManagerUpdatable#getEmailField() here}!
+     *
+     * @param  email
+     *         The new email
+     *
+     * @throws net.dv8tion.jda.core.exceptions.AccountTypeException
+     *         If the currently logged in account is not from {@link net.dv8tion.jda.core.AccountType#CLIENT}
+     * @throws IllegalArgumentException
+     *         <ul>
+     *             <li>If the provided {@code currentPassword} or the provided {@code email} is {@code null} or empty
+     *             <li>If the provided {@code email} is not valid.</li>
+     *         </ul>
+     *
+     * @return {@link net.dv8tion.jda.core.requests.RestAction}
+     *         The update RestAction that will set the provided email.
+     *         <br>See {@link net.dv8tion.jda.core.managers.AccountManagerUpdatable#update(String) #update()} for more information
+     */
+    @CheckReturnValue
+    public RestAction<Void> setEmail(String email)
+    {
+        return updatable.getEmailField().setValue(email).update();
     }
 
     /**

@@ -138,7 +138,7 @@ public class ReadyHandler extends SocketHandler
                 userSettings.setTimezoneOffset(timezoneOffset);
                 this.api.getEventManager().handle(new UserSettingsUpdateTimezoneOffsetEvent(this.api, this.responseNumber, timezoneOffset));
 
-                //             update presence information unless the status is ONLINE
+                // update presence information unless the status is ONLINE
                 if (userSettings.getStatus() != OnlineStatus.ONLINE) // TODO: decide what this should really be
                     ((PresenceImpl) api.getPresence()).setCacheStatus(userSettings.getStatus());
             }
@@ -201,7 +201,7 @@ public class ReadyHandler extends SocketHandler
             JSONObject notesObject = content.getJSONObject("notes");
             JSONArray readstatesArray = content.has("read_state") ? content.getJSONArray("read_state") : null; // TODO: read states
             JSONArray guildSettingsArray= content.has("user_guild_settings") ? content.getJSONArray("user_guild_settings") : null;
-           
+
             for (int i = 0; i < relationshipsArray.length(); i++)
             {
                 JSONObject relationship = relationshipsArray.getJSONObject(i);
@@ -216,7 +216,7 @@ public class ReadyHandler extends SocketHandler
                 String userId = presence.getJSONObject("user").getString("id");
                 FriendImpl friend = (FriendImpl) api.asClient().getFriendById(userId);
                 if (friend == null)
-                    WebSocketClient.LOG.warn("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: " + presence);
+                    WebSocketClient.LOG.debug("Received a presence in the Presences array in READY that did not correspond to a cached Friend! JSON: " + presence);
                 else
                     builder.createPresence(friend, presence);
             }
@@ -226,7 +226,7 @@ public class ReadyHandler extends SocketHandler
                 User user = api.getUserById(note.getKey());
                 if (user == null)
                 {
-                    JDAImpl.LOG.fatal("Provided note for unknown user: " + note.toString());
+                    JDAImpl.LOG.debug("Provided note for unknown user: " + note.toString());
                     continue;
                 }
                 ((UserImpl)user).setNote((String) note.getValue());
@@ -245,6 +245,7 @@ public class ReadyHandler extends SocketHandler
                     WebSocketClient.LOG.log(e);
                 }
             }
+
             for (Guild guild : api.getGuildMap().valueCollection())
             {
                 if (api.asClient().getGuildSettings(guild) == null)
@@ -271,7 +272,6 @@ public class ReadyHandler extends SocketHandler
                 default:
                     WebSocketClient.LOG.warn("Received a Channel in the priv_channels array in READY of an unknown type! JSON: " + type);
             }
-
         }
 
         api.getClient().ready();
