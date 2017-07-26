@@ -720,9 +720,9 @@ public interface Message extends ISnowflake, Formattable
     /**
      * Represents a {@link net.dv8tion.jda.core.entities.Message Message} file attachment.
      */
-    class Attachment
+    class Attachment implements ISnowflake
     {
-        private final String id;
+        private final long id;
         private final String url;
         private final String proxyUrl;
         private final String fileName;
@@ -731,7 +731,7 @@ public interface Message extends ISnowflake, Formattable
         private final int width;
         private final JDAImpl jda;
 
-        public Attachment(String id, String url, String proxyUrl, String fileName, int size, int height, int width, JDA jda)
+        public Attachment(long id, String url, String proxyUrl, String fileName, int size, int height, int width, JDA jda)
         {
             this.id = id;
             this.url = url;
@@ -743,12 +743,7 @@ public interface Message extends ISnowflake, Formattable
             this.jda = (JDAImpl) jda;
         }
 
-        /**
-         * The id of the attachment. This is not the id of the message that the attachment was attached to.
-         *
-         * @return Non-null String containing the Attachment ID.
-         */
-        public String getId()
+        public long getIdLong()
         {
             return id;
         }

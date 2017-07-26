@@ -245,7 +245,7 @@ public class PresenceImpl implements Presence
     {
         api.getClient().send(new JSONObject()
             .put("d", data)
-            .put("op", WebSocketCode.PRESENCE).toString());
+            .put("op", WebSocketCode.PRESENCE));
     }
 
 }

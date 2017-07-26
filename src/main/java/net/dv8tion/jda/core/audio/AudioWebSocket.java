@@ -332,12 +332,12 @@ public class AudioWebSocket extends WebSocketAdapter
             JSONObject obj = new JSONObject()
                 .put("op", WebSocketCode.VOICE_STATE)
                 .put("d", new JSONObject()
-                    .put("guild_id", guild.getId())
+                    .put("guild_id", guild.getIdLong())
                     .put("channel_id", JSONObject.NULL)
                     .put("self_mute", false)
                     .put("self_deaf", false)
                 );
-            api.getClient().send(obj.toString());
+            api.getClient().send(obj);
         }
         if (keepAliveHandle != null)
         {
