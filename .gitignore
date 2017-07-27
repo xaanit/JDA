@@ -1,7 +1,6 @@
 # project files
 config.json
 tokens.json
-src/test/
 
 # music files
 *.mp3
