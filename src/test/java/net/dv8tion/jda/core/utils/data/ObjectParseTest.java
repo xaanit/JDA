@@ -4,7 +4,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.math.BigInteger;
 
 import static org.junit.Assert.*;
 
@@ -29,8 +28,6 @@ public class ObjectParseTest
                     "\"intS\":\"1\"," +
                     "\"doubleS\":\"0.5\"," +
                     "\"array\":[\"f\"]," +
-                    "\"bigIntS\":\"50\"," +
-                    "\"bigInt\":50," +
                     "\"map\":{\"test\":\"yey\"}," +
                     "\"null\":null" +
                 "}"
@@ -94,18 +91,6 @@ public class ObjectParseTest
     public void readBoolS()
     {
         assertEquals("Should be able to read boolean from string", false, obj.getBoolean("boolS"));
-    }
-
-    @Test
-    public void readBigInt()
-    {
-        assertEquals("Should be able to read bigInt", new BigInteger("50"), obj.getBigInt("bigInt"));
-    }
-
-    @Test
-    public void readBigIntS()
-    {
-        assertEquals("Should be able to read bigInt from string", new BigInteger("50"), obj.getBigInt("bigIntS"));
     }
 
     @Test

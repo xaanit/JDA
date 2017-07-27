@@ -4,7 +4,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.math.BigInteger;
 
 import static org.junit.Assert.*;
 
@@ -28,8 +27,6 @@ public class ArrayParseTest
                     "\"String\"," +
                     "true," +
                     "\"false\"," +
-                    "50," +
-                    "\"50\"," +
                     "{\"test\":\"yey\"}," +
                     "[\"f\"]," +
                     "null" +
@@ -97,21 +94,9 @@ public class ArrayParseTest
     }
 
     @Test
-    public void readBigInt()
-    {
-        assertEquals("Should be able to read bigInt", new BigInteger("50"), arr.getBigInt(9));
-    }
-
-    @Test
-    public void readBigIntS()
-    {
-        assertEquals("Should be able to read bigInt from string", new BigInteger("50"), arr.getBigInt(10));
-    }
-
-    @Test
     public void readObject()
     {
-        DataObject map = arr.getObject(11);
+        DataObject map = arr.getObject(9);
         assertNotNull("Read map should not be null", map);
         assertEquals("Read map should have size of 1", 1, map.size());
         assertEquals("Read map should have element 'test'", "yey", map.getString("test"));
@@ -120,7 +105,7 @@ public class ArrayParseTest
     @Test
     public void readArray()
     {
-        DataArray array = arr.getArray(12);
+        DataArray array = arr.getArray(10);
         assertNotNull("Read array should not be null", array);
         assertEquals("Read array should have size of 1", 1, array.size());
         assertEquals("Read array should have element", "f", array.getString(0));
@@ -129,13 +114,13 @@ public class ArrayParseTest
     @Test
     public void readNull()
     {
-        assertNull("null should be returned as null", arr.getString(13));
+        assertNull("null should be returned as null", arr.getString(11));
     }
 
     @Test(expected = DataReadException.class)
     public void readToHighIndex()
     {
-        arr.getString(14);
+        arr.getString(12);
     }
 
     @Test(expected = DataReadException.class)

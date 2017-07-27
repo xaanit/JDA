@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 
@@ -55,32 +54,27 @@ public class DataArray implements List<Object>
 
     public int getInt(int index)
     {
-        return get(Integer.class, index, Integer::parseInt);
+        return get(Integer.class, index, Integer::parseInt, Number::intValue);
     }
 
     public long getLong(int index)
     {
-        return get(Long.class, index, Long::parseLong);
+        return get(Long.class, index, Long::parseLong, Number::longValue);
     }
 
     public long getUnsignedLong(int index)
     {
-        return get(Long.class, index, Long::parseUnsignedLong);
-    }
-
-    public BigInteger getBigInt(int index)
-    {
-        return get(BigInteger.class, index, BigInteger::new);
+        return get(Long.class, index, Long::parseUnsignedLong, Number::longValue);
     }
 
     public double getDouble(int index)
     {
-        return get(Double.class, index, Double::parseDouble);
+        return get(Double.class, index, Double::parseDouble, Number::doubleValue);
     }
 
     public boolean getBoolean(int index)
     {
-        return get(Boolean.class, index, Boolean::parseBoolean);
+        return get(Boolean.class, index, Boolean::parseBoolean, null);
     }
 
     public String getString(int index)
@@ -278,10 +272,10 @@ public class DataArray implements List<Object>
 
     private <T> T get(Class<T> type, int index)
     {
-        return get(type, index, null);
+        return get(type, index, null, null);
     }
 
-    private <T> T get(Class<T> type, int index, Function<String, T> stringParse)
+    private <T> T get(Class<T> type, int index, Function<String, T> stringParse, Function<Number, T> numberTransform)
     {
         checkRange(index);
         Object val = data.get(index);
@@ -289,14 +283,23 @@ public class DataArray implements List<Object>
             return null;
         if (!type.isAssignableFrom(val.getClass()))
         {
-            if (stringParse != null && (val instanceof String
-                || (Number.class.isAssignableFrom(type) && val instanceof Number)))
+            if (stringParse != null && val instanceof String)
             {
-
-                String stringVal = (val instanceof String) ? (String) val : val.toString();
                 try
                 {
-                    return stringParse.apply(stringVal);
+                    return stringParse.apply((String) val);
+                }
+                catch (Throwable parseEx)
+                {
+                    throw new DataReadException(String.format("Index %d in DataArray could not be parsed to %s",
+                        index, type.getName()));
+                }
+            }
+            else if (numberTransform != null && Number.class.isAssignableFrom(type) && val instanceof Number)
+            {
+                try
+                {
+                    return numberTransform.apply((Number) val);
                 }
                 catch (Throwable parseEx)
                 {

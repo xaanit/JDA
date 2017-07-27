@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.function.Function;
 
@@ -44,32 +43,27 @@ public class DataObject implements Map<String, Object>
 
     public int getInt(String key)
     {
-        return get(Integer.class, key, Integer::parseInt);
+        return get(Integer.class, key, Integer::parseInt, Number::intValue);
     }
 
     public long getLong(String key)
     {
-        return get(Long.class, key, Long::parseLong);
+        return get(Long.class, key, Long::parseLong, Number::longValue);
     }
 
     public long getUnsignedLong(String key)
     {
-        return get(Long.class, key, Long::parseUnsignedLong);
-    }
-
-    public BigInteger getBigInt(String key)
-    {
-        return get(BigInteger.class, key, BigInteger::new);
+        return get(Long.class, key, Long::parseUnsignedLong, Number::longValue);
     }
 
     public double getDouble(String key)
     {
-        return get(Double.class, key, Double::parseDouble);
+        return get(Double.class, key, Double::parseDouble, Number::doubleValue);
     }
 
     public boolean getBoolean(String key)
     {
-        return get(Boolean.class, key, Boolean::parseBoolean);
+        return get(Boolean.class, key, Boolean::parseBoolean, null);
     }
 
     public String getString(String key)
@@ -211,10 +205,10 @@ public class DataObject implements Map<String, Object>
 
     private <T> T get(Class<T> type, String key)
     {
-        return get(type, key, null);
+        return get(type, key, null, null);
     }
 
-    private <T> T get(Class<T> type, String key, Function<String, T> stringParse)
+    private <T> T get(Class<T> type, String key, Function<String, T> stringParse, Function<Number, T> numberTransform)
     {
         checkKey(key);
         Object val = data.get(key);
@@ -222,14 +216,23 @@ public class DataObject implements Map<String, Object>
             return null;
         if (!type.isAssignableFrom(val.getClass()))
         {
-            if (stringParse != null && (val instanceof String
-                || (Number.class.isAssignableFrom(type) && val instanceof Number)))
+            if (stringParse != null && val instanceof String)
             {
-
-                String stringVal = (val instanceof String) ? (String) val : val.toString();
                 try
                 {
-                    return stringParse.apply(stringVal);
+                    return stringParse.apply((String) val);
+                }
+                catch (Throwable parseEx)
+                {
+                    throw new DataReadException(String.format("Key %s in DataObject could not be parsed to %s",
+                        key, type.getName()));
+                }
+            }
+            else if (numberTransform != null && Number.class.isAssignableFrom(type) && val instanceof Number)
+            {
+                try
+                {
+                    return numberTransform.apply((Number) val);
                 }
                 catch (Throwable parseEx)
                 {

@@ -3,8 +3,6 @@ package net.dv8tion.jda.core.utils.data;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.math.BigInteger;
-
 import static org.junit.Assert.*;
 
 public class ObjectReadTest
@@ -20,12 +18,10 @@ public class ObjectReadTest
             .put("double", 0.5D)
             .put("string", "String")
             .put("bool", true)
-            .put("bigInt", new BigInteger("50"))
             .put("intS", "1")
             .put("longS", "2")
             .put("doubleS", "0.5")
             .put("boolS", "false")
-            .put("bigIntS", "50")
             .put("map", new DataObject().put("test", "yey"))
             .put("array", new DataArray().put("f"))
             .put("null", null);
@@ -83,18 +79,6 @@ public class ObjectReadTest
     public void readBoolS()
     {
         assertEquals("Should be able to read boolean from string", false, obj.getBoolean("boolS"));
-    }
-
-    @Test
-    public void readBigInt()
-    {
-        assertEquals("Should be able to read bigInt", new BigInteger("50"), obj.getBigInt("bigInt"));
-    }
-
-    @Test
-    public void readBigIntS()
-    {
-        assertEquals("Should be able to read bigInt from string", new BigInteger("50"), obj.getBigInt("bigIntS"));
     }
 
     @Test
