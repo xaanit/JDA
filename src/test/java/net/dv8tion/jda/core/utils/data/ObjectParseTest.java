@@ -18,7 +18,8 @@ public class ObjectParseTest
         try
         {
             obj = DataObject.fromJson(
-                "{\"string\":\"String\"," +
+                "{" +
+                    "\"string\":\"String\"," +
                     "\"bool\":true," +
                     "\"double\":0.5," +
                     "\"int\":1," +
@@ -31,7 +32,8 @@ public class ObjectParseTest
                     "\"bigIntS\":\"50\"," +
                     "\"bigInt\":50," +
                     "\"map\":{\"test\":\"yey\"}," +
-                    "\"null\":null}"
+                    "\"null\":null" +
+                "}"
             );
         }
         catch (IOException ex)

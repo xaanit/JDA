@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.utils.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.type.ArrayType;
+import com.fasterxml.jackson.databind.type.CollectionType;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -28,7 +28,7 @@ import java.util.function.Function;
 public class DataArray implements List<Object>
 {
     private static final ObjectMapper jsonMapper = new ObjectMapper();
-    private static final ArrayType jacksonType = jsonMapper.getTypeFactory().constructArrayType(Object.class);
+    private static final CollectionType jacksonType = jsonMapper.getTypeFactory().constructCollectionType(List.class, Object.class);
 
     private final List<Object> data;
 
@@ -285,6 +285,8 @@ public class DataArray implements List<Object>
     {
         checkRange(index);
         Object val = data.get(index);
+        if(val == null)
+            return null;
         if (!type.isAssignableFrom(val.getClass()))
         {
             if (stringParse != null && val instanceof String)

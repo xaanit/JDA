@@ -25,7 +25,8 @@ public class ObjectSerializeTest
             .put("map", new DataObject().put("test", "yey"))
             .put("array", new DataArray().put("f"))
             .put("null", null);
-        String expected = "{\"string\":\"String\"," +
+        String expected = "{" +
+            "\"string\":\"String\"," +
             "\"bool\":true," +
             "\"double\":0.5," +
             "\"int\":1," +
@@ -38,7 +39,8 @@ public class ObjectSerializeTest
             "\"array\":[\"f\"]," +
             "\"bigIntS\":\"50\"," +
             "\"bigInt\":50," +
-            "\"map\":{\"test\":\"yey\"}}";
+            "\"map\":{\"test\":\"yey\"}" +
+            "}";
         Assert.assertEquals(expected, obj.toString());
     }
 }
