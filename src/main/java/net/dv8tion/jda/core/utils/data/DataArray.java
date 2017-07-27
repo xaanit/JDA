@@ -289,9 +289,11 @@ public class DataArray implements List<Object>
             return null;
         if (!type.isAssignableFrom(val.getClass()))
         {
-            if (stringParse != null && val instanceof String)
+            if (stringParse != null && (val instanceof String
+                || (Number.class.isAssignableFrom(type) && val instanceof Number)))
             {
-                String stringVal = (String) val;
+
+                String stringVal = (val instanceof String) ? (String) val : val.toString();
                 try
                 {
                     return stringParse.apply(stringVal);
