@@ -41,6 +41,11 @@ public class DataObject implements Map<String, Object>
         this.data = data;
     }
 
+    public boolean isNull(String key)
+    {
+        return get(key) == null;
+    }
+
     public int getInt(String key)
     {
         return get(Integer.class, key, Integer::parseInt, Number::intValue);

@@ -52,6 +52,11 @@ public class DataArray implements List<Object>
         return data.size();
     }
 
+    public boolean isNull(int index)
+    {
+        return get(index) == null;
+    }
+
     public int getInt(int index)
     {
         return get(Integer.class, index, Integer::parseInt, Number::intValue);

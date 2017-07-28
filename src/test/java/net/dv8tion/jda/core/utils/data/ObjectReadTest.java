@@ -105,6 +105,12 @@ public class ObjectReadTest
         assertNull("null should be returned as null", obj.getString("null"));
     }
 
+    @Test
+    public void testIsNull()
+    {
+        assertTrue("isNull() should return true for null value", obj.isNull("null"));
+    }
+
     @Test(expected = DataReadException.class)
     public void readMissingProperty()
     {

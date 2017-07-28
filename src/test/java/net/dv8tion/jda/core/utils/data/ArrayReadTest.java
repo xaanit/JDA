@@ -105,6 +105,12 @@ public class ArrayReadTest
         assertNull("null should be returned as null", arr.getString(11));
     }
 
+    @Test
+    public void testIsNull()
+    {
+        assertTrue("isNull should return true for null value", arr.isNull(11));
+    }
+
     @Test(expected = DataReadException.class)
     public void readToHighIndex()
     {
