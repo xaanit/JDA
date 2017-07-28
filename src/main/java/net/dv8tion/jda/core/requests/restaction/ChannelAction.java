@@ -22,15 +22,15 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONString;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
@@ -340,10 +340,16 @@ public class ChannelAction extends AuditableRestAction<Channel>
     @Override
     protected RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject();
+        DataObject object = new DataObject();
         object.put("name", name);
         object.put("type", voice ? 2 : 0);
-        object.put("permission_overwrites", new JSONArray(overrides));
+        object.put("permission_overwrites", //TODO: TEST (better be save than sorry)
+            new DataArray().addAll(
+                overrides
+                    .stream()
+                    .map(PromisePermissionOverride::toDataObject)
+                    .collect(Collectors.toSet())
+            ));
         if (voice)
         {
             if (bitrate != null)
@@ -395,7 +401,7 @@ public class ChannelAction extends AuditableRestAction<Channel>
             Checks.notNull(p, "Permissions");
     }
 
-    protected final class PromisePermissionOverride implements JSONString
+    protected final class PromisePermissionOverride
     {
         protected final String id;
         protected final long deny;
@@ -410,16 +416,15 @@ public class ChannelAction extends AuditableRestAction<Channel>
             this.allow = allow;
         }
 
-        @Override
-        public String toJSONString()
+        public DataObject toDataObject()
         {
-            JSONObject object = new JSONObject();
+            DataObject object = new DataObject();
             object.put("id",    id);
             object.put("type",  type);
             object.put("deny",  deny);
             object.put("allow", allow);
 
-            return object.toString();
+            return object;
         }
     }
 }

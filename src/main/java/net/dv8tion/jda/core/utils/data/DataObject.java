@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.*;
 import java.util.function.Function;
 
@@ -119,6 +121,18 @@ public class DataObject implements Map<String, Object>
     public static DataObject fromJson(String json) throws IOException
     {
         Map<String, Object> map = jsonMapper.readValue(json, jacksonType);
+        return new DataObject(map);
+    }
+
+    public static DataObject fromJson(InputStream is) throws IOException
+    {
+        Map<String, Object> map = jsonMapper.readValue(is, jacksonType);
+        return new DataObject(map);
+    }
+
+    public static DataObject fromJson(Reader reader) throws IOException
+    {
+        Map<String, Object> map = jsonMapper.readValue(reader, jacksonType);
         return new DataObject(map);
     }
 

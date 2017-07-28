@@ -30,9 +30,9 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.InviteAction;
 import net.dv8tion.jda.core.requests.restaction.PermissionOverrideAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONArray;
+import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.data.DataArray;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -226,11 +226,11 @@ public abstract class AbstractChannelImpl<T extends AbstractChannelImpl<T>> impl
                 if (response.isOk())
                 {
                     EntityBuilder entityBuilder = this.api.getEntityBuilder();
-                    JSONArray array = response.getArray();
+                    DataArray array = response.getArray();
                     List<Invite> invites = new ArrayList<>(array.length());
                     for (int i = 0; i < array.length(); i++)
                     {
-                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                        invites.add(entityBuilder.createInvite(array.getObject(i)));
                     }
                     request.onSuccess(invites);
                 }

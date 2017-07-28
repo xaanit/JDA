@@ -26,8 +26,8 @@ import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.handle.SocketHandler;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,10 +41,10 @@ public class CallUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long channelId = content.getLong("channel_id");
-        JSONArray ringing = content.getJSONArray("ringing");
+        DataArray ringing = content.getArray("ringing");
         Region region = Region.fromKey(content.getString("region"));
 
         CallableChannel channel = api.asClient().getGroupById(channelId);
@@ -117,7 +117,7 @@ public class CallUpdateHandler extends SocketHandler
         return null;
     }
 
-    private List<Long> toLongList(JSONArray array)
+    private List<Long> toLongList(DataArray array)
     {
         List<Long> longs = new ArrayList<>();
         for (int i = 0; i < array.length(); i++)

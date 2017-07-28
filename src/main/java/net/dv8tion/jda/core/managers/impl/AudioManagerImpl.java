@@ -33,10 +33,10 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.managers.AudioManager;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.io.IOException;
 
@@ -339,9 +339,9 @@ public class AudioManagerImpl implements AudioManager
             VoiceChannel channel = isConnected() ? getConnectedChannel() : getQueuedAudioConnection();
 
             //This is technically equivalent to an audio open/move packet.
-            JSONObject voiceStateChange = new JSONObject()
+            DataObject voiceStateChange = new DataObject()
                     .put("op", WebSocketCode.VOICE_STATE)
-                    .put("d", new JSONObject()
+                    .put("d", new DataObject()
                             .put("guild_id", guild.getIdLong())
                             .put("channel_id", channel.getIdLong())
                             .put("self_mute", isSelfMuted())

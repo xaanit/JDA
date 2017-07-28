@@ -16,9 +16,8 @@
 
 package net.dv8tion.jda.core.requests;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.io.*;
 import java.util.Objects;
@@ -78,9 +77,9 @@ public class Response implements Closeable
             reader.reset();
 
             if (begin == '{')
-                this.object = new JSONObject(new JSONTokener(reader));
+                this.object = DataObject.fromJson(reader);
             else if (begin == '[')
-                this.object = new JSONArray(new JSONTokener(reader));
+                this.object = DataArray.fromJson(reader);
             else
                 this.object = reader.lines().collect(Collectors.joining());
         }
@@ -108,14 +107,14 @@ public class Response implements Closeable
         this(response, response.code(), response.message(), retryAfter, cfRays);
     }
 
-    public JSONArray getArray()
+    public DataArray getArray()
     {
-        return this.object instanceof JSONArray ? (JSONArray) this.object : null;
+        return this.object instanceof DataArray ? (DataArray) this.object : null;
     }
 
-    public JSONObject getObject()
+    public DataObject getObject()
     {
-        return this.object instanceof JSONObject ? (JSONObject) this.object : null;
+        return this.object instanceof DataObject ? (DataObject) this.object : null;
     }
 
     public String getString()

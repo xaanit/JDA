@@ -27,7 +27,7 @@ import net.dv8tion.jda.core.entities.impl.TextChannelImpl;
 import net.dv8tion.jda.core.events.message.MessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageDeleteEvent;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class MessageDeleteHandler extends SocketHandler
 {
@@ -38,7 +38,7 @@ public class MessageDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long messageId = content.getLong("id");
         final long channelId = content.getLong("channel_id");

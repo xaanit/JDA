@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
 import java.util.*;
 import java.util.function.Function;
 
@@ -130,6 +132,18 @@ public class DataArray implements List<Object>
     public static DataArray fromJson(String json) throws IOException
     {
         List<Object> map = jsonMapper.readValue(json, jacksonType);
+        return new DataArray(map);
+    }
+
+    public static DataArray fromJson(InputStream is) throws IOException
+    {
+        List<Object> map = jsonMapper.readValue(is, jacksonType);
+        return new DataArray(map);
+    }
+
+    public static DataArray fromJson(Reader reader) throws IOException
+    {
+        List<Object> map = jsonMapper.readValue(reader, jacksonType);
         return new DataArray(map);
     }
 

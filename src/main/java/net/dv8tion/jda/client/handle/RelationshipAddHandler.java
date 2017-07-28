@@ -21,12 +21,11 @@ import net.dv8tion.jda.client.events.relationship.FriendAddedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestReceivedEvent;
 import net.dv8tion.jda.client.events.relationship.FriendRequestSentEvent;
 import net.dv8tion.jda.client.events.relationship.UserBlockedEvent;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.handle.SocketHandler;
 import net.dv8tion.jda.core.requests.WebSocketClient;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class RelationshipAddHandler extends SocketHandler
 {
@@ -36,7 +35,7 @@ public class RelationshipAddHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         Relationship relationship = api.getEntityBuilder().createRelationship(content);
         if (relationship == null)

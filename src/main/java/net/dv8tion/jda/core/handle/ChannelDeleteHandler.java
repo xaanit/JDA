@@ -31,7 +31,7 @@ import net.dv8tion.jda.core.events.channel.priv.PrivateChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.text.TextChannelDeleteEvent;
 import net.dv8tion.jda.core.events.channel.voice.VoiceChannelDeleteEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class ChannelDeleteHandler extends SocketHandler
 {
@@ -41,7 +41,7 @@ public class ChannelDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         ChannelType type = ChannelType.fromId(content.getInt("type"));
 

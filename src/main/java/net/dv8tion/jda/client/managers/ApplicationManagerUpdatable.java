@@ -26,13 +26,13 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
+import javax.annotation.CheckReturnValue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
-import javax.annotation.CheckReturnValue;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -326,7 +326,7 @@ public class ApplicationManagerUpdatable
         if (!this.needsUpdate())
             return new RestAction.EmptyRestAction<>(getJDA(), null);
 
-        final JSONObject body = new JSONObject();
+        final DataObject body = new DataObject();
 
         // All fields are required or they are resetted to default
 
@@ -338,7 +338,7 @@ public class ApplicationManagerUpdatable
 
         body.put("icon",
                 this.icon.shouldUpdate()
-                        ? this.icon.getValue() == null ? JSONObject.NULL : this.icon.getValue().getEncoding()
+                        ? this.icon.getValue() == null ? null : this.icon.getValue().getEncoding()
                         : this.application.getIconUrl());
 
         body.put("bot_public",

@@ -23,8 +23,8 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 
@@ -84,9 +84,9 @@ public class WebhookAction extends AuditableRestAction<Webhook>
     @Override
     public RequestBody finalizeData()
     {
-        JSONObject object = new JSONObject();
+        DataObject object = new DataObject();
         object.put("name",   name);
-        object.put("avatar", avatar != null ? avatar.getEncoding() : JSONObject.NULL);
+        object.put("avatar", avatar != null ? avatar.getEncoding() : null);
 
         return getRequestBody(object);
     }
@@ -99,7 +99,7 @@ public class WebhookAction extends AuditableRestAction<Webhook>
             request.onFailure(response);
             return;
         }
-        JSONObject json = response.getObject();
+        DataObject json = response.getObject();
         Webhook webhook = api.getEntityBuilder().createWebhook(json);
 
         request.onSuccess(webhook);

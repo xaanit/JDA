@@ -27,7 +27,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.regex.Pattern;
@@ -232,16 +232,16 @@ public class AccountManagerUpdatable
         if (!needToUpdate())
             return new RestAction.EmptyRestAction<>(getJDA(), null);
 
-        JSONObject body = new JSONObject();
+        DataObject body = new DataObject();
 
         //Required fields. Populate with current values..
         body.put("username", name.getOriginalValue());
-        body.put("avatar", selfUser.getAvatarId() != null ? selfUser.getAvatarId() : JSONObject.NULL);
+        body.put("avatar", selfUser.getAvatarId());
 
         if (name.shouldUpdate())
             body.put("username", name.getValue());
         if (avatar.shouldUpdate())
-            body.put("avatar", avatar.getValue() != null ? avatar.getValue().getEncoding() : JSONObject.NULL);
+            body.put("avatar", avatar.getValue() != null ? avatar.getValue().getEncoding() : null);
 
         if (isType(AccountType.CLIENT))
         {

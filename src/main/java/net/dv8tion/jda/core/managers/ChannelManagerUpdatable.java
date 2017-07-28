@@ -30,7 +30,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import javax.annotation.CheckReturnValue;
 
@@ -278,11 +278,11 @@ public class ChannelManagerUpdatable
         if (!needToUpdate())
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
-        JSONObject frame = new JSONObject().put("name", channel.getName());
+        DataObject frame = new DataObject().put("name", channel.getName());
         if (name.shouldUpdate())
             frame.put("name", name.getValue());
         if (topic != null && topic.shouldUpdate())
-            frame.put("topic", topic.getValue() == null ? JSONObject.NULL : topic.getValue());
+            frame.put("topic", topic.getValue());
         if (nsfw != null && nsfw.shouldUpdate())
             frame.put("nsfw", nsfw.getValue());
         if (userLimit != null && userLimit.shouldUpdate())

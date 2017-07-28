@@ -24,9 +24,9 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import org.apache.commons.lang3.StringUtils;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -574,13 +574,13 @@ public class MessageImpl implements Message
             : String.format("M:%.20s", this); // this message was made using MessageBuilder
     }
 
-    public JSONObject toJSONObject()
+    public DataObject toDataObject()
     {
-        JSONObject obj = new JSONObject();
+        DataObject obj = new DataObject();
         obj.put("content", content);
         obj.put("tts",     isTTS);
         if (!embeds.isEmpty())
-            obj.put("embed", ((MessageEmbedImpl) embeds.get(0)).toJSONObject());
+            obj.put("embed", ((MessageEmbedImpl) embeds.get(0)).toDataObject());
         return obj;
     }
 

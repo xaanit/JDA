@@ -17,15 +17,14 @@
 package net.dv8tion.jda.client.requests.restaction;
 
 import net.dv8tion.jda.client.entities.Application;
-import net.dv8tion.jda.core.entities.EntityBuilder;
 import net.dv8tion.jda.core.entities.Icon;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 /**
  * Extension of {@link net.dv8tion.jda.core.requests.RestAction RestAction} specifically
@@ -51,7 +50,7 @@ public class ApplicationAction extends RestAction<Application>
     @Override
     protected RequestBody finalizeData()
     {
-        final JSONObject object = new JSONObject();
+        final DataObject object = new DataObject();
 
         object.put("name", this.name); // required
 

@@ -32,13 +32,13 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import javax.annotation.CheckReturnValue;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -210,7 +210,7 @@ public class EmoteManagerUpdatable
         if (!needsUpdate())
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
-        JSONObject body = new JSONObject();
+        DataObject body = new DataObject();
 
         if (name.shouldUpdate())
             body.put("name", name.getValue());

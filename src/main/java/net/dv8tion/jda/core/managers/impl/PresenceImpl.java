@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.Presence;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 /**
  * The Presence associated with the provided JDA instance
@@ -104,19 +104,16 @@ public class PresenceImpl implements Presence
     @Override
     public void setPresence(OnlineStatus status, Game game, boolean idle)
     {
-        JSONObject gameObj = getGameJson(game);
+        DataObject gameObj = getGameJson(game);
 
         Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
 
-        JSONObject object = new JSONObject();
+        DataObject object = new DataObject();
 
-        if (gameObj == null)
-            object.put("game", JSONObject.NULL);
-        else
-            object.put("game", gameObj);
+        object.put("game", gameObj);
         object.put("afk", idle);
         object.put("status", status.getKey());
         object.put("since", System.currentTimeMillis());
@@ -129,19 +126,16 @@ public class PresenceImpl implements Presence
     @Override
     public void setPresence(OnlineStatus status, Game game)
     {
-        JSONObject gameObj = getGameJson(game);
+        DataObject gameObj = getGameJson(game);
 
         Checks.check(status != OnlineStatus.UNKNOWN,
                 "Cannot set the presence status to an unknown OnlineStatus!");
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
 
-        JSONObject object = new JSONObject();
+        DataObject object = new DataObject();
 
-        if (gameObj == null)
-            object.put("game", JSONObject.NULL);
-        else
-            object.put("game", gameObj);
+        object.put("game", gameObj);
         object.put("status", status.getKey());
         object.put("since", System.currentTimeMillis());
         update(object);
@@ -157,7 +151,7 @@ public class PresenceImpl implements Presence
         if (status == OnlineStatus.OFFLINE || status == null)
             status = OnlineStatus.INVISIBLE;
 
-        JSONObject object = new JSONObject();
+        DataObject object = new DataObject();
 
         object.put("afk", idle);
         object.put("status", status.getKey());
@@ -170,13 +164,10 @@ public class PresenceImpl implements Presence
     @Override
     public void setPresence(Game game, boolean idle)
     {
-        JSONObject gameObj = getGameJson(game);
-        JSONObject object = new JSONObject();
+        DataObject gameObj = getGameJson(game);
+        DataObject object = new DataObject();
 
-        if (gameObj == null)
-            object.put("game", JSONObject.NULL);
-        else
-            object.put("game", gameObj);
+        object.put("game", gameObj);
         object.put("afk", idle);
         object.put("since", System.currentTimeMillis());
         update(object);
@@ -214,21 +205,21 @@ public class PresenceImpl implements Presence
     /* -- Internal Methods -- */
 
 
-    public JSONObject getFullPresence()
+    public DataObject getFullPresence()
     {
-        JSONObject game = getGameJson(this.game);
-        return new JSONObject()
+        DataObject game = getGameJson(this.game);
+        return new DataObject()
               .put("afk", idle)
               .put("since", System.currentTimeMillis())
-              .put("game", game == null ? JSONObject.NULL : game)
+              .put("game", game)
               .put("status", getStatus().getKey());
     }
 
-    private JSONObject getGameJson(Game game)
+    private DataObject getGameJson(Game game)
     {
         if (game == null || game.getName() == null || game.getType() == null)
             return null;
-        JSONObject gameObj = new JSONObject();
+        DataObject gameObj = new DataObject();
         gameObj.put("name", game.getName());
         gameObj.put("type", game.getType().getKey());
         if (game.getType() == Game.GameType.TWITCH && game.getUrl() != null)
@@ -241,9 +232,9 @@ public class PresenceImpl implements Presence
     /* -- Terminal -- */
 
 
-    protected void update(JSONObject data)
+    protected void update(DataObject data)
     {
-        api.getClient().send(new JSONObject()
+        api.getClient().send(new DataObject()
             .put("d", data)
             .put("op", WebSocketCode.PRESENCE));
     }

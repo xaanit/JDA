@@ -26,8 +26,8 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.time.OffsetDateTime;
 
@@ -145,10 +145,10 @@ public class InviteImpl implements Invite
                 if (response.isOk())
                 {
                     final EntityBuilder entityBuilder = this.api.getEntityBuilder();
-                    final JSONArray array = response.getArray();
+                    final DataArray array = response.getArray();
                     for (int i = 0; i < array.length(); i++)
                     {
-                        final JSONObject object = array.getJSONObject(i);
+                        final DataObject object = array.getObject(i);
                         if (InviteImpl.this.code.equals(object.getString("code")))
                         {
                             request.onSuccess(entityBuilder.createInvite(object));

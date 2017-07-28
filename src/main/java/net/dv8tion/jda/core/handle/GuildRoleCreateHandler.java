@@ -19,7 +19,7 @@ import net.dv8tion.jda.core.entities.Role;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.role.RoleCreateEvent;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class GuildRoleCreateHandler extends SocketHandler
 {
@@ -30,7 +30,7 @@ public class GuildRoleCreateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long guildId = content.getLong("guild_id");
         if (api.getGuildLock().isLocked(guildId))
@@ -49,7 +49,7 @@ public class GuildRoleCreateHandler extends SocketHandler
             return null;
         }
 
-        Role newRole = api.getEntityBuilder().createRole(content.getJSONObject("role"), guild.getIdLong());
+        Role newRole = api.getEntityBuilder().createRole(content.getObject("role"), guild.getIdLong());
         api.getEventManager().handle(
                 new RoleCreateEvent(
                         api, responseNumber,

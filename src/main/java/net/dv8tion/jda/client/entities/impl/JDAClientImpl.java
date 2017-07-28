@@ -32,9 +32,9 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONArray;
+import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.data.DataArray;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -265,12 +265,12 @@ public class JDAClientImpl implements JDAClient
             {
                 if (response.isOk())
                 {
-                    JSONArray array = response.getArray();
+                    DataArray array = response.getArray();
                     List<Application> applications = new ArrayList<>(array.length());
                     EntityBuilder entityBuilder = api.getEntityBuilder();
 
                     for (int i = 0; i < array.length(); i++)
-                        applications.add(entityBuilder.createApplication(array.getJSONObject(i)));
+                        applications.add(entityBuilder.createApplication(array.getObject(i)));
 
                     request.onSuccess(Collections.unmodifiableList(applications));
                 }
@@ -312,12 +312,12 @@ public class JDAClientImpl implements JDAClient
             {
                 if (response.isOk())
                 {
-                    JSONArray array = response.getArray();
+                    DataArray array = response.getArray();
                     List<AuthorizedApplication> applications = new ArrayList<>(array.length());
                     EntityBuilder entityBuilder = api.getEntityBuilder();
 
                     for (int i = 0; i < array.length(); i++)
-                        applications.add(entityBuilder.createAuthorizedApplication(array.getJSONObject(i)));
+                        applications.add(entityBuilder.createAuthorizedApplication(array.getObject(i)));
 
                     request.onSuccess(Collections.unmodifiableList(applications));
                 }

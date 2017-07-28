@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
-import org.json.JSONArray;
+import net.dv8tion.jda.core.utils.data.DataArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,12 +105,12 @@ public class MessagePaginationAction extends PaginationAction<Message, MessagePa
             return;
         }
 
-        JSONArray array = response.getArray();
+        DataArray array = response.getArray();
         List<Message> messages = new ArrayList<>(array.length());
         EntityBuilder builder = api.getEntityBuilder();
         for (int i = 0; i < array.length(); i++)
         {
-            Message msg = builder.createMessage(array.getJSONObject(i), channel, false);
+            Message msg = builder.createMessage(array.getObject(i), channel, false);
             messages.add(msg);
             if (useCache)
                 cached.add(msg);

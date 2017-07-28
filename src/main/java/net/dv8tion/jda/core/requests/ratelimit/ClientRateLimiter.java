@@ -23,8 +23,7 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
-import org.json.JSONObject;
-import org.json.JSONTokener;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,10 +74,10 @@ public class ClientRateLimiter extends RateLimiter
             {
                 try (InputStream in = Requester.getBody(response))
                 {
-                    JSONObject limitObj = new JSONObject(new JSONTokener(in));
+                    DataObject limitObj = DataObject.fromJson(in);
                     long retryAfter = limitObj.getLong("retry_after");
 
-                    if (limitObj.has("global") && limitObj.getBoolean("global"))    //Global ratelimit
+                    if (limitObj.containsKey("global") && limitObj.getBoolean("global"))    //Global ratelimit
                         globalCooldown = now + retryAfter;
                     else
                         bucket.retryAfter = now + retryAfter;

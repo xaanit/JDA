@@ -22,8 +22,8 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.RequestBody;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.concurrent.TimeUnit;
@@ -47,7 +47,7 @@ public class InviteAction extends AuditableRestAction<Invite>
     @Override
     protected RequestBody finalizeData()
     {
-        final JSONObject object = new JSONObject();
+        final DataObject object = new DataObject();
 
         if (this.maxAge != null)
             object.put("max_age", (int) this.maxAge);

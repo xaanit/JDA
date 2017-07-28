@@ -24,7 +24,7 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.user.UserTypingEvent;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -39,7 +39,7 @@ public class TypingStartHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long channelId = content.getLong("channel_id");
         MessageChannel channel = api.getTextChannelMap().get(channelId);

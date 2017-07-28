@@ -25,8 +25,8 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.util.*;
 
@@ -50,7 +50,7 @@ public class ApplicationImpl implements Application
     private int rpcApplicationState;
     private String secret;
 
-    public ApplicationImpl(final JDA api, final JSONObject object)
+    public ApplicationImpl(final JDA api, final DataObject object)
     {
         this.api = api;
 
@@ -238,11 +238,11 @@ public class ApplicationImpl implements Application
         return "Application(" + this.id + ")";
     }
 
-    public ApplicationImpl updateFromJson(final JSONObject object)
+    public ApplicationImpl updateFromJson(final DataObject object)
     {
-        if (object.has("bot"))
+        if (object.containsKey("bot"))
         {
-            final JSONObject botObject = object.getJSONObject("bot");
+            final DataObject botObject = object.getObject("bot");
 
             if (this.bot == null)
                 this.bot = new BotImpl(botObject);
@@ -258,11 +258,11 @@ public class ApplicationImpl implements Application
         this.doesBotRequireCodeGrant = object.getBoolean("bot_require_code_grant");
         this.description = object.getString("description");
         this.flags = object.getInt("flags");
-        this.iconId = object.has("icon") ? object.getString("icon") : null;
+        this.iconId = object.containsKey("icon") ? object.getString("icon") : null;
         this.id = object.getLong("id");
         this.name = object.getString("name");
 
-        final JSONArray redirectUriArray = object.getJSONArray("redirect_uris");
+        final DataArray redirectUriArray = object.getArray("redirect_uris");
         if (this.redirectUris == null)
             this.redirectUris = new ArrayList<>(redirectUriArray.length());
         else
@@ -286,7 +286,7 @@ public class ApplicationImpl implements Application
         private String name;
         private String token;
 
-        private BotImpl(final JSONObject object)
+        private BotImpl(final DataObject object)
         {
             this.updateFromJson(object);
         }
@@ -411,13 +411,13 @@ public class ApplicationImpl implements Application
             return "Application.Bot(" + this.id + ")";
         }
 
-        public BotImpl updateFromJson(final JSONObject object)
+        public BotImpl updateFromJson(final DataObject object)
         {
             this.name = object.getString("username");
             this.discriminator = object.getString("discriminator");
             this.token = object.getString("token");
             this.id = object.getLong("id");
-            this.avatarId = object.has("avatar") ? object.getString("avatar") : null;
+            this.avatarId = object.containsKey("avatar") ? object.getString("avatar") : null;
 
             return this;
         }

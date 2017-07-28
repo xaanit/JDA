@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.events.role.RoleDeleteEvent;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class GuildRoleDeleteHandler extends SocketHandler
 {
@@ -32,7 +32,7 @@ public class GuildRoleDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long guildId = content.getLong("guild_id");
         if (api.getGuildLock().isLocked(guildId))

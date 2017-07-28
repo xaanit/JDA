@@ -27,7 +27,7 @@ import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.requests.WebSocketClient;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class MessageCreateHandler extends SocketHandler
 {
@@ -39,7 +39,7 @@ public class MessageCreateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         MessageType type = MessageType.fromId(content.getInt("type"));
 
@@ -53,7 +53,7 @@ public class MessageCreateHandler extends SocketHandler
         return null;
     }
 
-    private Long handleDefaultMessage(JSONObject content)
+    private Long handleDefaultMessage(DataObject content)
     {
         Message message;
         try
@@ -73,7 +73,7 @@ public class MessageCreateHandler extends SocketHandler
                 }
                 case EntityBuilder.MISSING_USER:
                 {
-                    final long authorId = content.getJSONObject("author").getLong("id");
+                    final long authorId = content.getObject("author").getLong("id");
                     api.getEventCache().cache(EventCache.Type.USER, authorId, () -> handle(responseNumber, allContent));
                     EventCache.LOG.debug("Received a message for a user that JDA does not currently have cached");
                     return null;

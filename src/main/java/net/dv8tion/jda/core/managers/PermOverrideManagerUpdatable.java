@@ -27,7 +27,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.Arrays;
@@ -443,7 +443,7 @@ public class PermOverrideManagerUpdatable
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         String targetId = override.isRoleOverride() ? override.getRole().getId() : override.getMember().getUser().getId();
-        JSONObject body = new JSONObject()
+        DataObject body = new DataObject()
                 .put("id", targetId)
                 .put("type", override.isRoleOverride() ? "role" : "member")
                 .put("allow", getAllowBits())

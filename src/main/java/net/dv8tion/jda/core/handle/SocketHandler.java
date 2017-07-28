@@ -16,13 +16,13 @@
 package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public abstract class SocketHandler
 {
     protected final JDAImpl api;
     protected long responseNumber;
-    protected JSONObject allContent;
+    protected DataObject allContent;
 
     public SocketHandler(JDAImpl api)
     {
@@ -30,11 +30,11 @@ public abstract class SocketHandler
     }
 
 
-    public final void handle(long responseTotal, JSONObject o)
+    public final void handle(long responseTotal, DataObject o)
     {
         this.allContent = o;
         this.responseNumber = responseTotal;
-        final Long guildId = handleInternally(o.getJSONObject("d"));
+        final Long guildId = handleInternally(o.getObject("d"));
         if (guildId != null)
             api.getGuildLock().queue(guildId, o);
     }
@@ -46,5 +46,5 @@ public abstract class SocketHandler
      * @return
      *      Guild-id if that guild has a lock, or null if successful
      */
-    protected abstract Long handleInternally(JSONObject content);
+    protected abstract Long handleInternally(DataObject content);
 }

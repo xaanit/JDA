@@ -27,8 +27,8 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.ExceptionEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.io.IOException;
 import java.net.*;
@@ -112,9 +112,9 @@ public class AudioWebSocket extends WebSocketAdapter
             return;
         }
 
-        JSONObject connectObj = new JSONObject()
+        DataObject connectObj = new DataObject()
                 .put("op", 0)
-                .put("d", new JSONObject()
+                .put("d", new DataObject()
                         .put("server_id", guild.getId())
                         .put("user_id", api.getSelfUser().getId())
                         .put("session_id", sessionId)
@@ -129,14 +129,23 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void onTextMessage(WebSocket websocket, String message)
     {
-        JSONObject contentAll = new JSONObject(message);
+        DataObject contentAll = null;
+        try
+        {
+            contentAll = DataObject.fromJson(message);
+        }
+        catch (IOException e)
+        {
+            LOG.fatal("Could not parse");
+            LOG.log(e);
+        }
         int opCode = contentAll.getInt("op");
 
         switch(opCode)
         {
             case INITIAL_CONNECTION_RESPONSE:
             {
-                JSONObject content = contentAll.getJSONObject("d");
+                DataObject content = contentAll.getObject("d");
                 ssrc = content.getInt("ssrc");
                 int port = content.getInt("port");
                 int heartbeatInterval = content.getInt("heartbeat_interval");
@@ -157,11 +166,11 @@ public class AudioWebSocket extends WebSocketAdapter
                     }
                 } while (externalIpAndPort == null);
 
-                send(new JSONObject()
+                send(new DataObject()
                         .put("op", 1)
-                        .put("d", new JSONObject()
+                        .put("d", new DataObject()
                             .put("protocol", "udp")
-                            .put("data", new JSONObject()
+                            .put("data", new DataObject()
                                 .put("address", externalIpAndPort.getHostString())
                                 .put("port", externalIpAndPort.getPort())
                                 .put("mode", "xsalsa20_poly1305")   //Discord requires encryption
@@ -187,7 +196,7 @@ public class AudioWebSocket extends WebSocketAdapter
             case CONNECTING_COMPLETED:
             {
                 //secret_key is an array of 32 ints that are less than 256, so they are bytes.
-                JSONArray keyArray = contentAll.getJSONObject("d").getJSONArray("secret_key");
+                DataArray keyArray = contentAll.getObject("d").getArray("secret_key");
 
                 secretKey = new byte[DISCORD_SECRET_KEY_LENGTH];
                 for (int i = 0; i < keyArray.length(); i++)
@@ -200,7 +209,7 @@ public class AudioWebSocket extends WebSocketAdapter
             }
             case USER_SPEAKING_UPDATE:
             {
-                JSONObject content = contentAll.getJSONObject("d");
+                DataObject content = contentAll.getObject("d");
                 boolean speaking = content.getBoolean("speaking");
                 int ssrc = content.getInt("ssrc");
                 final long userId = content.getLong("user_id");
@@ -225,7 +234,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 break;
             }
             default:
-                LOG.debug("Unknown Audio OP code.\n" + contentAll.toString(4));
+                LOG.debug("Unknown Audio OP code.\n" + contentAll.toString());
         }
     }
 
@@ -329,11 +338,11 @@ public class AudioWebSocket extends WebSocketAdapter
         shutdown = true;
         if (closeStatus != ConnectionStatus.AUDIO_REGION_CHANGE)
         {
-            JSONObject obj = new JSONObject()
+            DataObject obj = new DataObject()
                 .put("op", WebSocketCode.VOICE_STATE)
-                .put("d", new JSONObject()
+                .put("d", new DataObject()
                     .put("guild_id", guild.getIdLong())
-                    .put("channel_id", JSONObject.NULL)
+                    .put("channel_id", null)
                     .put("self_mute", false)
                     .put("self_deaf", false)
                 );
@@ -491,7 +500,7 @@ public class AudioWebSocket extends WebSocketAdapter
         {
             if (socket.isOpen() && socket.isOpen() && !udpSocket.isClosed())
             {
-                send(new JSONObject()
+                send(new DataObject()
                         .put("op", 3)
                         .put("d", System.currentTimeMillis())
                         .toString());

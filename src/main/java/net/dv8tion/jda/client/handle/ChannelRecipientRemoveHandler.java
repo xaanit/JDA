@@ -23,7 +23,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.handle.SocketHandler;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class ChannelRecipientRemoveHandler extends SocketHandler
 {
@@ -33,10 +33,10 @@ public class ChannelRecipientRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long groupId = content.getLong("channel_id");
-        final long userId = content.getJSONObject("user").getLong("id");
+        final long userId = content.getObject("user").getLong("id");
 
         GroupImpl group = (GroupImpl) api.asClient().getGroupById(groupId);
         if (group == null)

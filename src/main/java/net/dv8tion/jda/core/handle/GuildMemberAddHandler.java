@@ -19,7 +19,7 @@ import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class GuildMemberAddHandler extends SocketHandler
 {
@@ -30,7 +30,7 @@ public class GuildMemberAddHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("guild_id");
         if (api.getGuildLock().isLocked(id))

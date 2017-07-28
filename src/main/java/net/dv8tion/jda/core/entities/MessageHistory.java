@@ -24,8 +24,8 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.data.DataArray;
 import org.apache.commons.collections4.map.ListOrderedMap;
-import org.json.JSONArray;
 
 import javax.annotation.CheckReturnValue;
 import java.util.*;
@@ -176,10 +176,10 @@ public class MessageHistory
 
                 EntityBuilder builder = api.getEntityBuilder();;
                 LinkedList<Message> msgs  = new LinkedList<>();
-                JSONArray historyJson = response.getArray();
+                DataArray historyJson = response.getArray();
 
                 for (int i = 0; i < historyJson.length(); i++)
-                    msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
+                    msgs.add(builder.createMessage(historyJson.getObject(i)));
 
                 msgs.forEach(msg -> history.put(msg.getIdLong(), msg));
                 request.onSuccess(msgs);
@@ -254,10 +254,10 @@ public class MessageHistory
 
                 EntityBuilder builder = api.getEntityBuilder();;
                 LinkedList<Message> msgs  = new LinkedList<>();
-                JSONArray historyJson = response.getArray();
+                DataArray historyJson = response.getArray();
 
                 for (int i = 0; i < historyJson.length(); i++)
-                    msgs.add(builder.createMessage(historyJson.getJSONObject(i)));
+                    msgs.add(builder.createMessage(historyJson.getObject(i)));
 
                 for (Iterator<Message> it = msgs.descendingIterator(); it.hasNext();)
                 {

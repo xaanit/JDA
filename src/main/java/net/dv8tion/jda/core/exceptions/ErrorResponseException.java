@@ -18,7 +18,7 @@ package net.dv8tion.jda.core.exceptions;
 
 import net.dv8tion.jda.core.requests.ErrorResponse;
 import net.dv8tion.jda.core.requests.Response;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 /**
  * Indicates an unhandled error that is returned by Discord API Request using {@link net.dv8tion.jda.core.requests.RestAction RestAction}
@@ -107,7 +107,7 @@ public class ErrorResponseException extends RuntimeException
 
     public static ErrorResponseException create(ErrorResponse errorResponse, Response response)
     {
-        JSONObject obj = response.getObject();
+        DataObject obj = response.getObject();
         String meaning = errorResponse.getMeaning();
         int code = errorResponse.getCode();
         if (response.isError() && response.getException() != null)

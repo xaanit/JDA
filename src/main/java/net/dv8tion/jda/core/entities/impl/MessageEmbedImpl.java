@@ -17,10 +17,10 @@ package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.core.entities.EmbedType;
 import net.dv8tion.jda.core.entities.MessageEmbed;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
-import java.awt.Color;
+import java.awt.*;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -238,9 +238,9 @@ public class MessageEmbedImpl implements MessageEmbed
         return "EmbedMessage";
     }
     
-    public JSONObject toJSONObject()
+    public DataObject toDataObject()
     {
-        JSONObject obj = new JSONObject();
+        DataObject obj = new DataObject();
         if (url != null)
             obj.put("url", url);
         if (title != null)
@@ -252,10 +252,10 @@ public class MessageEmbedImpl implements MessageEmbed
         if (color != null)
             obj.put("color", color.getRGB() & 0xFFFFFF);
         if (thumbnail != null)
-            obj.put("thumbnail", new JSONObject().put("url", thumbnail.getUrl()));
+            obj.put("thumbnail", new DataObject().put("url", thumbnail.getUrl()));
         if (siteProvider != null)
         {
-            JSONObject siteProviderObj = new JSONObject();
+            DataObject siteProviderObj = new DataObject();
             if (siteProvider.getName() != null)
                 siteProviderObj.put("name", siteProvider.getName());
             if (siteProvider.getUrl() != null)
@@ -264,7 +264,7 @@ public class MessageEmbedImpl implements MessageEmbed
         }
         if (author != null)
         {
-            JSONObject authorObj = new JSONObject();
+            DataObject authorObj = new DataObject();
             if (author.getName() != null)
                 authorObj.put("name", author.getName());
             if (author.getUrl() != null)
@@ -274,10 +274,10 @@ public class MessageEmbedImpl implements MessageEmbed
             obj.put("author", authorObj);
         }
         if (videoInfo != null)
-            obj.put("video", new JSONObject().put("url", videoInfo.getUrl()));
+            obj.put("video", new DataObject().put("url", videoInfo.getUrl()));
         if (footer != null)
         {
-            JSONObject footerObj = new JSONObject();
+            DataObject footerObj = new DataObject();
             if (footer.getText() != null)
                 footerObj.put("text", footer.getText());
             if (footer.getIconUrl() != null)
@@ -285,12 +285,12 @@ public class MessageEmbedImpl implements MessageEmbed
             obj.put("footer", footerObj);
         }
         if (image != null)
-            obj.put("image", new JSONObject().put("url", image.getUrl()));
+            obj.put("image", new DataObject().put("url", image.getUrl()));
         if (!fields.isEmpty())
         {
-            JSONArray fieldsArray = new JSONArray();
+            DataArray fieldsArray = new DataArray();
             fields.stream().forEach(field -> 
-                fieldsArray.put(new JSONObject()
+                fieldsArray.put(new DataObject()
                     .put("name", field.getName())
                     .put("value", field.getValue())
                     .put("inline", field.isInline())));

@@ -1,5 +1,10 @@
 package net.dv8tion.jda.core.etf;
 
+import net.dv8tion.jda.core.etf.utils.BoundedDataInput;
+import net.dv8tion.jda.core.etf.utils.ByteArrayDataInput;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
+
 import java.io.Closeable;
 import java.io.DataInput;
 import java.io.IOException;
@@ -9,10 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
-import net.dv8tion.jda.core.etf.utils.BoundedDataInput;
-import net.dv8tion.jda.core.etf.utils.ByteArrayDataInput;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * 
@@ -28,7 +29,7 @@ public class EtfReader implements Closeable {
     this.permanentInflater = threadSafe ? null : new Inflater();
   }
 
-  public JSONObject readMessage(BoundedDataInput input) {
+  public DataObject readMessage(BoundedDataInput input) {
     try {
       return readTerm(input);
     } catch (Exception e) {
@@ -36,7 +37,7 @@ public class EtfReader implements Closeable {
     }
   }
 
-  private JSONObject readTerm(BoundedDataInput input) throws IOException {
+  private DataObject readTerm(BoundedDataInput input) throws IOException {
     int termHeader = input.readUnsignedByte();
         if (termHeader != 131) {
       throw new IllegalStateException("Should start with a term header.");
@@ -44,11 +45,11 @@ public class EtfReader implements Closeable {
 
     Object element = readObject(input);
 
-    if (!(element instanceof JSONObject)) {
+    if (!(element instanceof DataObject)) {
       throw new IllegalStateException("Root element must be a map.");
     }
 
-    return (JSONObject) element;
+    return (DataObject) element;
   }
 
   private Object readObject(BoundedDataInput input) throws IOException {
@@ -63,7 +64,7 @@ public class EtfReader implements Closeable {
       case EtfTag.ATOM_EXT:
         return readAtomElement(input);
       case EtfTag.NIL_EXT:
-        return new JSONArray();
+        return new DataArray();
       case EtfTag.STRING_EXT:
         return readByteListElement(input);
       case EtfTag.LIST_EXT:
@@ -152,7 +153,7 @@ public class EtfReader implements Closeable {
     String result = new String(bytes, 0, length, StandardCharsets.UTF_8);
 
     if ("nil".equals(result)) {
-      return JSONObject.NULL;
+      return null;
     } else if ("true".equals(result)) {
       return true;
     } else if ("false".equals(result)) {
@@ -162,9 +163,9 @@ public class EtfReader implements Closeable {
     }
   }
 
-  private JSONObject readMapElement(BoundedDataInput input) throws IOException {
+  private DataObject readMapElement(BoundedDataInput input) throws IOException {
     int arity = input.readInt();
-    JSONObject object = new JSONObject();
+      DataObject object = new DataObject();
 
     for (int i = 0; i < arity; i++) {
       Object key = readObject(input);
@@ -191,9 +192,9 @@ public class EtfReader implements Closeable {
     return list;
   }
 
-  private JSONArray readListElement(BoundedDataInput input) throws IOException {
+  private DataArray readListElement(BoundedDataInput input) throws IOException {
     int length = input.readInt();
-    JSONArray list = new JSONArray();
+    DataArray list = new DataArray();
 
     for (int i = 0; i < length; i++) {
       list.put(readObject(input));

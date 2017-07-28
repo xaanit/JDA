@@ -29,8 +29,8 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -164,23 +164,23 @@ public class AuditLogPaginationAction extends PaginationAction<AuditLogEntry, Au
             return;
         }
 
-        JSONObject obj = response.getObject();
-        JSONArray users = obj.getJSONArray("users");
-        JSONArray entries = obj.getJSONArray("audit_log_entries");
+        DataObject obj = response.getObject();
+        DataArray users = obj.getArray("users");
+        DataArray entries = obj.getArray("audit_log_entries");
 
         List<AuditLogEntry> list = new ArrayList<>(entries.length());
         EntityBuilder builder = api.getEntityBuilder();
 
-        TLongObjectMap<JSONObject> userMap = new TLongObjectHashMap<>();
+        TLongObjectMap<DataObject> userMap = new TLongObjectHashMap<>();
         for (int i = 0; i < users.length(); i++)
         {
-            JSONObject user = users.getJSONObject(i);
+            DataObject user = users.getObject(i);
             userMap.put(user.getLong("id"), user);
         }
         for (int i = 0; i < entries.length(); i++)
         {
-            JSONObject entry = entries.getJSONObject(i);
-            JSONObject user  = userMap.get(entry.getLong("user_id"));
+            DataObject entry = entries.getObject(i);
+            DataObject user  = userMap.get(entry.getLong("user_id"));
             AuditLogEntry result = builder.createAuditLogEntry((GuildImpl) guild, entry, user);
             list.add(result);
             if (this.useCache)

@@ -21,8 +21,8 @@ import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongIntHashMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -30,7 +30,7 @@ import java.util.List;
 public class GuildMembersChunkHandler extends SocketHandler
 {
     private final TLongIntMap expectedGuildMembers = new TLongIntHashMap();
-    private final TLongObjectMap<List<JSONArray>> memberChunksCache = new TLongObjectHashMap<>();
+    private final TLongObjectMap<List<DataArray>> memberChunksCache = new TLongObjectHashMap<>();
 
     public GuildMembersChunkHandler(JDAImpl api)
     {
@@ -38,18 +38,18 @@ public class GuildMembersChunkHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long guildId = content.getLong("guild_id");
-        List<JSONArray> memberChunks = memberChunksCache.get(guildId);
+        List<DataArray> memberChunks = memberChunksCache.get(guildId);
         int expectMemberCount = expectedGuildMembers.get(guildId);
 
-        JSONArray members = content.getJSONArray("members");
+        DataArray members = content.getArray("members");
         JDAImpl.LOG.debug("GUILD_MEMBER_CHUNK for: " + guildId + " \tMembers: " + members.length());
         memberChunks.add(members);
 
         int currentTotal = 0;
-        for (JSONArray arr : memberChunks)
+        for (DataArray arr : memberChunks)
         {
             currentTotal += arr.length();
         }

@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.guild.GuildAvailableEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.UnavailableGuildJoinedEvent;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class GuildCreateHandler extends SocketHandler
 {
@@ -31,7 +31,7 @@ public class GuildCreateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         Guild g = api.getGuildById(content.getLong("id"));
         Boolean wasAvail = (g == null || g.getName() == null) ? null : g.isAvailable();

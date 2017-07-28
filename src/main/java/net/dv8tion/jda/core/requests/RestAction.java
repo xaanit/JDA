@@ -21,12 +21,13 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.exceptions.PermissionException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
-import net.dv8tion.jda.core.utils.SimpleLog;
-import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import okhttp3.RequestBody;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
+import okhttp3.RequestBody;
+import org.apache.commons.collections4.map.CaseInsensitiveMap;
+
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 
@@ -212,7 +213,7 @@ public abstract class RestAction<T>
      * @param  data
      *         The data that should be sent to the specified route. (can be null)
      */
-    public RestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    public RestAction(JDA api, Route.CompiledRoute route, DataObject data)
     {
         this(api, route, data == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, data.toString()));
 
@@ -665,14 +666,14 @@ public abstract class RestAction<T>
     protected Route.CompiledRoute finalizeRoute() { return route; }
     protected CaseInsensitiveMap<String, String> finalizeHeaders() { return null; }
 
-    protected RequestBody getRequestBody(JSONObject object)
+    protected RequestBody getRequestBody(DataObject object)
     {
         this.rawData = object;
 
         return object == null ? null : RequestBody.create(Requester.MEDIA_TYPE_JSON, object.toString());
     }
 
-    protected RequestBody getRequestBody(JSONArray array)
+    protected RequestBody getRequestBody(DataArray array)
     {
         this.rawData = array;
 

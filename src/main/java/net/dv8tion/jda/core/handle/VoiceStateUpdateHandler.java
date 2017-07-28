@@ -34,7 +34,7 @@ import net.dv8tion.jda.core.entities.impl.VoiceChannelImpl;
 import net.dv8tion.jda.core.events.guild.voice.*;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.requests.WebSocketClient;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.util.Objects;
 
@@ -46,9 +46,9 @@ public class VoiceStateUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
-        final Long guildId = content.has("guild_id") ? content.getLong("guild_id") : null;
+        final Long guildId = content.containsKey("guild_id") ? content.getLong("guild_id") : null;
         if (guildId != null && api.getGuildLock().isLocked(guildId))
             return guildId;
 
@@ -59,7 +59,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
         return null;
     }
 
-    private void handleGuildVoiceState(JSONObject content)
+    private void handleGuildVoiceState(DataObject content)
     {
         final long userId = content.getLong("user_id");
         final long guildId = content.getLong("guild_id");
@@ -183,7 +183,7 @@ public class VoiceStateUpdateHandler extends SocketHandler
             api.getEventManager().handle(new GuildVoiceDeafenEvent(api, responseNumber, member));
     }
 
-    private void handleCallVoiceState(JSONObject content)
+    private void handleCallVoiceState(DataObject content)
     {
         final long userId = content.getLong("user_id");
         final Long channelId = !content.isNull("channel_id") ? content.getLong("channel_id") : null;

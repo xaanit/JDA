@@ -22,8 +22,8 @@ import net.dv8tion.jda.core.events.user.UserAvatarUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserGameUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserNameUpdateEvent;
 import net.dv8tion.jda.core.events.user.UserOnlineStatusUpdateEvent;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONObject;
 
 public class PresenceUpdateHandler extends SocketHandler
 {
@@ -34,17 +34,17 @@ public class PresenceUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked.
-        if (content.has("guild_id"))
+        if (content.containsKey("guild_id"))
         {
             final long guildId = content.getLong("guild_id");
             if (api.getGuildLock().isLocked(guildId))
                 return guildId;
         }
 
-        JSONObject jsonUser = content.getJSONObject("user");
+        DataObject jsonUser = content.getObject("user");
         final long userId = jsonUser.getLong("id");
         UserImpl user = (UserImpl) api.getUserMap().get(userId);
 
@@ -55,7 +55,7 @@ public class PresenceUpdateHandler extends SocketHandler
         // due to a User leaving a guild or no longer being a relation.
         if (user != null)
         {
-            if (jsonUser.has("username"))
+            if (jsonUser.containsKey("username"))
             {
                 String name = jsonUser.getString("username");
                 String discriminator = jsonUser.get("discriminator").toString();
@@ -89,15 +89,15 @@ public class PresenceUpdateHandler extends SocketHandler
             String gameName = null;
             String gameUrl = null;
             Game.GameType type = null;
-            if ( !content.isNull("game") && !content.getJSONObject("game").isNull("name") )
+            if ( !content.isNull("game") && !content.getObject("game").isNull("name") )
             {
-                gameName = content.getJSONObject("game").get("name").toString();
-                gameUrl = ( content.getJSONObject("game").isNull("url") ? null : content.getJSONObject("game").get("url").toString() );
+                gameName = content.getObject("game").get("name").toString();
+                gameUrl = ( content.getObject("game").isNull("url") ? null : content.getObject("game").get("url").toString() );
                 try
                 {
-                    type = content.getJSONObject("game").isNull("type")
+                    type = content.getObject("game").isNull("type")
                             ? Game.GameType.DEFAULT
-                            : Game.GameType.fromKey(Integer.parseInt(content.getJSONObject("game").get("type").toString()));
+                            : Game.GameType.fromKey(Integer.parseInt(content.getObject("game").get("type").toString()));
                 }
                 catch (NumberFormatException ex)
                 {
@@ -111,7 +111,7 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //If we are in a Guild, then we will use Member.
             // If we aren't we'll be dealing with the Relation system.
-            if (content.has("guild_id"))
+            if (content.containsKey("guild_id"))
             {
                 GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
                 MemberImpl member = (MemberImpl) guild.getMember(user);
@@ -176,7 +176,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 return null;
 
             //If this was for a Guild, cache it in the Guild for later use in GUILD_MEMBER_ADD
-            if (content.has("guild_id"))
+            if (content.containsKey("guild_id"))
             {
                 GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
                 guild.getCachedPresenceMap().put(userId, content);

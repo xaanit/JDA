@@ -28,17 +28,16 @@ import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.MessagePaginationAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
-import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
@@ -363,7 +362,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         }
 
         Route.CompiledRoute route = Route.Messages.SEND_MESSAGE.compile(getId());
-        JSONObject json = ((MessageImpl) msg).toJSONObject();
+        DataObject json = ((MessageImpl) msg).toDataObject();
         return new RestAction<Message>(getJDA(), route, json)
         {
             @Override
@@ -530,7 +529,7 @@ public interface MessageChannel extends ISnowflake, Formattable
                         type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
             }
 
-            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
+            builder.addFormDataPart("payload_json", ((MessageImpl) message).toDataObject().toString());
         }
 
         return new RestAction<Message>(getJDA(), route, builder.build())
@@ -603,7 +602,7 @@ public interface MessageChannel extends ISnowflake, Formattable
                         type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
             }
 
-            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
+            builder.addFormDataPart("payload_json", ((MessageImpl) message).toDataObject().toString());
         }
 
         return new RestAction<Message>(getJDA(), route, builder.build())
@@ -683,7 +682,7 @@ public interface MessageChannel extends ISnowflake, Formattable
                         type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
             }
 
-            builder.addFormDataPart("payload_json", ((MessageImpl) message).toJSONObject().toString());
+            builder.addFormDataPart("payload_json", ((MessageImpl) message).toDataObject().toString());
         }
 
         return new RestAction<Message>(getJDA(), route, builder.build())
@@ -1114,10 +1113,10 @@ public interface MessageChannel extends ISnowflake, Formattable
 
                 EntityBuilder builder = api.getEntityBuilder();;
                 LinkedList<Message> msgs  = new LinkedList<>();
-                JSONArray historyJson = response.getArray();
+                DataArray historyJson = response.getArray();
 
                 for (int i = 0; i < historyJson.length(); i++)
-                    msgs.add(builder.createMessage(historyJson.getJSONObject(i), MessageChannel.this, false));
+                    msgs.add(builder.createMessage(historyJson.getObject(i), MessageChannel.this, false));
 
                 msgs.forEach(msg -> mHistory.history.put(msg.getIdLong(), msg));
                 request.onSuccess(mHistory);
@@ -1757,11 +1756,11 @@ public interface MessageChannel extends ISnowflake, Formattable
                 {
                     LinkedList<Message> pinnedMessages = new LinkedList<>();
                     EntityBuilder builder = api.getEntityBuilder();
-                    JSONArray pins = response.getArray();
+                    DataArray pins = response.getArray();
 
                     for (int i = 0; i < pins.length(); i++)
                     {
-                        pinnedMessages.add(builder.createMessage(pins.getJSONObject(i), MessageChannel.this, false));
+                        pinnedMessages.add(builder.createMessage(pins.getObject(i), MessageChannel.this, false));
                     }
 
                     request.onSuccess(Collections.unmodifiableList(pinnedMessages));
@@ -1882,7 +1881,7 @@ public interface MessageChannel extends ISnowflake, Formattable
                     "Provided Message contains an embed with a length greater than %d characters, which is the max for %s accounts!",
                     type == AccountType.BOT ? MessageEmbed.EMBED_MAX_LENGTH_BOT : MessageEmbed.EMBED_MAX_LENGTH_CLIENT, type);
         }
-        JSONObject json = ((MessageImpl) newContent).toJSONObject();
+        DataObject json = ((MessageImpl) newContent).toDataObject();
         Route.CompiledRoute route = Route.Messages.EDIT_MESSAGE.compile(getId(), messageId);
         return new RestAction<Message>(getJDA(), route, json)
         {

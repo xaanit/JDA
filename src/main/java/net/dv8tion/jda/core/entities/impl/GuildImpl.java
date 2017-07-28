@@ -35,12 +35,12 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
-import org.apache.commons.lang3.StringUtils;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
+import net.dv8tion.jda.core.utils.data.DataReadException;
+import org.apache.commons.lang3.StringUtils;
 
 import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
@@ -57,7 +57,7 @@ public class GuildImpl implements Guild
     private final TLongObjectMap<Role> roles = MiscUtil.newLongMap();
     private final TLongObjectMap<Emote> emotes = MiscUtil.newLongMap();
 
-    private final TLongObjectMap<JSONObject> cachedPresences = MiscUtil.newLongMap();
+    private final TLongObjectMap<DataObject> cachedPresences = MiscUtil.newLongMap();
 
     private final Object mngLock = new Object();
     private volatile GuildManager manager;
@@ -142,16 +142,16 @@ public class GuildImpl implements Guild
                 }
 
                 List<Webhook> webhooks = new LinkedList<>();
-                JSONArray array = response.getArray();
+                DataArray array = response.getArray();
                 EntityBuilder builder = api.getEntityBuilder();
 
                 for (Object object : array)
                 {
                     try
                     {
-                        webhooks.add(builder.createWebhook((JSONObject) object));
+                        webhooks.add(builder.createWebhook((DataObject) object));
                     }
-                    catch (JSONException | NullPointerException e)
+                    catch (DataReadException | NullPointerException e)
                     {
                         JDAImpl.LOG.log(e);
                     }
@@ -423,11 +423,11 @@ public class GuildImpl implements Guild
 
                 EntityBuilder builder = api.getEntityBuilder();
                 List<User> bans = new LinkedList<>();
-                JSONArray bannedArr = response.getArray();
+                DataArray bannedArr = response.getArray();
 
                 for (int i = 0; i < bannedArr.length(); i++)
                 {
-                    JSONObject user = bannedArr.getJSONObject(i).getJSONObject("user");
+                    DataObject user = bannedArr.getObject(i).getObject("user");
                     bans.add(builder.createFakeUser(user, false));
                 }
                 request.onSuccess(Collections.unmodifiableList(bans));
@@ -569,11 +569,11 @@ public class GuildImpl implements Guild
         if (!owner.equals(getSelfMember()))
             throw new PermissionException("Cannot delete a guild that you do not own!");
 
-        JSONObject mfaBody = null;
+        DataObject mfaBody = null;
         if (api.getSelfUser().isMfaEnabled())
         {
             Checks.notEmpty(mfaCode, "Provided MultiFactor Auth code");
-            mfaBody = new JSONObject().put("code", mfaCode);
+            mfaBody = new DataObject().put("code", mfaCode);
         }
 
         Route.CompiledRoute route = Route.Guilds.DELETE_GUILD.compile(getId());
@@ -799,7 +799,7 @@ public class GuildImpl implements Guild
         return roles;
     }
 
-    public TLongObjectMap<JSONObject> getCachedPresenceMap()
+    public TLongObjectMap<DataObject> getCachedPresenceMap()
     {
         return cachedPresences;
     }
@@ -849,11 +849,11 @@ public class GuildImpl implements Guild
                 if (response.isOk())
                 {
                     EntityBuilder entityBuilder = this.api.getEntityBuilder();
-                    JSONArray array = response.getArray();
+                    DataArray array = response.getArray();
                     List<Invite> invites = new ArrayList<>(array.length());
                     for (int i = 0; i < array.length(); i++)
                     {
-                        invites.add(entityBuilder.createInvite(array.getJSONObject(i)));
+                        invites.add(entityBuilder.createInvite(array.getObject(i)));
                     }
                     request.onSuccess(invites);
                 }

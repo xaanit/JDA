@@ -25,7 +25,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.util.FormattableFlags;
 import java.util.Formatter;
@@ -109,7 +109,7 @@ public class UserImpl implements User
             throw new IllegalStateException("Cannot open a PrivateChannel with a Fake user.");
 
         Route.CompiledRoute route = Route.Self.CREATE_PRIVATE_CHANNEL.compile();
-        JSONObject body = new JSONObject().put("recipient_id", getId());
+        DataObject body = new DataObject().put("recipient_id", getId());
         return new RestAction<PrivateChannel>(api, route, body)
         {
             @Override

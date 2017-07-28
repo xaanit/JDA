@@ -34,7 +34,7 @@ import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.GuildUnavailableEvent;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class GuildDeleteHandler extends SocketHandler
 {
@@ -44,20 +44,20 @@ public class GuildDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("id");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
 
         //If the event is attempting to mark the guild as unavailable, but it is already unavailable,
         // ignore the event
-        if ((guild == null || !guild.isAvailable()) && content.has("unavailable") && content.getBoolean("unavailable"))
+        if ((guild == null || !guild.isAvailable()) && content.containsKey("unavailable") && content.getBoolean("unavailable"))
             return null;
 
         if (api.getGuildLock().isLocked(id))
             return id;
 
-        if (content.has("unavailable") && content.getBoolean("unavailable"))
+        if (content.containsKey("unavailable") && content.getBoolean("unavailable"))
         {
             guild.setAvailable(false);
             api.getEventManager().handle(

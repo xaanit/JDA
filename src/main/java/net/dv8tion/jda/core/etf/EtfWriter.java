@@ -1,11 +1,13 @@
 package net.dv8tion.jda.core.etf;
 
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import java.util.Map;
 
 /**
  * 
@@ -19,7 +21,7 @@ public class EtfWriter {
     this.smallTextBuffer = threadSafe ? null : new byte[512];
   }
 
-  public void writeMessage(JSONObject message, DataOutput output) {
+  public void writeMessage(DataObject message, DataOutput output) {
     try {
       output.write(131);
       writeObject(message, output);
@@ -28,7 +30,7 @@ public class EtfWriter {
     }
   }
 
-    public byte[] writeMessage(JSONObject message)
+    public byte[] writeMessage(DataObject message)
     {
         try
         {
@@ -46,8 +48,8 @@ public class EtfWriter {
   private void writeObject(Object object, DataOutput output) throws IOException {
         if (object instanceof String) {
       writeStringBytes((String) object, output);
-    } else if (object instanceof JSONObject) {
-      writeMap((JSONObject) object, output);
+    } else if (object instanceof DataObject) {
+      writeMap((DataObject) object, output);
     } else if (object instanceof Number) {
       if (object instanceof Byte) {
         output.write(EtfTag.SMALL_INTEGER_EXT);
@@ -61,11 +63,11 @@ public class EtfWriter {
         output.write(EtfTag.INTEGER_EXT);
         output.writeInt(((Number) object).intValue());
       }
-    } else if (object instanceof JSONArray) {
-      writeList((JSONArray) object, output);
+    } else if (object instanceof DataArray) {
+      writeList((DataArray) object, output);
     } else if (object instanceof Boolean) {
       writeStringAtom(object == Boolean.TRUE ? "true" : "false", output);
-    } else if (JSONObject.NULL.equals(object)) {
+    } else if (object == null) {
       writeStringAtom("nil", output);
     } else {
       throw new IllegalArgumentException("Invalid object type to write: " + object.getClass().getName());
@@ -134,17 +136,14 @@ public class EtfWriter {
     output.write(buffer, 0, binaryLength);
   }
 
-  private void writeMap(JSONObject object, DataOutput output) throws IOException {
+  private void writeMap(DataObject object, DataOutput output) throws IOException {
     output.write(EtfTag.MAP_EXT);
-    output.writeInt(object.length());
+    output.writeInt(object.size());
 
-    for (String key : object.keySet()) {
-        if (!(key instanceof String)) {
-            throw new IllegalArgumentException("Map key must be a string.");
-          }
-      Object value = object.get(key);
-      writeObject(key, output);
-      writeObject(value, output);
+    for (Map.Entry<String, Object> entry : object.entrySet())
+    {
+      writeObject(entry.getKey(), output);
+      writeObject(entry.getValue(), output);
     }
   }
 
@@ -186,9 +185,9 @@ public class EtfWriter {
     return bytes;
   }
 
-  private void writeList(JSONArray list, DataOutput output) throws IOException {
+  private void writeList(DataArray list, DataOutput output) throws IOException {
     output.write(EtfTag.LIST_EXT);
-    output.writeInt(list.length());
+    output.writeInt(list.size());
 
     for (Object element : list) {
       writeObject(element, output);

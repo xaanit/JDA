@@ -19,7 +19,7 @@ package net.dv8tion.jda.core.handle;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.message.MessageBulkDeleteEvent;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.util.LinkedList;
 
@@ -31,17 +31,17 @@ public class MessageBulkDeleteHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long channelId = content.getLong("channel_id");
 
         if (api.isBulkDeleteSplittingEnabled())
         {
             SocketHandler handler = api.getClient().getHandler("MESSAGE_DELETE");
-            content.getJSONArray("ids").forEach(id ->
+            content.getArray("ids").forEach(id ->
             {
-                handler.handle(responseNumber, new JSONObject()
-                    .put("d", new JSONObject()
+                handler.handle(responseNumber, new DataObject()
+                    .put("d", new DataObject()
                         .put("channel_id", Long.toUnsignedString(channelId))
                         .put("id", id)));
             });
@@ -62,7 +62,7 @@ public class MessageBulkDeleteHandler extends SocketHandler
             }
 
             LinkedList<String> msgIds = new LinkedList<>();
-            content.getJSONArray("ids").forEach(id -> msgIds.add((String) id));
+            content.getArray("ids").forEach(id -> msgIds.add((String) id));
             api.getEventManager().handle(
                     new MessageBulkDeleteEvent(
                             api, responseNumber,

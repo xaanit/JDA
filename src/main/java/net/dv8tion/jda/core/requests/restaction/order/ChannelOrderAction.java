@@ -22,12 +22,11 @@ import net.dv8tion.jda.core.entities.ChannelType;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.exceptions.PermissionException;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.RequestBody;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.Collection;
 
@@ -96,11 +95,11 @@ public class ChannelOrderAction<T extends Channel> extends OrderAction<T, Channe
         final Member self = guild.getSelfMember();
         if (!self.hasPermission(Permission.MANAGE_CHANNEL))
             throw new PermissionException(Permission.MANAGE_CHANNEL);
-        JSONArray array = new JSONArray();
+        DataArray array = new DataArray();
         for (int i = 0; i < orderList.size(); i++)
         {
             Channel chan = orderList.get(i);
-            array.put(new JSONObject()
+            array.put(new DataObject()
                     .put("id", chan.getId())
                     .put("position", i));
         }

@@ -25,11 +25,11 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
+import net.dv8tion.jda.core.utils.data.DataReadException;
 
 import java.io.InputStream;
 import java.time.OffsetDateTime;
@@ -74,16 +74,16 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
                 }
 
                 List<Webhook> webhooks = new LinkedList<>();
-                JSONArray array = response.getArray();
+                DataArray array = response.getArray();
                 EntityBuilder builder = api.getEntityBuilder();
 
                 for (Object object : array)
                 {
                     try
                     {
-                        webhooks.add(builder.createWebhook((JSONObject) object));
+                        webhooks.add(builder.createWebhook((DataObject) object));
                     }
-                    catch (JSONException | NullPointerException e)
+                    catch (DataReadException | NullPointerException e)
                     {
                         JDAImpl.LOG.log(e);
                     }
@@ -118,7 +118,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
             Checks.check(MiscUtil.parseSnowflake(id) > twoWeeksAgo, "Message Id provided was older than 2 weeks. Id: " + id);
         }
 
-        JSONObject body = new JSONObject().put("messages", messageIds);
+        DataObject body = new DataObject().put("messages", messageIds);
         Route.CompiledRoute route = Route.Messages.DELETE_MESSAGES.compile(getId());
         return new RestAction<Void>(getJDA(), route, body)
         {

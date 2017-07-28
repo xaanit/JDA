@@ -20,7 +20,7 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.entities.impl.SelfUserImpl;
 import net.dv8tion.jda.core.events.self.*;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.util.Objects;
 
@@ -32,15 +32,15 @@ public class UserUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         SelfUserImpl self = (SelfUserImpl) api.getSelfUser();
 
         String name = content.getString("username");
         String discriminator = content.getString("discriminator");
         String avatarId = !content.isNull("avatar") ? content.getString("avatar") : null;
-        Boolean verified = content.has("verified") ? content.getBoolean("verified") : null;
-        Boolean mfaEnabled = content.has("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
+        Boolean verified = content.containsKey("verified") ? content.getBoolean("verified") : null;
+        Boolean mfaEnabled = content.containsKey("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
         //Client only
         String email = !content.isNull("email") ? content.getString("email") : null;

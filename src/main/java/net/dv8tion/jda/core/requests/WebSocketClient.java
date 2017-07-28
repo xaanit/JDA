@@ -41,10 +41,11 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
+import net.dv8tion.jda.core.utils.data.DataReadException;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
@@ -74,7 +75,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected volatile boolean chunkingAndSyncing = false;
     protected boolean sentAuthInfo = false;
     protected boolean initiating;             //cache all events?
-    protected final List<JSONObject> cachedEvents = new LinkedList<>();
+    protected final List<DataObject> cachedEvents = new LinkedList<>();
 
     protected boolean shouldReconnect = true;
     protected int reconnectTimeoutS = 2;
@@ -113,7 +114,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return traces;
     }
 
-    protected void updateTraces(JSONArray arr, String type, int opCode)
+    protected void updateTraces(DataArray arr, String type, int opCode)
     {
         final String msg = String.format("Received a _trace for %s (OP: %d) with %s", type, opCode, arr);
         WebSocketClient.LOG.debug(msg);
@@ -180,12 +181,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return !initiating;
     }
 
-    public void handle(List<JSONObject> events)
+    public void handle(List<DataObject> events)
     {
         events.forEach(this::handleEvent);
     }
 
-    public void send(JSONObject message)
+    public void send(DataObject message)
     {
         send(writer.writeMessage(message));
     }
@@ -195,12 +196,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ratelimitQueue.addLast(message);
     }
 
-    public void chunkOrSyncRequest(JSONObject request)
+    public void chunkOrSyncRequest(DataObject request)
     {
         chunkSyncQueue.addLast(writer.writeMessage(request));
     }
 
-    private boolean send(JSONObject message, boolean skipQueue)
+    private boolean send(DataObject message, boolean skipQueue)
     {
         return send(writer.writeMessage(message), skipQueue);
     }
@@ -275,9 +276,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         {
                             VoiceChannel channel = audioRequest.getRight();
                             AudioManager audioManager = channel.getGuild().getAudioManager();
-                            JSONObject audioConnectPacket = new JSONObject()
+                            DataObject audioConnectPacket = new DataObject()
                                     .put("op", 4)
-                                    .put("d", new JSONObject()
+                                    .put("d", new DataObject()
                                             .put("guild_id", channel.getGuild().getIdLong())
                                             .put("channel_id", channel.getIdLong())
                                             .put("self_mute", audioManager.isSelfMuted())
@@ -519,10 +520,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     public void onTextMessage(WebSocket websocket, String message)
     {
         LOG.debug("A text message??? " + message);
-        onMessage(new JSONObject(message));
+
+        try
+        {
+            onMessage(DataObject.fromJson(message));
+        }
+        catch (IOException e)
+        {
+            LOG.log(e);
+        }
     }
 
-    private void onMessage(JSONObject content)
+    private void onMessage(DataObject content)
     {
         int opCode = content.getInt("op");
 
@@ -561,10 +570,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
-                final JSONObject data = content.getJSONObject("d");
+                final DataObject data = content.getObject("d");
                 setupKeepAlive(data.getInt("heartbeat_interval"));
                 if (!data.isNull("_trace"))
-                    updateTraces(data.getJSONArray("_trace"), "HELLO", WebSocketCode.HELLO);
+                    updateTraces(data.getArray("_trace"), "HELLO", WebSocketCode.HELLO);
                 break;
             case WebSocketCode.HEARTBEAT_ACK:
                 LOG.trace("Got Heartbeat Ack (OP 11).");
@@ -604,7 +613,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void sendKeepAlive()
     {
         byte[] keepAlivePacket = writer.writeMessage(
-                new JSONObject()
+                new DataObject()
                     .put("op", WebSocketCode.HEARTBEAT)
                     .put("d", api.getResponseTotal()
                 ));
@@ -618,13 +627,13 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     {
         LOG.debug("Sending Identify-packet...");
         PresenceImpl presenceObj = (PresenceImpl) api.getPresence();
-        JSONObject connectionProperties = new JSONObject()
+        DataObject connectionProperties = new DataObject()
             .put("$os", System.getProperty("os.name"))
             .put("$browser", "JDA")
             .put("$device", "JDA")
             .put("$referring_domain", "")
             .put("$referrer", "");
-        JSONObject payload = new JSONObject()
+        DataObject payload = new DataObject()
             .put("presence", presenceObj.getFullPresence())
             .put("token", getToken())
             .put("properties", connectionProperties)
@@ -633,12 +642,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             //Used to make the READY event be given
             // as compressed binary data when over a certain size. TY @ShadowLordAlpha
             .put("compress", true);
-        JSONObject identify = new JSONObject()
+        DataObject identify = new DataObject()
                 .put("op", WebSocketCode.IDENTIFY)
-                .put("d", new JSONObject()
+                .put("d", new DataObject()
                         .put("presence", presenceObj.getFullPresence())
                         .put("token", api.getToken())
-                        .put("properties", new JSONObject()
+                        .put("properties", new DataObject()
                                 .put("$os", System.getProperty("os.name"))
                                 .put("$browser", "JDA")
                                 .put("$device", "JDA")
@@ -651,7 +660,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         if (shardInfo != null)
         {
             payload
-                .put("shard", new JSONArray()
+                .put("shard", new DataArray()
                     .put(shardInfo.getShardId())
                     .put(shardInfo.getShardTotal()));
         }
@@ -662,9 +671,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected void sendResume()
     {
         LOG.debug("Sending Resume-packet...");
-        JSONObject resume = new JSONObject()
+        DataObject resume = new DataObject()
             .put("op", WebSocketCode.RESUME)
-            .put("d", new JSONObject()
+            .put("d", new DataObject()
                 .put("session_id", sessionId)
                 .put("token", getToken())
                 .put("seq", api.getResponseTotal())
@@ -766,15 +775,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         return api.getToken();
     }
 
-    protected void handleEvent(JSONObject raw)
+    protected void handleEvent(DataObject raw)
     {
         String type = raw.getString("t");
         long responseTotal = api.getResponseTotal();
 
         if (type.equals("GUILD_MEMBER_ADD"))
-            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), 1);
+            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getObject("d").getLong("guild_id"), 1);
         if (type.equals("GUILD_MEMBER_REMOVE"))
-            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getJSONObject("d").getLong("guild_id"), -1);
+            ((GuildMembersChunkHandler) getHandler("GUILD_MEMBERS_CHUNK")).modifyExpectedGuildMember(raw.getObject("d").getLong("guild_id"), -1);
 
         //If initiating, only allows READY, RESUMED, GUILD_MEMBERS_CHUNK, GUILD_SYNC, and GUILD_CREATE through.
         // If we are currently chunking, we don't allow GUILD_CREATE through anymore.
@@ -786,8 +795,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         {
             //If we are currently GuildStreaming, and we get a GUILD_DELETE informing us that a Guild is unavailable
             // convert it to a GUILD_CREATE for handling.
-            JSONObject content = raw.getJSONObject("d");
-            if (!chunkingAndSyncing && type.equals("GUILD_DELETE") && content.has("unavailable") && content.getBoolean("unavailable"))
+            DataObject content = raw.getObject("d");
+            if (!chunkingAndSyncing && type.equals("GUILD_DELETE") && content.containsKey("unavailable") && content.getBoolean("unavailable"))
             {
                 type = "GUILD_CREATE";
                 raw.put("t", "GUILD_CREATE")
@@ -815,7 +824,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //            return;
 //        }
 
-        JSONObject content = raw.getJSONObject("d");
+        DataObject content = raw.getObject("d");
         LOG.trace(String.format("%s -> %s", type, content.toString()));
 
         try
@@ -828,7 +837,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     processingReady = true;
                     sessionId = content.getString("session_id");
                     if (!content.isNull("_trace"))
-                        updateTraces(content.getJSONArray("_trace"), "READY", WebSocketCode.DISPATCH);
+                        updateTraces(content.getArray("_trace"), "READY", WebSocketCode.DISPATCH);
                     handlers.get("READY").handle(responseTotal, raw);
                     break;
                 case "RESUMED":
@@ -838,7 +847,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         ready();
                     }
                     if (!content.isNull("_trace"))
-                        updateTraces(content.getJSONArray("_trace"), "RESUMED", WebSocketCode.DISPATCH);
+                        updateTraces(content.getArray("_trace"), "RESUMED", WebSocketCode.DISPATCH);
                     break;
                 default:
                     SocketHandler handler = handlers.get(type);
@@ -848,7 +857,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         LOG.debug("Unrecognized event:\n" + raw);
             }
         }
-        catch (JSONException ex)
+        catch (DataReadException ex)
         {
             LOG.warn("Got an unexpected Json-parse error. Please redirect following message to the devs:\n\t"
                     + ex.getMessage() + "\n\t" + type + " -> " + content);
@@ -1026,7 +1035,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             handlers.put("MESSAGE_ACK", new SocketHandler(api)
             {
                 @Override
-                protected Long handleInternally(JSONObject content)
+                protected Long handleInternally(DataObject content)
                 {
                     return null;
                 }

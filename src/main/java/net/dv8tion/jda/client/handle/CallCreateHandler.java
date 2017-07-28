@@ -27,8 +27,8 @@ import net.dv8tion.jda.core.entities.impl.PrivateChannelImpl;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.handle.SocketHandler;
 import net.dv8tion.jda.core.requests.WebSocketClient;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class CallCreateHandler extends SocketHandler
 {
@@ -38,13 +38,13 @@ public class CallCreateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long channelId = content.getLong("channel_id");
         final long messageId = content.getLong("message_id");
         Region region = Region.fromKey(content.getString("region"));
-        JSONArray voiceStates = content.getJSONArray("voice_states");
-        JSONArray ringing = content.getJSONArray("ringing");
+        DataArray voiceStates = content.getArray("voice_states");
+        DataArray ringing = content.getArray("ringing");
 
         CallableChannel channel = api.asClient().getGroupById(channelId);
         if (channel == null)
@@ -96,7 +96,7 @@ public class CallCreateHandler extends SocketHandler
 
         for (int i = 0; i < voiceStates.length(); i++)
         {
-            JSONObject voiceState = voiceStates.getJSONObject(i);
+            DataObject voiceState = voiceStates.getObject(i);
             final long userId = voiceState.getLong("user_id");
             CallUser cUser = callUsers.get(userId);
             CallVoiceStateImpl vState = (CallVoiceStateImpl) cUser.getVoiceState();

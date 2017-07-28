@@ -22,9 +22,9 @@ import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberNickChangeEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -40,13 +40,13 @@ public class GuildMemberUpdateHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("guild_id");
         if (api.getGuildLock().isLocked(id))
             return id;
 
-        JSONObject userJson = content.getJSONObject("user");
+        DataObject userJson = content.getObject("user");
         final long userId = userJson.getLong("id");
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(id);
         if (guild == null)
@@ -71,7 +71,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         }
 
         Set<Role> currentRoles = member.getRoleSet();
-        List<Role> newRoles = toRolesList(guild, content.getJSONArray("roles"));
+        List<Role> newRoles = toRolesList(guild, content.getArray("roles"));
 
         //If newRoles is null that means that we didn't find a role that was in the array and was cached this event
         if (newRoles == null)
@@ -112,7 +112,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
                             api, responseNumber,
                             guild, member, newRoles));
         }
-        if (content.has("nick"))
+        if (content.containsKey("nick"))
         {
             String prevNick = member.getNickname();
             String newNick = content.isNull("nick") ? null : content.getString("nick");
@@ -128,7 +128,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         return null;
     }
 
-    private List<Role> toRolesList(GuildImpl guild, JSONArray array)
+    private List<Role> toRolesList(GuildImpl guild, DataArray array)
     {
         LinkedList<Role> roles = new LinkedList<>();
         for(int i = 0; i < array.length(); i++)

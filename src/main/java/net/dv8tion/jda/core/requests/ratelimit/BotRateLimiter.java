@@ -24,9 +24,8 @@ import net.dv8tion.jda.core.requests.Requester;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.Route.RateLimit;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.Headers;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,7 +87,7 @@ public class BotRateLimiter extends RateLimiter
                 {
                     try (InputStream in = Requester.getBody(response))
                     {
-                        JSONObject limitObj = new JSONObject(new JSONTokener(in));
+                        DataObject limitObj = DataObject.fromJson(in);
                         retry = limitObj.get("retry_after").toString();
                     }
                     catch (IOException e)

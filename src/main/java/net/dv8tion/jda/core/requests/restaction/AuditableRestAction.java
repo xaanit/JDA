@@ -19,9 +19,9 @@ package net.dv8tion.jda.core.requests.restaction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.utils.MiscUtil;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
-import org.json.JSONObject;
 
 import javax.annotation.CheckReturnValue;
 import java.util.function.Consumer;
@@ -41,7 +41,7 @@ public abstract class AuditableRestAction<T> extends RestAction<T>
         super(api, route, data);
     }
 
-    public AuditableRestAction(JDA api, Route.CompiledRoute route, JSONObject data)
+    public AuditableRestAction(JDA api, Route.CompiledRoute route, DataObject data)
     {
         super(api, route, data);
     }

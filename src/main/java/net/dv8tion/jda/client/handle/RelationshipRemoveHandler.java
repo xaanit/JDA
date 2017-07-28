@@ -32,7 +32,7 @@ import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.handle.EventCache;
 import net.dv8tion.jda.core.handle.SocketHandler;
 import net.dv8tion.jda.core.requests.WebSocketClient;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class RelationshipRemoveHandler extends SocketHandler
 {
@@ -42,7 +42,7 @@ public class RelationshipRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long userId = content.getLong("id");
         RelationshipType type = RelationshipType.fromKey(content.getInt("type"));

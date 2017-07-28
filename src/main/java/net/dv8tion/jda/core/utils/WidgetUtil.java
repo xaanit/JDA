@@ -25,12 +25,11 @@ import net.dv8tion.jda.core.entities.ISnowflake;
 import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.requests.Requester;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -215,7 +214,7 @@ public class WidgetUtil
                 {
                     try (InputStream stream = data)
                     {
-                        return new Widget(new JSONObject(new JSONTokener(stream)));
+                        return new Widget(DataObject.fromJson(stream));
                     }
                     catch (IOException e)
                     {
@@ -232,7 +231,7 @@ public class WidgetUtil
                     long retryAfter;
                     try (InputStream stream = data)
                     {
-                        retryAfter = new JSONObject(new JSONTokener(stream)).getLong("retry_after");
+                        retryAfter = DataObject.fromJson(stream).getLong("retry_after");
                     }
                     catch (Exception e)
                     {
@@ -301,9 +300,9 @@ public class WidgetUtil
          * Constructs an available Widget
          *
          * @param json
-         *        The {@link org.json.JSONObject JSONObject} to construct the Widget from
+         *        The {@link DataObject DataObject} to construct the Widget from
          */
-        private Widget(JSONObject json)
+        private Widget(DataObject json)
         {
             String inviteCode = json.isNull("instant_invite") ? null : json.getString("instant_invite");
             if (inviteCode != null)
@@ -316,17 +315,17 @@ public class WidgetUtil
             channels = MiscUtil.newLongMap();
             members = MiscUtil.newLongMap();
             
-            JSONArray channelsJson = json.getJSONArray("channels");
+            DataArray channelsJson = json.getArray("channels");
             for (int i = 0; i < channelsJson.length(); i++)
             {
-                JSONObject channel = channelsJson.getJSONObject(i);
+                DataObject channel = channelsJson.getObject(i);
                 channels.put(channel.getLong("id"), new VoiceChannel(channel, this));
             }
             
-            JSONArray membersJson = json.getJSONArray("members");
+            DataArray membersJson = json.getArray("members");
             for (int i = 0; i<membersJson.length(); i++)
             {
-                JSONObject memberJson = membersJson.getJSONObject(i);
+                DataObject memberJson = membersJson.getObject(i);
                 Member member = new Member(memberJson, this);
                 if (!memberJson.isNull("channel_id")) // voice state
                 {
@@ -539,7 +538,7 @@ public class WidgetUtil
             private final Widget widget;
             private VoiceState state;
             
-            private Member(JSONObject json, Widget widget)
+            private Member(DataObject json, Widget widget)
             {
                 this.widget = widget;
                 this.bot = !json.isNull("bot") && json.getBoolean("bot");
@@ -550,8 +549,8 @@ public class WidgetUtil
                 this.nickname = json.isNull("nick") ? null : json.getString("nick");
                 this.status = OnlineStatus.fromKey(json.getString("status"));
                 this.game = json.isNull("game") ? null : 
-                            json.getJSONObject("game").isNull("name") || json.getJSONObject("game").getString("name").isEmpty() ? null :
-                            Game.of(json.getJSONObject("game").getString("name"));
+                            json.getObject("game").isNull("name") || json.getObject("game").getString("name").isEmpty() ? null :
+                            Game.of(json.getObject("game").getString("name"));
             }
             
             private void setVoiceState(VoiceState voiceState)
@@ -757,7 +756,7 @@ public class WidgetUtil
             private final List<Member> members;
             private final Widget widget;
             
-            private VoiceChannel(JSONObject json, Widget widget)
+            private VoiceChannel(DataObject json, Widget widget)
             {
                 this.widget = widget;
                 this.position = json.getInt("position");

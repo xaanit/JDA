@@ -40,15 +40,17 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.*;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.OkHttpClient;
-import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
@@ -156,10 +158,10 @@ public class JDAImpl implements JDA
 
     public void verifyToken() throws LoginException, RateLimitedException
     {
-        RestAction<JSONObject> login = new RestAction<JSONObject>(this, Route.Self.GET_SELF.compile())
+        RestAction<DataObject> login = new RestAction<DataObject>(this, Route.Self.GET_SELF.compile())
         {
             @Override
-            protected void handleResponse(Response response, Request<JSONObject> request)
+            protected void handleResponse(Response response, Request<DataObject> request)
             {
                 if (response.isOk())
                     request.onSuccess(response.getObject());
@@ -173,7 +175,7 @@ public class JDAImpl implements JDA
             }
         };
 
-        JSONObject userResponse;
+        DataObject userResponse;
         try
         {
             userResponse = login.complete(false);
@@ -237,16 +239,16 @@ public class JDAImpl implements JDA
         }
     }
 
-    private void verifyToken(JSONObject userResponse)
+    private void verifyToken(DataObject userResponse)
     {
         if (getAccountType() == AccountType.BOT)
         {
-            if (!userResponse.has("bot") || !userResponse.getBoolean("bot"))
+            if (!userResponse.containsKey("bot") || !userResponse.getBoolean("bot"))
                 throw new AccountTypeException(AccountType.BOT, "Attempted to login as a BOT with a CLIENT token!");
         }
         else
         {
-            if (userResponse.has("bot") && userResponse.getBoolean("bot"))
+            if (userResponse.containsKey("bot") && userResponse.getBoolean("bot"))
                 throw new AccountTypeException(AccountType.CLIENT, "Attempted to login as a CLIENT with a BOT token!");
         }
     }
@@ -385,7 +387,7 @@ public class JDAImpl implements JDA
                     request.onFailure(response);
                     return;
                 }
-                JSONObject user = response.getObject();
+                DataObject user = response.getObject();
                 request.onSuccess(getEntityBuilder().createFakeUser(user, false));
             }
         };

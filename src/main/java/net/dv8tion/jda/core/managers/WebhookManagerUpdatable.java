@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import javax.annotation.CheckReturnValue;
 
@@ -214,7 +214,7 @@ public class WebhookManagerUpdatable
         if (!shouldUpdate())
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
-        JSONObject data = new JSONObject();
+        DataObject data = new DataObject();
         data.put("name", name.getOriginalValue());
 
         if (channel.shouldUpdate())
@@ -224,7 +224,7 @@ public class WebhookManagerUpdatable
         if (avatar.shouldUpdate())
         {
             Icon value = avatar.getValue();
-            data.put("avatar", value != null ? value.getEncoding() : JSONObject.NULL);
+            data.put("avatar", value != null ? value.getEncoding() : null);
         }
 
         Route.CompiledRoute route = Route.Webhooks.MODIFY_WEBHOOK.compile(webhook.getId());

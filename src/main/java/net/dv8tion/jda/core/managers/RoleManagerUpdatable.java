@@ -28,10 +28,10 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import javax.annotation.CheckReturnValue;
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * An {@link #update() updatable} manager that allows
@@ -243,7 +243,7 @@ public class RoleManagerUpdatable
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
         //TODO: check if all of this is *actually* needed.
-        JSONObject body = new JSONObject().put("name", role.getName());
+        DataObject body = new DataObject().put("name", role.getName());
 
         if(name.shouldUpdate())
             body.put("name", name.getValue());

@@ -30,7 +30,7 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 import javax.annotation.CheckReturnValue;
 
@@ -380,7 +380,7 @@ public class GuildManagerUpdatable
         if (!needToUpdate())
             return new AuditableRestAction.EmptyRestAction<>(getJDA(), null);
 
-        JSONObject body = new JSONObject().put("name", guild.getName());
+        DataObject body = new DataObject().put("name", guild.getName());
         if (name.shouldUpdate())
             body.put("name", name.getValue());
         if (region.shouldUpdate())
@@ -388,11 +388,11 @@ public class GuildManagerUpdatable
         if (timeout.shouldUpdate())
             body.put("afk_timeout", timeout.getValue().getSeconds());
         if (icon.shouldUpdate())
-            body.put("icon", icon.getValue() == null ? JSONObject.NULL : icon.getValue().getEncoding());
+            body.put("icon", icon.getValue() == null ? null : icon.getValue().getEncoding());
         if (splash.shouldUpdate())
-            body.put("splash", splash.getValue() == null ? JSONObject.NULL : splash.getValue().getEncoding());
+            body.put("splash", splash.getValue() == null ? null : splash.getValue().getEncoding());
         if (afkChannel.shouldUpdate())
-            body.put("afk_channel_id", afkChannel.getValue() == null ? JSONObject.NULL : afkChannel.getValue().getId());
+            body.put("afk_channel_id", afkChannel.getValue() == null ? null : afkChannel.getValue().getId());
         if (verificationLevel.shouldUpdate())
             body.put("verification_level", verificationLevel.getValue().getKey());
         if (defaultNotificationLevel.shouldUpdate())

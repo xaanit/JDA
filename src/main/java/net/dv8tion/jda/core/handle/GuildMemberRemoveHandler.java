@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.entities.impl.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberLeaveEvent;
 import net.dv8tion.jda.core.events.guild.voice.GuildVoiceLeaveEvent;
 import net.dv8tion.jda.core.requests.WebSocketClient;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class GuildMemberRemoveHandler extends SocketHandler
 {
@@ -33,7 +33,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long id = content.getLong("guild_id");
         if (api.getGuildLock().isLocked(id))
@@ -46,7 +46,7 @@ public class GuildMemberRemoveHandler extends SocketHandler
             return null;
         }
 
-        final long userId = content.getJSONObject("user").getLong("id");
+        final long userId = content.getObject("user").getLong("id");
         MemberImpl member = (MemberImpl) guild.getMembersMap().remove(userId);
 
         if (member == null)

@@ -18,8 +18,8 @@ package net.dv8tion.jda.core.handle;
 
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class GuildSyncHandler extends SocketHandler
 {
@@ -29,7 +29,7 @@ public class GuildSyncHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
         final long guildId = content.getLong("id");
         if (!api.getGuildMap().containsKey(guildId))
@@ -39,8 +39,8 @@ public class GuildSyncHandler extends SocketHandler
         }
 
         GuildImpl guild = (GuildImpl) api.getGuildMap().get(guildId);
-        JSONArray members = content.getJSONArray("members");
-        JSONArray presences = content.getJSONArray("presences");
+        DataArray members = content.getArray("members");
+        DataArray presences = content.getArray("presences");
         api.getEntityBuilder().handleGuildSync(guild, members, presences);
 
         return null;

@@ -33,7 +33,7 @@ import net.dv8tion.jda.core.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.requests.WebSocketClient;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
 public class MessageReactionHandler extends SocketHandler
 {
@@ -47,9 +47,9 @@ public class MessageReactionHandler extends SocketHandler
     }
 
     @Override
-    protected Long handleInternally(JSONObject content)
+    protected Long handleInternally(DataObject content)
     {
-        JSONObject emoji = content.getJSONObject("emoji");
+        DataObject emoji = content.getObject("emoji");
 
         final long userId    = content.getLong("user_id");
         final long messageId = content.getLong("message_id");

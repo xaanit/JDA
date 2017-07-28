@@ -22,19 +22,17 @@ import gnu.trove.set.hash.TLongHashSet;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.utils.data.DataObject;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 public class GuildLock
 {
     public static final SimpleLog LOG = SimpleLog.getLog("JDAGuildLock");
 
     private final JDA api;
-    private final TLongObjectMap<List<JSONObject>> cache = new TLongObjectHashMap<>();
+    private final TLongObjectMap<List<DataObject>> cache = new TLongObjectHashMap<>();
     private final TLongSet cached = new TLongHashSet();
 
     public boolean isLocked(long guildId)
@@ -56,7 +54,7 @@ public class GuildLock
         if (isLocked(guildId))
         {
             cached.remove(guildId);
-            List<JSONObject> events = cache.remove(guildId);
+            List<DataObject> events = cache.remove(guildId);
             if(events.size() > 0)
             {
                 LOG.debug("Replaying " + events.size() + " events for unlocked guild with id " + guildId);
@@ -66,7 +64,7 @@ public class GuildLock
         }
     }
 
-    public void queue(long guildId, JSONObject event)
+    public void queue(long guildId, DataObject event)
     {
         if (isLocked(guildId))
         {

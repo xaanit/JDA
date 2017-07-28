@@ -32,8 +32,8 @@ import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.data.DataObject;
 import org.apache.commons.lang3.tuple.Pair;
-import org.json.JSONObject;
 import tomp2p.opuswrapper.Opus;
 
 import java.net.DatagramPacket;
@@ -621,9 +621,9 @@ public class AudioConnection
     private void setSpeaking(boolean isSpeaking)
     {
         this.speaking = isSpeaking;
-        JSONObject obj = new JSONObject()
+        DataObject obj = new DataObject()
                 .put("op", 5)
-                .put("d", new JSONObject()
+                .put("d", new DataObject()
                         .put("speaking", isSpeaking)
                         .put("delay", 0)
                 );
