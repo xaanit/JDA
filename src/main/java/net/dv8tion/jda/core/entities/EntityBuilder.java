@@ -853,7 +853,7 @@ public class EntityBuilder
                 DataArray roleMentions = DataObject.getArray("mention_roles");
                 for (int i = 0; i < roleMentions.length(); i++)
                 {
-                    String roleId = roleMentions.getString(i);
+                    long roleId = roleMentions.getLong(i);
                     Role r = textChannel.getGuild().getRoleById(roleId);
                     if (r != null)
                     {
