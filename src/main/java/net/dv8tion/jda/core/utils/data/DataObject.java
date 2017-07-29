@@ -35,12 +35,17 @@ public class DataObject implements Map<String, Object>
 
     public DataObject()
     {
-        data = new HashMap<>();
+        this.data = new HashMap<>();
     }
 
     public DataObject(Map<String, Object> data)
     {
         this.data = data;
+    }
+
+    public DataObject(int size)
+    {
+        this.data = new HashMap<>(size);
     }
 
     public boolean isNull(String key)
@@ -78,6 +83,7 @@ public class DataObject implements Map<String, Object>
         return get(String.class, key);
     }
 
+    @SuppressWarnings("unchecked")
     public DataObject getObject(String key)
     {
         try
@@ -91,6 +97,7 @@ public class DataObject implements Map<String, Object>
         throw new DataReadException(String.format("Map with key %s inside of DataObject couldn't properly be assigned to DataObject", key));
     }
 
+    @SuppressWarnings("unchecked")
     public DataArray getArray(String key)
     {
         try

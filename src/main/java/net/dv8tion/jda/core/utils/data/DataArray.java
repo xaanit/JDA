@@ -35,12 +35,17 @@ public class DataArray implements List<Object>
 
     public DataArray()
     {
-        data = new ArrayList<>();
+        this.data = new ArrayList<>();
     }
 
     public DataArray(List<Object> data)
     {
         this.data = data;
+    }
+
+    public DataArray(int length)
+    {
+        this.data = new ArrayList<>(length);
     }
 
     public DataArray put(Object o)
@@ -89,6 +94,7 @@ public class DataArray implements List<Object>
         return get(String.class, index);
     }
 
+    @SuppressWarnings("unchecked")
     public DataObject getObject(int index)
     {
         try
@@ -102,6 +108,7 @@ public class DataArray implements List<Object>
         throw new DataReadException(String.format("Map with index %d inside of DataArray couldn't properly be assigned to DataObject", index));
     }
 
+    @SuppressWarnings("unchecked")
     public DataArray getArray(int index)
     {
         try

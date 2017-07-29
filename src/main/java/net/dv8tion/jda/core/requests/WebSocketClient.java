@@ -17,6 +17,9 @@
 package net.dv8tion.jda.core.requests;
 
 import com.neovisionaries.ws.client.*;
+import com.sedmelluq.jda.etf.EtfReader;
+import com.sedmelluq.jda.etf.EtfWriter;
+import com.sedmelluq.jda.etf.utils.ByteArrayDataInput;
 import gnu.trove.iterator.TLongObjectIterator;
 import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
@@ -31,9 +34,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.etf.EtfReader;
-import net.dv8tion.jda.core.etf.EtfWriter;
-import net.dv8tion.jda.core.etf.utils.ByteArrayDataInput;
 import net.dv8tion.jda.core.events.*;
 import net.dv8tion.jda.core.handle.*;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -881,7 +881,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         switch (api.getGatewayEncoding())
         {
             case ETF:
-                onMessage(reader.readMessage(new ByteArrayDataInput(binary)));
+                onMessage(reader.readMessage(new ByteArrayDataInput(binary, binary.length)));
                 break;
             case JSON:
                 try
