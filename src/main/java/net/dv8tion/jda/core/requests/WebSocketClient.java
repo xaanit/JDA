@@ -41,12 +41,14 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
-import net.dv8tion.jda.core.utils.tuple.MutablePair;
 import net.dv8tion.jda.core.utils.data.DataArray;
 import net.dv8tion.jda.core.utils.data.DataObject;
 import net.dv8tion.jda.core.utils.data.DataReadException;
+import net.dv8tion.jda.core.utils.tuple.MutablePair;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -225,7 +227,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
 
         //Allows 115 messages to be sent before limiting.
-        if (this.messagesSent <= 115 || (skipQueue && this.messagesSent <= 119))   //technically we could go to 120, but we aren't going to chance it
+        // technically we could go to 120, but we aren't going to chance it
+        if (this.messagesSent <= 115 || (skipQueue && this.messagesSent <= 119))
         {
             switch (api.getGatewayEncoding())
             {
@@ -236,7 +239,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                     socket.sendText(message.toString());
                     break;
                 default:
-                    throw new RuntimeException("no appropiate action for encoding " + api.getGatewayEncoding().getKey() + " found");
+                    throw new RuntimeException("No appropriate action for encoding " + api.getGatewayEncoding().getKey() + " found!");
             }
             this.messagesSent++;
             return true;
@@ -883,16 +886,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             case JSON:
                 try
                 {
-                    onMessage(DataObject.fromJson(new InflaterInputStream(new ByteArrayInputStream(binary))));
+                    final InputStream in = new InflaterInputStream(new ByteArrayInputStream(binary));
+                    final DataObject object = DataObject.fromJson(in);
+                    onMessage(object);
                 }
                 catch (IOException e)
                 {
-                    WebSocketClient.LOG.fatal("An error occured while parsing a compressed websocket message");
+                    WebSocketClient.LOG.fatal("An error occurred while parsing a compressed websocket message!");
                     WebSocketClient.LOG.log(e);
                 }
                 break;
             default:
-                throw new RuntimeException("no appropiate action for encoding " + api.getGatewayEncoding().getKey() + " found");
+                throw new RuntimeException("No appropriate action for encoding " + api.getGatewayEncoding().getKey() + " found!");
         }
     }
 
