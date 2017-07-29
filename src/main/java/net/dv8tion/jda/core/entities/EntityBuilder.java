@@ -161,7 +161,7 @@ public class EntityBuilder
                 Set<Role> roleSet = emoteObj.getRoleSet();
 
                 for (int j = 0; j < emoteRoles.length(); j++)
-                    roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
+                    roleSet.add(guildObj.getRoleById(emoteRoles.getLong(j)));
                 emoteMap.put(emoteId, emoteObj
                         .setName(object.getString("name"))
                         .setManaged(object.getBoolean("managed")));
