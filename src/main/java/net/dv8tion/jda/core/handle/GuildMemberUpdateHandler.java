@@ -24,12 +24,8 @@ import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleAddEvent;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberRoleRemoveEvent;
 import net.dv8tion.jda.core.utils.data.DataArray;
 import net.dv8tion.jda.core.utils.data.DataObject;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class GuildMemberUpdateHandler extends SocketHandler
 {
@@ -116,7 +112,7 @@ public class GuildMemberUpdateHandler extends SocketHandler
         {
             String prevNick = member.getNickname();
             String newNick = content.isNull("nick") ? null : content.getString("nick");
-            if (!StringUtils.equals(prevNick, newNick))
+            if (!Objects.equals(prevNick, newNick))
             {
                 member.setNickname(newNick);
                 api.getEventManager().handle(

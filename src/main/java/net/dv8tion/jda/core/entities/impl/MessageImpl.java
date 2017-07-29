@@ -26,7 +26,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.data.DataObject;
-import org.apache.commons.lang3.StringUtils;
+import net.dv8tion.jda.core.utils.Helpers;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -617,14 +617,14 @@ public class MessageImpl implements Message
             Appendable appendable = formatter.out();
             if (precision > -1 && out.length() > precision)
             {
-                appendable.append(StringUtils.truncate(out, precision - 3)).append("...");
+                appendable.append(Helpers.truncate(out, precision - 3)).append("...");
                 return;
             }
 
             if (leftJustified)
-                appendable.append(StringUtils.rightPad(out, width));
+                appendable.append(Helpers.rightPad(out, width));
             else
-                appendable.append(StringUtils.leftPad(out, width));
+                appendable.append(Helpers.leftPad(out, width));
         }
         catch (IOException e)
         {

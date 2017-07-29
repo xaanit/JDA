@@ -37,7 +37,7 @@ import net.dv8tion.jda.core.utils.data.DataObject;
 import net.dv8tion.jda.core.utils.data.DataReadException;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 
-import java.awt.*;
+import java.awt.Color;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -396,7 +396,7 @@ public class EntityBuilder
             }
             else
             {
-                throw new RuntimeException("Got permission_override for unknown channel with id: " + channel.getLong("id"));
+                WebSocketClient.LOG.fatal("Got permission_override for unknown channel with id: " + channel.getLong("id"));
             }
         }
     }

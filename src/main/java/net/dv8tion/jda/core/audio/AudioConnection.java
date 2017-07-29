@@ -33,7 +33,7 @@ import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.data.DataObject;
-import org.apache.commons.lang3.tuple.Pair;
+import net.dv8tion.jda.core.utils.tuple.Pair;
 import tomp2p.opuswrapper.Opus;
 
 import java.net.DatagramPacket;

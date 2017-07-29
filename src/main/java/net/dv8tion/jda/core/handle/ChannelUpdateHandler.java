@@ -30,7 +30,6 @@ import net.dv8tion.jda.core.events.channel.text.update.*;
 import net.dv8tion.jda.core.events.channel.voice.update.*;
 import net.dv8tion.jda.core.utils.data.DataArray;
 import net.dv8tion.jda.core.utils.data.DataObject;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +78,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final String oldTopic = textChannel.getTopic();
                 final int oldPosition = textChannel.getPositionRaw();
                 final boolean oldNsfw = textChannel.isNSFW();
-                if (!StringUtils.equals(oldName, name))
+                if (!Objects.equals(oldName, name))
                 {
                     textChannel.setName(name);
                     api.getEventManager().handle(
@@ -87,7 +86,7 @@ public class ChannelUpdateHandler extends SocketHandler
                                     api, responseNumber,
                                     textChannel, oldName));
                 }
-                if (!StringUtils.equals(oldTopic, topic))
+                if (!Objects.equals(oldTopic, topic))
                 {
                     textChannel.setTopic(topic);
                     api.getEventManager().handle(
@@ -141,7 +140,7 @@ public class ChannelUpdateHandler extends SocketHandler
                 final int oldPosition = voiceChannel.getPositionRaw();
                 final int oldLimit = voiceChannel.getUserLimit();
                 final int oldBitrate = voiceChannel.getBitrate();
-                if (!StringUtils.equals(oldName, name))
+                if (!Objects.equals(oldName, name))
                 {
                     voiceChannel.setName(name);
                     api.getEventManager().handle(

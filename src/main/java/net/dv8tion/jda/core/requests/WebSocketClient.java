@@ -41,16 +41,15 @@ import net.dv8tion.jda.core.managers.impl.AudioManagerImpl;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
+import net.dv8tion.jda.core.utils.tuple.MutablePair;
 import net.dv8tion.jda.core.utils.data.DataArray;
 import net.dv8tion.jda.core.utils.data.DataObject;
 import net.dv8tion.jda.core.utils.data.DataReadException;
-import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.DataFormatException;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
@@ -63,6 +62,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Set<String> cfRays = new HashSet<>();
     protected final Set<String> traces = new HashSet<>();
+    protected final EtfWriter writer = new EtfWriter(true);
 
     protected WebSocket socket;
     protected String gatewayUrl = null;
@@ -332,8 +332,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         ratelimitThread.start();
     }
 
-    EtfWriter writer = new EtfWriter(true);
-    
     public void close()
     {
         socket.sendClose(1000);
@@ -556,17 +554,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             case WebSocketCode.INVALIDATE_SESSION:
                 LOG.debug("Got Invalidate request (OP 9). Invalidating...");
                 final boolean isResume = content.getBoolean("d");
+                // When d: true we can wait a bit and then try to resume again
+                //sending 4000 to not drop session
+                int closeCode = isResume ? 4000 : 1000;
                 if (isResume)
-                {
-                    LOG.debug("Session can be recovered... Waiting and sending new RESUME request");
-                    // When d: true we can wait a bit and then try to resume again
-                    api.pool.schedule(this::sendResume, 2, TimeUnit.SECONDS);
-                }
-                else
-                {
+                    LOG.debug("Session can be recovered... Closing and sending new RESUME request");
+                else // this can also mean we got rate limited in IDENTIFY
                     invalidate();
-                    sendIdentify();
-                }
+
+                close(closeCode);
                 break;
             case WebSocketCode.HELLO:
                 LOG.debug("Got HELLO packet (OP 10). Initializing keep-alive.");
@@ -581,7 +577,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 break;
             default:
                 LOG.debug("Got unknown op-code: " + opCode + " with content: " + content.toString());
-        }        
+        }
     }
 
     protected void setupKeepAlive(long timeout)
@@ -644,19 +640,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("compress", true);
         DataObject identify = new DataObject()
                 .put("op", WebSocketCode.IDENTIFY)
-                .put("d", new DataObject()
-                        .put("presence", presenceObj.getFullPresence())
-                        .put("token", api.getToken())
-                        .put("properties", new DataObject()
-                                .put("$os", System.getProperty("os.name"))
-                                .put("$browser", "JDA")
-                                .put("$device", "JDA")
-                                .put("$referring_domain", "")
-                                .put("$referrer", "")
-                        )
-                        .put("v", DISCORD_GATEWAY_VERSION)
-                        .put("large_threshold", 250)
-                        .put("compress", true));    // Not sure if this has any use when using etf
+                .put("d", payload);
         if (shardInfo != null)
         {
             payload
