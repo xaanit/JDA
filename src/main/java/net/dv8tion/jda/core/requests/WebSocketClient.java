@@ -45,12 +45,13 @@ import net.dv8tion.jda.core.utils.tuple.MutablePair;
 import net.dv8tion.jda.core.utils.data.DataArray;
 import net.dv8tion.jda.core.utils.data.DataObject;
 import net.dv8tion.jda.core.utils.data.DataReadException;
-
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.zip.DataFormatException;
+import java.util.zip.InflaterInputStream;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
@@ -62,7 +63,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected final Map<String, SocketHandler> handlers = new HashMap<>();
     protected final Set<String> cfRays = new HashSet<>();
     protected final Set<String> traces = new HashSet<>();
-    protected final EtfWriter writer = new EtfWriter(true);
+    protected final EtfWriter writer;
+    protected final EtfReader reader;
 
     protected WebSocket socket;
     protected String gatewayUrl = null;
@@ -84,8 +86,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     //GuildId, <TimeOfNextAttempt, AudioConnection>
     protected final TLongObjectMap<MutablePair<Long, VoiceChannel>> queuedAudioConnections = MiscUtil.newLongMap();
 
-    protected final LinkedList<Object> chunkSyncQueue = new LinkedList<>();
-    protected final LinkedList<Object> ratelimitQueue = new LinkedList<>();
+    protected final LinkedList<DataObject> chunkSyncQueue = new LinkedList<>();
+    protected final LinkedList<DataObject> ratelimitQueue = new LinkedList<>();
     protected volatile Thread ratelimitThread = null;
     protected volatile long ratelimitResetTime;
     protected volatile int messagesSent;
@@ -99,6 +101,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         this.api = api;
         this.shardInfo = api.getShardInfo();
         this.shouldReconnect = api.isAutoReconnect();
+
+        if (api.getGatewayEncoding() == GatewayEncoding.ETF)
+        {
+            this.writer= new EtfWriter(false); 
+            this.reader= new EtfReader(false); 
+        }
+        else
+        {
+            writer = null;
+            reader = null;
+        }
+
         setupHandlers();
         setupSendingThread();
         connect();
@@ -188,25 +202,15 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     public void send(DataObject message)
     {
-        send(writer.writeMessage(message));
-    }
-
-    public void send(byte[] message)
-    {
         ratelimitQueue.addLast(message);
     }
 
     public void chunkOrSyncRequest(DataObject request)
     {
-        chunkSyncQueue.addLast(writer.writeMessage(request));
+        chunkSyncQueue.addLast(request);
     }
 
     private boolean send(DataObject message, boolean skipQueue)
-    {
-        return send(writer.writeMessage(message), skipQueue);
-    }
-
-    private boolean send(byte[] message, boolean skipQueue)
     {
         if (!connected)
             return false;
@@ -223,7 +227,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         //Allows 115 messages to be sent before limiting.
         if (this.messagesSent <= 115 || (skipQueue && this.messagesSent <= 119))   //technically we could go to 120, but we aren't going to chance it
         {
-            socket.sendBinary(message);
+            switch (api.getGatewayEncoding())
+            {
+                case ETF:
+                    socket.sendBinary(writer.writeMessage(message));
+                    break;
+                case JSON:
+                    socket.sendText(message.toString());
+                    break;
+                default:
+                    throw new RuntimeException("no appropiate action for encoding " + api.getGatewayEncoding().getKey() + " found");
+            }
             this.messagesSent++;
             return true;
         }
@@ -262,7 +276,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         needRatelimit = false;
                         MutablePair<Long, VoiceChannel> audioRequest = getNextAudioConnectRequest();
 
-                        byte[] chunkOrSyncRequest = (byte[]) chunkSyncQueue.peekFirst();
+                        DataObject chunkOrSyncRequest = chunkSyncQueue.peekFirst();
                         if (chunkOrSyncRequest != null)
                         {
                             needRatelimit = !send(chunkOrSyncRequest, false);
@@ -303,7 +317,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                         }
                         else
                         {
-                            byte[] message = (byte[]) ratelimitQueue.peekFirst();
+                            DataObject message = ratelimitQueue.peekFirst();
 
                             if (message != null)
                             {
@@ -398,7 +412,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             };
 
-            return gateway.complete(false) + "?encoding=etf&v=" + DISCORD_GATEWAY_VERSION;
+            return gateway.complete(false) + "?encoding=" + api.getGatewayEncoding().getKey() + "&v=" + DISCORD_GATEWAY_VERSION;
         }
         catch (Exception ex)
         {
@@ -512,20 +526,27 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    EtfReader reader = new EtfReader(false);
-
     @Override
     public void onTextMessage(WebSocket websocket, String message)
     {
-        LOG.debug("A text message??? " + message);
-
-        try
+        switch (api.getGatewayEncoding())
         {
-            onMessage(DataObject.fromJson(message));
-        }
-        catch (IOException e)
-        {
-            LOG.log(e);
+            case ETF:
+                WebSocketClient.LOG.fatal("Got a text message although using etf , message: " + message);
+                break;
+            case JSON:
+                try
+                {
+                    onMessage(DataObject.fromJson(message));
+                }
+                catch (IOException e)
+                {
+                    WebSocketClient.LOG.fatal("An error occured while parsing a websocket message, json: " + message);
+                    WebSocketClient.LOG.log(e);
+                }
+                break;
+            default:
+                throw new RuntimeException("no appropiate action for encoding " + api.getGatewayEncoding().getKey() + " found");
         }
     }
 
@@ -608,11 +629,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void sendKeepAlive()
     {
-        byte[] keepAlivePacket = writer.writeMessage(
-                new DataObject()
-                    .put("op", WebSocketCode.HEARTBEAT)
-                    .put("d", api.getResponseTotal()
-                ));
+        DataObject keepAlivePacket = new DataObject()
+                .put("op", WebSocketCode.HEARTBEAT)
+                .put("d", api.getResponseTotal());
 
         if (!send(keepAlivePacket, true))
             ratelimitQueue.addLast(keepAlivePacket);
@@ -856,7 +875,25 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
     {
-        onMessage(reader.readMessage(new ByteArrayDataInput(binary)));
+        switch (api.getGatewayEncoding())
+        {
+            case ETF:
+                onMessage(reader.readMessage(new ByteArrayDataInput(binary)));
+                break;
+            case JSON:
+                try
+                {
+                    onMessage(DataObject.fromJson(new InflaterInputStream(new ByteArrayInputStream(binary))));
+                }
+                catch (IOException e)
+                {
+                    WebSocketClient.LOG.fatal("An error occured while parsing a compressed websocket message");
+                    WebSocketClient.LOG.log(e);
+                }
+                break;
+            default:
+                throw new RuntimeException("no appropiate action for encoding " + api.getGatewayEncoding().getKey() + " found");
+        }
     }
 
     @Override

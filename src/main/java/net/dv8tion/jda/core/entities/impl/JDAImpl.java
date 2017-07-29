@@ -77,6 +77,7 @@ public class JDAImpl implements JDA
     protected final JDAClient jdaClient;
     protected final JDABot jdaBot;
     protected final int maxReconnectDelay;
+    protected final GatewayEncoding gatewayEncoding;
     protected final Thread shutdownHook;
     protected final EntityBuilder entityBuilder = new EntityBuilder(this);
     protected final EventCache eventCache = new EventCache();
@@ -99,7 +100,7 @@ public class JDAImpl implements JDA
     protected long ping = -1;
 
     public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled,
-            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, int corePoolSize, int maxReconnectDelay)
+            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, int corePoolSize, int maxReconnectDelay, GatewayEncoding gatewayEncoding)
     {
         this.accountType = accountType;
         this.httpClientBuilder = httpClientBuilder;
@@ -110,6 +111,7 @@ public class JDAImpl implements JDA
         this.bulkDeleteSplittingEnabled = bulkDeleteSplittingEnabled;
         this.pool = new ScheduledThreadPoolExecutor(corePoolSize, new JDAThreadFactory());
         this.maxReconnectDelay = maxReconnectDelay;
+        this.gatewayEncoding = gatewayEncoding;
 
         this.presence = new PresenceImpl(this);
         this.requester = new Requester(this);
@@ -809,6 +811,11 @@ public class JDAImpl implements JDA
     public OkHttpClient.Builder getHttpClientBuilder()
     {
         return httpClientBuilder;
+    }
+
+    public GatewayEncoding getGatewayEncoding()
+    {
+        return gatewayEncoding;
     }
 
     private class JDAThreadFactory implements ThreadFactory

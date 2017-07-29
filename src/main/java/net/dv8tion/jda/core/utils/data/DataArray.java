@@ -115,6 +115,9 @@ public class DataArray implements List<Object>
         throw new DataReadException(String.format("Array with index %d inside of DataArray couldn't properly be assigned to DataArray", index));
     }
 
+    /**
+     * Returns the JSON representation for this object
+     */
     @Override
     public String toString()
     {

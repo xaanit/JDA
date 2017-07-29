@@ -104,6 +104,9 @@ public class DataObject implements Map<String, Object>
         throw new DataReadException(String.format("Array with key %s inside of DataObject couldn't properly be assigned to DataArray", key));
     }
 
+    /**
+     * Returns the JSON representation for this object
+     */
     @Override
     public String toString()
     {

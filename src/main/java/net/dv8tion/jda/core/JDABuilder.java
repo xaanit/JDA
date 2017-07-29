@@ -24,6 +24,7 @@ import net.dv8tion.jda.core.exceptions.AccountTypeException;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
+import net.dv8tion.jda.core.requests.GatewayEncoding;
 import okhttp3.OkHttpClient;
 import net.dv8tion.jda.core.utils.Checks;
 
@@ -62,6 +63,7 @@ public class JDABuilder
     protected boolean enableVoice = true;
     protected boolean enableShutdownHook = true;
     protected boolean enableBulkDeleteSplitting = true;
+    protected GatewayEncoding gatewayEncoding = GatewayEncoding.ETF;
     protected boolean autoReconnect = true;
     protected boolean idle = false;
 
@@ -444,6 +446,25 @@ public class JDABuilder
     }
 
     /**
+     * Sets the {@link net.dv8tion.jda.core.requests.GatewayEncoding GatewayEncoding} that JDA will sue to communicate over the main websocket.
+     * <br>Default value is {@link net.dv8tion.jda.core.requests.GatewayEncoding#ETF ETF}.
+     *
+     * @param  encoding
+     *         The GatewayEncoding that should be used.
+     *
+     * @throws java.lang.IllegalArgumentException
+     *         Thrown if the provided GatewayEncoding is {@code null}.
+     *
+     * @return Returns the {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setGatewayEncoding(GatewayEncoding encoding)
+    {
+        Checks.notNull(encoding, "encoding");
+        this.gatewayEncoding = encoding;
+        return this;
+    }
+
+    /**
      * This will enable sharding mode for JDA.
      * <br>In sharding mode, guilds are split up and assigned one of multiple shards (clients).
      * <br>The shardId that receives all stuff related to given bot is calculated as follows: shardId == (guildId {@literal >>} 22) % shardTotal;
@@ -505,7 +526,7 @@ public class JDABuilder
         OkHttpClient.Builder httpClientBuilder = this.httpClientBuilder == null ? new OkHttpClient.Builder() : this.httpClientBuilder;
         WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
         JDAImpl jda = new JDAImpl(accountType, httpClientBuilder, wsFactory, autoReconnect, enableVoice, enableShutdownHook,
-                enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay);
+                enableBulkDeleteSplitting, corePoolSize, maxReconnectDelay, gatewayEncoding);
 
         if (eventManager != null)
             jda.setEventManager(eventManager);
