@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.client.requests.restaction.pagination.SearchPaginationAction;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -34,11 +35,10 @@ import okhttp3.RequestBody;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.annotation.CheckReturnValue;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
-import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord channel that can have {@link net.dv8tion.jda.core.entities.Message Messages} and files sent to it.
@@ -963,6 +963,19 @@ public interface MessageChannel extends ISnowflake, Formattable
     default MessagePaginationAction getIterableHistory()
     {
         return new MessagePaginationAction(this);
+    }
+
+    @CheckReturnValue
+    default SearchPaginationAction search(long offset)
+    {
+        Checks.notNegative(offset, "Offset");
+        return new SearchPaginationAction(this, offset);
+    }
+
+    @CheckReturnValue
+    default SearchPaginationAction search()
+    {
+        return search(0);
     }
 
     /**

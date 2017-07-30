@@ -17,8 +17,6 @@
 package net.dv8tion.jda.client.entities.impl;
 
 import gnu.trove.map.TLongObjectMap;
-import java.util.*;
-import java.util.stream.Collectors;
 import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.*;
 import net.dv8tion.jda.client.requests.restaction.ApplicationAction;
@@ -34,10 +32,13 @@ import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JDAClientImpl implements JDAClient
 {
@@ -369,19 +370,19 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
-    public boolean isFriendRquestIncoming(long userId)
+    public boolean isFriendRequestIncoming(long userId)
     {
         return hasRelationship(userId, RelationshipType.INCOMING_FRIEND_REQUEST);
     }
 
     @Override
-    public boolean isFriendRquestIncoming(String userId)
+    public boolean isFriendRequestIncoming(String userId)
     {
-        return isFriendRquestIncoming(MiscUtil.parseSnowflake(userId));
+        return isFriendRequestIncoming(MiscUtil.parseSnowflake(userId));
     }
 
     @Override
-    public boolean isFriendRquestIncoming(User user)
+    public boolean isFriendRequestIncoming(User user)
     {
         return hasRelationship(user.getIdLong());
     }
@@ -417,19 +418,19 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
-    public boolean isFriendRquestOutgoing(long userId)
+    public boolean isFriendRequestOutgoing(long userId)
     {
         return hasRelationship(userId, RelationshipType.FRIEND);
     }
 
     @Override
-    public boolean isFriendRquestOutgoing(String userId)
+    public boolean isFriendRequestOutgoing(String userId)
     {
-        return isFriendRquestOutgoing(MiscUtil.parseSnowflake(userId));
+        return isFriendRequestOutgoing(MiscUtil.parseSnowflake(userId));
     }
 
     @Override
-    public boolean isFriendRquestOutgoing(User user)
+    public boolean isFriendRequestOutgoing(User user)
     {
         return hasRelationship(user.getIdLong());
     }
@@ -646,19 +647,26 @@ public class JDAClientImpl implements JDAClient
     @Override
     public SearchPaginationAction search(Guild guild)
     {
-        return new SearchPaginationAction(guild);
+        return search(guild, 0);
     }
 
     @Override
-    public SearchPaginationAction search(PrivateChannel channel)
+    public SearchPaginationAction search(Guild guild, long offset)
     {
-        return new SearchPaginationAction(channel);
+        Checks.notNull(guild, "Guild");
+        return guild.search(offset);
     }
 
     @Override
-    public SearchPaginationAction search(Group group)
+    public SearchPaginationAction search(MessageChannel channel)
     {
-        return new SearchPaginationAction(group);
+        return search(channel, 0);
+    }
+
+    @Override
+    public SearchPaginationAction search(MessageChannel channel, long offset)
+    {
+        return channel.search(offset);
     }
 
     @Override

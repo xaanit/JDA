@@ -17,9 +17,9 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import gnu.trove.map.TLongObjectMap;
-import net.dv8tion.jda.client.entities.GuildSettings;
 import net.dv8tion.jda.client.entities.impl.GuildSettingsImpl;
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
+import net.dv8tion.jda.client.requests.restaction.pagination.SearchPaginationAction;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.Region;
@@ -537,6 +537,13 @@ public class GuildImpl implements Guild
     public AuditLogPaginationAction getAuditLogs()
     {
         return new AuditLogPaginationAction(this);
+    }
+
+    @Override
+    public SearchPaginationAction search(long offset)
+    {
+        Checks.notNegative(offset, "Offset");
+        return new SearchPaginationAction(this, offset);
     }
 
     @Override

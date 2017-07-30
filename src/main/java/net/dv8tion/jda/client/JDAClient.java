@@ -25,18 +25,22 @@ import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.ErrorResponseException;
 import net.dv8tion.jda.core.requests.ErrorResponse;
 import net.dv8tion.jda.core.requests.RestAction;
-import java.util.Collection;
-import java.util.List;
 
 import javax.annotation.CheckReturnValue;
+import java.util.Collection;
+import java.util.List;
 
 public interface JDAClient
 {
     JDA getJDA();
 
+    @CheckReturnValue
     RestAction<Group> createGroup(Friend... friends);
+    @CheckReturnValue
     RestAction<Group> createGroup(Collection<Friend> friends);
+    @CheckReturnValue
     RestAction<Group> createGroup(long... friendIds);
+    @CheckReturnValue
     RestAction<Group> createGroup(String... friendIds);
 
     List<Group> getGroups();
@@ -88,40 +92,51 @@ public interface JDAClient
     IncomingFriendRequest getIncomingFriendRequest(User user);
     IncomingFriendRequest getIncomingFriendRequestById(String id);
     IncomingFriendRequest getIncomingFriendRequestById(long id);
-    boolean isFriendRquestIncoming(User user);
-    boolean isFriendRquestIncoming(String userId);
-    boolean isFriendRquestIncoming(long userId);
+    boolean isFriendRequestIncoming(User user);
+    boolean isFriendRequestIncoming(String userId);
+    boolean isFriendRequestIncoming(long userId);
 
     List<OutgoingFriendRequest> getOutgoingFriendRequests();
     List<OutgoingFriendRequest> getOutgoingFriendRequestsByName(String name, boolean ignoreCase);
     OutgoingFriendRequest getOutgoingFriendRequest(User user);
     OutgoingFriendRequest getOutgoingFriendRequestById(String id);
     OutgoingFriendRequest getOutgoingFriendRequestById(long id);
-    boolean isFriendRquestOutgoing(User user);
-    boolean isFriendRquestOutgoing(String userId);
-    boolean isFriendRquestOutgoing(long userId);
+    boolean isFriendRequestOutgoing(User user);
+    boolean isFriendRequestOutgoing(String userId);
+    boolean isFriendRequestOutgoing(long userId);
 
+    @CheckReturnValue
     RestAction<List<FriendSuggestion>> getFriendSuggestions();
 
     /**
      * @throws ErrorResponseException with {@link ErrorResponse#UNKNOWN_TAG}
      */
+    @CheckReturnValue
     RestAction<Void> sendFriendRequest(String name, int discriminator); // TODO: relationship endpoints may be disallowed
 
+    @CheckReturnValue
     RestAction<Void> sendFriendRequest(User user);
+    @CheckReturnValue
     RestAction<Void> sendFriendRequest(String user);
+    @CheckReturnValue
     RestAction<Void> sendFriendRequest(long user);
 
+    @CheckReturnValue
     RestAction<Void> block(User user);
+    @CheckReturnValue
     RestAction<Void> block(String user);
+    @CheckReturnValue
     RestAction<Void> block(long user);
 
-    String getNote(User user);
+    String getNote(User user); // TODO: move this into User interface as well, always null if current account is bot
     String getNote(String user);
     String getNote(long user);
 
+    @CheckReturnValue
     RestAction<Void> setNote(User user, String text);
+    @CheckReturnValue
     RestAction<Void> setNote(String user, String text);
+    @CheckReturnValue
     RestAction<Void> setNote(long user, String text);
 
     UserSettings getUserSettings();
@@ -130,10 +145,15 @@ public interface JDAClient
     GuildSettings getGuildSettings(String guild);
     GuildSettings getGuildSettings(long guild);
 
+    @CheckReturnValue
     SearchPaginationAction search(Guild guild);
-    SearchPaginationAction search(PrivateChannel channel);
-    SearchPaginationAction search(Group group);
-    
+    @CheckReturnValue
+    SearchPaginationAction search(Guild guild, long offset);
+    @CheckReturnValue
+    SearchPaginationAction search(MessageChannel channel);
+    @CheckReturnValue
+    SearchPaginationAction search(MessageChannel channel, long offset);
+
     /**
      * Retrieves the recent mentions for the currently logged in
      * client account.

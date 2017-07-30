@@ -17,6 +17,7 @@
 package net.dv8tion.jda.core.entities.impl;
 
 import net.dv8tion.jda.client.exceptions.VerificationLevelException;
+import net.dv8tion.jda.client.requests.restaction.pagination.SearchPaginationAction;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.exceptions.PermissionException;
@@ -25,8 +26,8 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.requests.restaction.AuditableRestAction;
-import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.Checks;
+import net.dv8tion.jda.core.utils.MiscUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -281,6 +282,12 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannelImpl> implem
 
         //Call MessageChannel's default method
         return TextChannel.super.deleteMessageById(messageId);
+    }
+
+    @Override
+    public SearchPaginationAction search(long offset)
+    {
+        return guild.search(offset).channel(this);
     }
 
     @Override

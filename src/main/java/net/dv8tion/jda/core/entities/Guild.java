@@ -16,6 +16,7 @@
 package net.dv8tion.jda.core.entities;
 
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
+import net.dv8tion.jda.client.requests.restaction.pagination.SearchPaginationAction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Region;
 import net.dv8tion.jda.core.managers.AudioManager;
@@ -25,9 +26,9 @@ import net.dv8tion.jda.core.managers.GuildManagerUpdatable;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.restaction.pagination.AuditLogPaginationAction;
 
+import javax.annotation.CheckReturnValue;
 import java.util.Collection;
 import java.util.List;
-import javax.annotation.CheckReturnValue;
 
 /**
  * Represents a Discord {@link net.dv8tion.jda.core.entities.Guild Guild}.
@@ -669,6 +670,15 @@ public interface Guild extends ISnowflake
      */
     @CheckReturnValue
     AuditLogPaginationAction getAuditLogs();
+
+    @CheckReturnValue
+    SearchPaginationAction search(long offset);
+
+    @CheckReturnValue
+    default SearchPaginationAction search()
+    {
+        return search(0);
+    }
 
     /**
      * Used to leave a Guild. If the currently logged in account is the owner of this guild ({@link net.dv8tion.jda.core.entities.Guild#getOwner()})
