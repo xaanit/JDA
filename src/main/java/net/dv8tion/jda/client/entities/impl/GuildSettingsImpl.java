@@ -4,6 +4,7 @@ import gnu.trove.map.TLongObjectMap;
 import net.dv8tion.jda.client.entities.GuildSettings;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 
 import java.util.ArrayList;
@@ -16,8 +17,8 @@ public class GuildSettingsImpl implements GuildSettings
     private final Guild guild;
     private boolean mobilePush;
     private boolean muted;
-    private NotificationLevel notificationLevel;
     private boolean suppressEveryone;
+    private NotificationLevel notificationLevel;
 
     public GuildSettingsImpl(final TLongObjectMap<ChannelOverrideImpl> channelOverrides, final Guild guild, final NotificationLevel notificationLevel, final boolean mobilePush, final boolean muted, final boolean suppressEveryone)
     {
@@ -44,6 +45,7 @@ public class GuildSettingsImpl implements GuildSettings
     @Override
     public ChannelOverrideImpl getChannelOverride(final TextChannel channel)
     {
+        Checks.notNull(channel, "Channel");
         return this.getChannelOverride(channel.getIdLong());
     }
 

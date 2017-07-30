@@ -702,6 +702,12 @@ public class GuildImpl implements Guild
         return id;
     }
 
+    @Override
+    public GuildSettingsImpl getGuildSettings()
+    {
+        return this.guildSettings;
+    }
+
     // ---- Setters -----
 
     public GuildImpl setAvailable(boolean available)
@@ -789,6 +795,12 @@ public class GuildImpl implements Guild
         return this;
     }
 
+    public GuildImpl setGuildSettings(GuildSettingsImpl guildSettings)
+    {
+        this.guildSettings = guildSettings;
+        return this;
+    }
+
     // -- Map getters --
 
     public TLongObjectMap<TextChannel> getTextChannelsMap()
@@ -819,16 +831,6 @@ public class GuildImpl implements Guild
     public TLongObjectMap<Emote> getEmoteMap()
     {
         return emotes;
-    }
-
-    public GuildSettingsImpl getGuildSettings()
-    {
-        return this.guildSettings;
-    }
-
-    public void setGuildSettings(GuildSettingsImpl guildSettings)
-    {
-        this.guildSettings = guildSettings;
     }
 
     // -- Object overrides --

@@ -275,6 +275,8 @@ public class SearchPaginationAction extends PaginationAction<SearchPaginationAct
             results.add(new SearchResult(analyticsId, result, hit));
         }
         offset += results.size();
+        if (useCache)
+            cached.addAll(results);
         request.onSuccess(results);
     }
 

@@ -18,16 +18,6 @@ package net.dv8tion.jda.core.entities;
 
 import gnu.trove.map.TLongObjectMap;
 import gnu.trove.map.hash.TLongObjectHashMap;
-
-import java.awt.Color;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.UnaryOperator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import net.dv8tion.jda.bot.entities.ApplicationInfo;
 import net.dv8tion.jda.bot.entities.impl.ApplicationInfoImpl;
 import net.dv8tion.jda.client.entities.*;
@@ -47,6 +37,16 @@ import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.awt.Color;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.UnaryOperator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class EntityBuilder
 {

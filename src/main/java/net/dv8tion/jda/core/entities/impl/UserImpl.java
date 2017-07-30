@@ -93,6 +93,7 @@ public class UserImpl implements User
         return getAvatarUrl() == null ? getDefaultAvatarUrl() : getAvatarUrl();
     }
 
+    @Override
     public String getNote()
     {
         return note;
@@ -237,9 +238,10 @@ public class UserImpl implements User
         return this;
     }
 
-    public void setNote(String note)
+    public UserImpl setNote(String note)
     {
         this.note = note;
+        return this;
     }
 
     @Override

@@ -20,8 +20,8 @@ import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import java.time.OffsetDateTime;
 import javax.annotation.CheckReturnValue;
+import java.time.OffsetDateTime;
 
 public interface Friend extends Relationship
 {
@@ -34,5 +34,12 @@ public interface Friend extends Relationship
     @CheckReturnValue
     RestAction<Void> removeFriend();
 
+    // TODO: List<Group> getMutualGroups(); could also be in User interface...
+
     // TODO: Create new Group
+    //GroupAction openGroup();
+    // allow adding more friends in GroupAction? definitely this if name can be set in create payload
+    // otherwise even:
+    //RestAction<Group> openGroup(Friend... friends);
+    //RestAction<Group> openGroup(Collection<Friend> friends);
 }

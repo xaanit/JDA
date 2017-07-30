@@ -15,8 +15,6 @@
  */
 package net.dv8tion.jda.client.entities;
 
-import java.util.HashMap;
-
 public interface ConnectedAccount
 {
 
@@ -45,26 +43,29 @@ public interface ConnectedAccount
         YOUTUBE("youtube"),
         UNKNOWN("");
 
-        private static final HashMap<String, Type> KEY_MAP;
-
-        static
-        {
-            KEY_MAP = new HashMap<>(Type.values().length - 1);
-            for (final Type type : Type.values())
-                if (!type.name.isEmpty())
-                    Type.KEY_MAP.put(type.name, type);
-        }
-
         public static Type fromName(final String name)
         {
-            final Type type = Type.KEY_MAP.get(name);
+            if (name == null || name.isEmpty())
+                return UNKNOWN;
 
-            return type == null ? UNKNOWN : type;
+            switch (name.toLowerCase())
+            {
+                case "lol":
+                case "leagueoflegends":
+                    return LEAGUE_OF_LEGENDS;
+                case "reddit": return REDDIT;
+                case "skype": return SKYPE;
+                case "steam": return STEAM;
+                case "twitch": return TWITCH;
+                case "twitter": return TWITTER;
+                case "youtube": return YOUTUBE;
+                default: return UNKNOWN;
+            }
         }
 
         private final String name;
 
-        private Type(final String name)
+        Type(final String name)
         {
             this.name = name;
         }

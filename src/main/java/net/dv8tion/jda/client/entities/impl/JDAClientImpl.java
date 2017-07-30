@@ -24,9 +24,7 @@ import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAc
 import net.dv8tion.jda.client.requests.restaction.pagination.SearchPaginationAction;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
-import net.dv8tion.jda.core.entities.impl.GuildImpl;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
-import net.dv8tion.jda.core.entities.impl.UserImpl;
 import net.dv8tion.jda.core.exceptions.GuildUnavailableException;
 import net.dv8tion.jda.core.requests.Request;
 import net.dv8tion.jda.core.requests.Response;
@@ -568,21 +566,8 @@ public class JDAClientImpl implements JDAClient
     @Override
     public String getNote(User user)
     {
-        Checks.notNull(user, "user");
-        return ((UserImpl)user).getNote();
-    }
-
-    @Override
-    public String getNote(String user)
-    {
-        Checks.notNull(user, "user");
-        return getNote(MiscUtil.parseSnowflake(user));
-    }
-
-    @Override
-    public String getNote(long user)
-    {
-        return getNote(api.getUserMap().get(user));
+        Checks.notNull(user, "User");
+        return user.getNote();
     }
 
     @Override
@@ -592,12 +577,12 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
-    public RestAction<Void> setNote(String user, String text)
+    public RestAction<Void> setNote(String userId, String text)
     {
-        Checks.notNull(user, "user");
+        Checks.noWhitespace(userId, "User");
         Checks.check(text.length() <= 256, "text too long");
 
-        Route.CompiledRoute route = Route.Users.SET_NOTE.compile(user);
+        Route.CompiledRoute route = Route.Users.SET_NOTE.compile(userId);
         JSONObject data = new JSONObject().put("note", text);
         return new RestAction<Void>(api, route, data)
         {
@@ -613,9 +598,9 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
-    public RestAction<Void> setNote(long user, String text)
+    public RestAction<Void> setNote(long userId, String text)
     {
-        return setNote(Long.toUnsignedString(user), text);
+        return setNote(Long.toUnsignedString(userId), text);
     }
 
     @Override
@@ -627,21 +612,8 @@ public class JDAClientImpl implements JDAClient
     @Override
     public GuildSettings getGuildSettings(Guild guild)
     {
-        Checks.notNull(guild, "guild");
-        return ((GuildImpl)guild).getGuildSettings();
-    }
-
-    @Override
-    public GuildSettings getGuildSettings(String guild)
-    {
-        Checks.notNull(guild, "guild");
-        return getGuildSettings(MiscUtil.parseSnowflake(guild));
-    }
-
-    @Override
-    public GuildSettings getGuildSettings(long guild)
-    {
-        return getGuildSettings(api.getGuildMap().get(guild));
+        Checks.notNull(guild, "Guild");
+        return guild.getGuildSettings();
     }
 
     @Override

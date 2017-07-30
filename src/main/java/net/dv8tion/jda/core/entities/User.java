@@ -19,8 +19,8 @@ package net.dv8tion.jda.core.entities;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import java.util.List;
 import javax.annotation.CheckReturnValue;
+import java.util.List;
 
 /**
  * Represents a Discord User.
@@ -153,6 +153,15 @@ public interface User extends ISnowflake, IMentionable, IFakeable
      * @return If the User's Account is marked as Bot
      */
     boolean isBot();
+
+    /**
+     * The attached note for this User.
+     * <br>This is always {@code null} if the currently logged in account is from {@link net.dv8tion.jda.core.AccountType#BOT AccountType.BOT}
+     * or if this is a {@link #isFake() fake} User.
+     *
+     * @return The possibly-null note attached to this user
+     */
+    String getNote();
 
     /**
      * Returns the {@link net.dv8tion.jda.core.JDA JDA} instance of this User

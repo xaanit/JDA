@@ -128,22 +128,18 @@ public interface JDAClient
     @CheckReturnValue
     RestAction<Void> block(long user);
 
-    String getNote(User user); // TODO: move this into User interface as well, always null if current account is bot
-    String getNote(String user);
-    String getNote(long user);
+    String getNote(User user);
 
     @CheckReturnValue
     RestAction<Void> setNote(User user, String text);
     @CheckReturnValue
-    RestAction<Void> setNote(String user, String text);
+    RestAction<Void> setNote(String userId, String text);
     @CheckReturnValue
-    RestAction<Void> setNote(long user, String text);
+    RestAction<Void> setNote(long userId, String text);
 
     UserSettings getUserSettings();
 
     GuildSettings getGuildSettings(Guild guild);
-    GuildSettings getGuildSettings(String guild);
-    GuildSettings getGuildSettings(long guild);
 
     @CheckReturnValue
     SearchPaginationAction search(Guild guild);

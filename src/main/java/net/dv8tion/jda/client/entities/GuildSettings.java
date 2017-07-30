@@ -41,7 +41,7 @@ public interface GuildSettings
 
     boolean isSuppressEveryone();
 
-    public interface ChannelOverride
+    interface ChannelOverride
     {
         TextChannel getChannel();
 
@@ -50,29 +50,19 @@ public interface GuildSettings
         boolean isMuted();
     }
 
-    public enum NotificationLevel
+    enum NotificationLevel
     {
         ALL_MESSAGES(0),
-        DEFAULT(3),
         MENTIONS_ONLY(1),
         NOTHING(2),
+        DEFAULT(3),
 
         UNKNOWN(-1);
 
-        private static final NotificationLevel[] KEY_MAP;
-
-        static
-        {
-            KEY_MAP = new NotificationLevel[NotificationLevel.values().length - 1];
-
-            for (final NotificationLevel type : NotificationLevel.values())
-                if (type.key >= 0)
-                    NotificationLevel.KEY_MAP[type.key] = type;
-        }
-
         public static NotificationLevel fromKey(final int key)
         {
-            return key >= 0 && key < NotificationLevel.KEY_MAP.length ? NotificationLevel.KEY_MAP[key] : UNKNOWN;
+            NotificationLevel[] values = values();
+            return key >= 0 && key < 4 ? values[key] : UNKNOWN;
         }
 
         private final int key;

@@ -27,15 +27,15 @@ import net.dv8tion.jda.core.JDA;
  */
 public class UserSettingsUpdateExplicitContentFilterEvent extends GenericUserSettingsUpdateEvent
 {
-    private final UserSettings.ContentFilterLevel oldValue;
+    private final UserSettings.ExplicitContentLevel oldValue;
 
-    public UserSettingsUpdateExplicitContentFilterEvent(final JDA api, final long responseNumber, final UserSettings.ContentFilterLevel oldValue)
+    public UserSettingsUpdateExplicitContentFilterEvent(final JDA api, final long responseNumber, final UserSettings.ExplicitContentLevel oldValue)
     {
         super(api, responseNumber);
         this.oldValue = oldValue;
     }
 
-    public UserSettings.ContentFilterLevel getOldValue()
+    public UserSettings.ExplicitContentLevel getOldValue()
     {
         return this.oldValue;
     }

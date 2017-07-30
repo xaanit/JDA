@@ -17,11 +17,6 @@
 package net.dv8tion.jda.client.entities.impl;
 
 import gnu.trove.map.TLongObjectMap;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
 import net.dv8tion.jda.client.entities.Call;
 import net.dv8tion.jda.client.entities.Friend;
 import net.dv8tion.jda.client.entities.Group;
@@ -34,6 +29,12 @@ import net.dv8tion.jda.core.requests.Response;
 import net.dv8tion.jda.core.requests.RestAction;
 import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.MiscUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class GroupImpl implements Group
 {
@@ -122,12 +123,6 @@ public class GroupImpl implements Group
                 .map(user -> api.asClient().getFriend(user))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList()));
-    }
-
-    @Override
-    public RestAction<Call> startCall()
-    {
-        return null; // TODO: startCall() 
     }
 
     @Override

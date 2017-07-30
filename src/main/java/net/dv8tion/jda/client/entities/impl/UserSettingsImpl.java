@@ -16,37 +16,38 @@
 
 package net.dv8tion.jda.client.entities.impl;
 
-import java.util.List;
-import java.util.Map;
 import net.dv8tion.jda.client.entities.UserSettings;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
+
+import java.util.List;
+import java.util.Map;
 
 public class UserSettingsImpl implements UserSettings
 {
     protected final JDA api;
 
     protected int afkTimeout;
+    protected int timezoneOffset;
     protected boolean convertEmoticons;
     protected boolean defaultGuildsRestricted;
     protected boolean detectPlatformAccounts;
     protected boolean developerMode;
     protected boolean enableTtsCommand;
-    protected ContentFilterLevel explicitContentFilter;
-    protected Map<String, Boolean> friendSourceFlags;
-    protected List<Guild> guildPositions = null;
     protected boolean inlineAttachmentMedia;
     protected boolean inlineEmbedMedia;
-    protected Locale locale;
     protected boolean messageDisplayCompact;
     protected boolean renderEmbeds;
     protected boolean renderReactions;
-    protected List<Guild> restrictedGuilds = null;
     protected boolean showCurrentGame;
+    protected ExplicitContentLevel explicitContentFilter;
+    protected Map<String, Boolean> friendSourceFlags;
+    protected List<Guild> guildPositions = null;
+    protected List<Guild> restrictedGuilds = null;
+    protected Locale locale;
     protected OnlineStatus status;
     protected Theme theme;
-    protected int timezoneOffset;
 
     public UserSettingsImpl(final JDA api)
     {
@@ -66,37 +67,37 @@ public class UserSettingsImpl implements UserSettings
     }
 
     @Override
-    public boolean getConvertEmoticons()
+    public boolean isConvertEmoticons()
     {
         return this.convertEmoticons;
     }
 
     @Override
-    public boolean getDefaultGuildsRestricted()
+    public boolean isDefaultGuildsRestricted()
     {
         return this.defaultGuildsRestricted;
     }
 
     @Override
-    public boolean getDetectPlatformAccounts()
+    public boolean isDetectPlatformAccounts()
     {
         return this.detectPlatformAccounts;
     }
 
     @Override
-    public boolean getDeveloperMode()
+    public boolean isDeveloperMode()
     {
         return this.developerMode;
     }
 
     @Override
-    public boolean getEnableTtsCommand()
+    public boolean isEnableTTSCommand()
     {
         return this.enableTtsCommand;
     }
 
     @Override
-    public ContentFilterLevel getExplicitContentFilter()
+    public ExplicitContentLevel getExplicitContentFilter()
     {
         return this.explicitContentFilter;
     }
@@ -114,13 +115,13 @@ public class UserSettingsImpl implements UserSettings
     }
 
     @Override
-    public boolean getInlineAttachmentMedia()
+    public boolean isInlineAttachmentMedia()
     {
         return this.inlineAttachmentMedia;
     }
 
     @Override
-    public boolean getInlineEmbedMedia()
+    public boolean isInlineEmbedMedia()
     {
         return this.inlineEmbedMedia;
     }
@@ -138,19 +139,19 @@ public class UserSettingsImpl implements UserSettings
     }
 
     @Override
-    public boolean getMessageDisplayCompact()
+    public boolean isMessageDisplayCompact()
     {
         return this.messageDisplayCompact;
     }
 
     @Override
-    public boolean getRenderEmbeds()
+    public boolean isRenderEmbeds()
     {
         return this.renderEmbeds;
     }
 
     @Override
-    public boolean getRenderReactions()
+    public boolean isRenderReactions()
     {
         return this.renderReactions;
     }
@@ -162,7 +163,7 @@ public class UserSettingsImpl implements UserSettings
     }
 
     @Override
-    public boolean getShowCurrentGame()
+    public boolean isShowCurrentGame()
     {
         return this.showCurrentGame;
     }
@@ -221,7 +222,7 @@ public class UserSettingsImpl implements UserSettings
         this.enableTtsCommand = enableTtsCommand;
     }
 
-    public void setExplicitContentFilter(final ContentFilterLevel explicitContentFilter)
+    public void setExplicitContentFilter(final ExplicitContentLevel explicitContentFilter)
     {
         this.explicitContentFilter = explicitContentFilter;
     }

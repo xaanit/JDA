@@ -15,6 +15,7 @@
  */
 package net.dv8tion.jda.core.entities;
 
+import net.dv8tion.jda.client.entities.GuildSettings;
 import net.dv8tion.jda.client.requests.restaction.pagination.MentionPaginationAction;
 import net.dv8tion.jda.client.requests.restaction.pagination.SearchPaginationAction;
 import net.dv8tion.jda.core.JDA;
@@ -615,6 +616,8 @@ public interface Guild extends ISnowflake
      * @return The controller for this Guild.
      */
     GuildController getController();
+
+    GuildSettings getGuildSettings();
 
     /**
      * Retrieves the recent mentions for the currently logged in

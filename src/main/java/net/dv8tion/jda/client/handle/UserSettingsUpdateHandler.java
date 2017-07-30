@@ -1,7 +1,7 @@
 package net.dv8tion.jda.client.handle;
 
 import net.dv8tion.jda.client.entities.UserSettings;
-import net.dv8tion.jda.client.entities.UserSettings.ContentFilterLevel;
+import net.dv8tion.jda.client.entities.UserSettings.ExplicitContentLevel;
 import net.dv8tion.jda.client.entities.impl.UserSettingsImpl;
 import net.dv8tion.jda.client.events.usersettings.update.*;
 import net.dv8tion.jda.core.OnlineStatus;
@@ -42,7 +42,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("convert_emoticons"))
         {
-            final boolean oldConvertEmoticons = settings.getConvertEmoticons();
+            final boolean oldConvertEmoticons = settings.isConvertEmoticons();
             final boolean convertEmoticons = content.getBoolean("convert_emoticons");
             if (oldConvertEmoticons != convertEmoticons)
             {
@@ -53,7 +53,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("default_guilds_restricted"))
         {
-            final boolean oldDefaultGuildsRestricted = settings.getDefaultGuildsRestricted();
+            final boolean oldDefaultGuildsRestricted = settings.isDefaultGuildsRestricted();
             final boolean defaultGuildsRestricted = content.getBoolean("default_guilds_restricted");
             if (oldDefaultGuildsRestricted != defaultGuildsRestricted)
             {
@@ -64,7 +64,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("detect_platform_accounts"))
         {
-            final boolean oldDetectPlatformAccounts = settings.getDetectPlatformAccounts();
+            final boolean oldDetectPlatformAccounts = settings.isDetectPlatformAccounts();
             final boolean detectPlatformAccounts = content.getBoolean("detect_platform_accounts");
             if (oldDetectPlatformAccounts != detectPlatformAccounts)
             {
@@ -75,7 +75,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("developer_mode"))
         {
-            final boolean oldDeveloperMode = settings.getDeveloperMode();
+            final boolean oldDeveloperMode = settings.isDeveloperMode();
             final boolean developerMode = content.getBoolean("developer_mode");
             if (oldDeveloperMode != developerMode)
             {
@@ -86,7 +86,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("enable_tts_command"))
         {
-            final boolean oldEnableTtsCommand = settings.getEnableTtsCommand();
+            final boolean oldEnableTtsCommand = settings.isEnableTTSCommand();
             final boolean enableTtsCommand = content.getBoolean("enable_tts_command");
             if (oldEnableTtsCommand != enableTtsCommand)
             {
@@ -97,8 +97,8 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("explicit_content_filter"))
         {
-            final ContentFilterLevel oldExplicitContentFilter = settings.getExplicitContentFilter();
-            final ContentFilterLevel explicitContentFilter = UserSettings.ContentFilterLevel.fromKey(content.getInt("explicit_content_filter"));
+            final ExplicitContentLevel oldExplicitContentFilter = settings.getExplicitContentFilter();
+            final ExplicitContentLevel explicitContentFilter = ExplicitContentLevel.fromKey(content.getInt("explicit_content_filter"));
             if (oldExplicitContentFilter != explicitContentFilter)
             {
                 settings.setExplicitContentFilter(explicitContentFilter);
@@ -133,7 +133,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("inline_attachment_media"))
         {
-            final boolean oldInlineAttachmentMedia = settings.getInlineAttachmentMedia();
+            final boolean oldInlineAttachmentMedia = settings.isInlineAttachmentMedia();
             final boolean inlineAttachmentMedia = content.getBoolean("inline_attachment_media");
             if (oldInlineAttachmentMedia != inlineAttachmentMedia)
             {
@@ -144,7 +144,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("inline_embed_media"))
         {
-            final boolean oldInlineEmbedMedia = settings.getInlineEmbedMedia();
+            final boolean oldInlineEmbedMedia = settings.isInlineEmbedMedia();
             final boolean inlineEmbedMedia = content.getBoolean("inline_embed_media");
             if (oldInlineEmbedMedia != inlineEmbedMedia)
             {
@@ -166,7 +166,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("message_display_compact"))
         {
-            final boolean oldMessageDisplayCompact = settings.getMessageDisplayCompact();
+            final boolean oldMessageDisplayCompact = settings.isMessageDisplayCompact();
             final boolean messageDisplayCompact = content.getBoolean("message_display_compact");
             if (oldMessageDisplayCompact != messageDisplayCompact)
             {
@@ -177,7 +177,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("render_embeds"))
         {
-            final boolean oldRenderEmbeds = settings.getRenderEmbeds();
+            final boolean oldRenderEmbeds = settings.isRenderEmbeds();
             final boolean renderEmbeds = content.getBoolean("render_embeds");
             if (oldRenderEmbeds != renderEmbeds)
             {
@@ -188,7 +188,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("render_reactions"))
         {
-            final boolean oldRenderReactions = settings.getRenderReactions();
+            final boolean oldRenderReactions = settings.isRenderReactions();
             final boolean renderReactions = content.getBoolean("render_reactions");
             if (oldRenderReactions != renderReactions)
             {
@@ -210,7 +210,7 @@ public class UserSettingsUpdateHandler extends SocketHandler
 
         if (content.has("show_current_game"))
         {
-            final boolean oldShowCurrentGame = settings.getRenderReactions();
+            final boolean oldShowCurrentGame = settings.isRenderReactions();
             final boolean showCurrentGame = content.getBoolean("show_current_game");
             if (oldShowCurrentGame != showCurrentGame)
             {

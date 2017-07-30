@@ -114,12 +114,6 @@ public class PrivateChannelImpl implements PrivateChannel
     }
 
     @Override
-    public RestAction<Call> startCall()
-    {
-        return null;
-    }
-
-    @Override
     public Call getCurrentCall()
     {
         return currentCall;

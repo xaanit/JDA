@@ -16,51 +16,50 @@
 
 package net.dv8tion.jda.client.entities;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Guild;
 
+import java.util.List;
+import java.util.Map;
+
 public interface UserSettings
 {
-
     int getAfkTimeout();
 
-    boolean getConvertEmoticons();
+    boolean isConvertEmoticons();
 
-    boolean getDefaultGuildsRestricted();
+    boolean isDefaultGuildsRestricted();
 
-    boolean getDetectPlatformAccounts();
+    boolean isDetectPlatformAccounts();
 
-    boolean getDeveloperMode();
+    boolean isDeveloperMode();
 
-    boolean getEnableTtsCommand();
+    boolean isEnableTTSCommand();
 
-    ContentFilterLevel getExplicitContentFilter();
+    ExplicitContentLevel getExplicitContentFilter();
 
     Map<String, Boolean> getFriendSourceFlags(); // TODO: what are these?
 
     List<Guild> getGuildPositions();
 
-    boolean getInlineAttachmentMedia();
+    boolean isInlineAttachmentMedia();
 
-    boolean getInlineEmbedMedia();
+    boolean isInlineEmbedMedia();
 
     JDA getJDA();
 
     Locale getLocale();
 
-    boolean getMessageDisplayCompact();
+    boolean isMessageDisplayCompact();
 
-    boolean getRenderEmbeds();
+    boolean isRenderEmbeds();
 
-    boolean getRenderReactions();
+    boolean isRenderReactions();
+
+    boolean isShowCurrentGame();
 
     List<Guild> getRestrictedGuilds();
-
-    boolean getShowCurrentGame();
 
     OnlineStatus getStatus();
 
@@ -68,33 +67,23 @@ public interface UserSettings
 
     int getTimezoneOffset();
 
-    public enum ContentFilterLevel
+    enum ExplicitContentLevel
     {
-        KEEP_ME_SAFE(2),
-        MY_FRIENDS_ARE_NICE(1),
         I_LIVE_ON_THE_EDGE(0),
+        MY_FRIENDS_ARE_NICE(1),
+        KEEP_ME_SAFE(2),
 
         UNKNOWN(-1);
 
-        private static final ContentFilterLevel[] KEY_MAP;
-
-        static
+        public static ExplicitContentLevel fromKey(final int key)
         {
-            KEY_MAP = new ContentFilterLevel[ContentFilterLevel.values().length - 1];
-
-            for (final ContentFilterLevel level : ContentFilterLevel.values())
-                if (level.key >= 0)
-                    ContentFilterLevel.KEY_MAP[level.key] = level;
-        }
-
-        public static ContentFilterLevel fromKey(final int key)
-        {
-            return key >= 0 && key < ContentFilterLevel.KEY_MAP.length ? ContentFilterLevel.KEY_MAP[key] : UNKNOWN;
+            ExplicitContentLevel[] values = values();
+            return key >= 0 && key < 3 ? values[key] : UNKNOWN;
         }
 
         private final int key;
 
-        private ContentFilterLevel(final int key)
+        ExplicitContentLevel(final int key)
         {
             this.key = key;
         }
@@ -105,7 +94,7 @@ public interface UserSettings
         }
     }
 
-    static enum Locale
+    enum Locale
     {
         BULGARIAN("bg"),
         CZECH("cs"),
@@ -131,26 +120,42 @@ public interface UserSettings
 
         UNKNOWN("");
 
-        private static final HashMap<String, Locale> KEY_MAP;
-
-        static
-        {
-            KEY_MAP = new HashMap<>(Locale.values().length - 1);
-            for (final Locale locale : Locale.values())
-                if (!locale.key.isEmpty())
-                    Locale.KEY_MAP.put(locale.key, locale);
-        }
-
         public static Locale fromKey(final String key)
         {
-            final Locale locale = Locale.KEY_MAP.get(key);
+            if (key == null || key.isEmpty())
+                return UNKNOWN;
 
-            return locale == null ? UNKNOWN : locale;
+            switch (key.toLowerCase())
+            {
+                case "bg": return BULGARIAN;
+                case "cs": return CZECH;
+                case "da": return DANISH;
+                case "nl": return DUTCH;
+                case "en-us": return ENGLISH_US;
+                case "en-uk": return ENGLISH_UK;
+                case "fi": return FINNISH;
+                case "fr": return FRENCH;
+                case "de": return GERMAN;
+                case "it": return ITALIAN;
+                case "ja": return JAPANESE;
+                case "ko": return KOREAN;
+                case "no": return NORWEGIAN;
+                case "pl": return POLISH;
+                case "pr-br": return PORTUGUESE_BRAZILIAN;
+                case "ru": return RUSSIAN;
+                case "es-es": return SPANISH;
+                case "sv-se": return SWEDISH;
+                case "zh-tw": return TRADITIONAL_CHINESE;
+                case "tr": return TURKISH;
+                case "uk": return UKRAINIAN;
+
+                default: return UNKNOWN;
+            }
         }
 
         private final String key;
 
-        private Locale(final String key)
+        Locale(final String key)
         {
             this.key = key;
         }
@@ -161,33 +166,31 @@ public interface UserSettings
         }
     }
 
-    static enum Theme
+    enum Theme
     {
         DARK("dark"),
         LIGHT("light"),
 
         UNKNOWN("");
 
-        private static final HashMap<String, Theme> KEY_MAP;
-
-        static
-        {
-            KEY_MAP = new HashMap<>(Theme.values().length - 1);
-            for (final Theme theme : Theme.values())
-                if (!theme.key.isEmpty())
-                    Theme.KEY_MAP.put(theme.key, theme);
-        }
-
         public static Theme fromKey(final String key)
         {
-            final Theme theme = Theme.KEY_MAP.get(key);
-
-            return theme == null ? UNKNOWN : theme;
+            if (key == null || key.isEmpty())
+                return UNKNOWN;
+            switch (key)
+            {
+                case "dark":
+                    return DARK;
+                case "light":
+                    return LIGHT;
+                default:
+                    return UNKNOWN;
+            }
         }
 
         private final String key;
 
-        private Theme(final String key)
+        Theme(final String key)
         {
             this.key = key;
         }

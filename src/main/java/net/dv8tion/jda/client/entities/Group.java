@@ -20,17 +20,16 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
 
-import java.util.List;
 import javax.annotation.CheckReturnValue;
+import java.util.List;
 
 public interface Group extends MessageChannel, CallableChannel
 {
     /**
-     * Returns the name set for this group.<br>
-     * If no name has been set for this group, then null is returned.
+     * The name set for this group.
+     * <br>If no name has been set for this group, then null is returned.
      *
-     * @return
-     *      Possibly-null name of the group.
+     * @return Possibly-null name of the group.
      */
     String getName();
     String getIconId();

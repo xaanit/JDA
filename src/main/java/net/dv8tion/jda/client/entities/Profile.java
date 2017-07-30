@@ -15,11 +15,13 @@
  */
 package net.dv8tion.jda.client.entities;
 
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.utils.Checks;
+
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import net.dv8tion.jda.core.entities.Guild;
 
 public interface Profile
 {
@@ -50,33 +52,64 @@ public interface Profile
                 badges.add(NITRO);
 
             for (final Badge badge : Badge.values())
-                if ((flags >> badge.offset & 1) == 1)
+            {
+                if ((flags & badge.offset) == badge.offset)
                     badges.add(badge);
+            }
 
             return badges;
         }
 
-        public static int getFlags(final Collection<Badge> badges)
+        public static byte getFlags(final Badge... badges)
         {
-            int flags = 0;
+            Checks.notNull(badges, "Badges");
+            byte flags = 0;
             for (final Badge badge : badges)
+            {
+                Checks.notNull(badge, "Badges");
                 if (badge.offset != -1)
                     flags |= badge.value;
+            }
             return flags;
         }
 
-        private final int offset;
-        private final int priority;
-        private final int value;
-
-        private Badge(final int priority, final int offset)
+        public static byte getFlags(final Collection<Badge> badges)
         {
-            this.priority = priority;
-            this.offset = offset;
-            this.value = 1 << offset;
+            Checks.notNull(badges, "Badges");
+            byte flags = 0;
+            for (final Badge badge : badges)
+            {
+                Checks.notNull(badge, "Badges");
+                if (badge.offset != -1)
+                    flags |= badge.value;
+            }
+            return flags;
         }
 
-        public int getPriority()
+        public static final byte ALL_FLAGS = getFlags(DISCORD_PARTNER, DISCORD_STAFF, HYPESQUAD);
+
+        private final byte offset;
+        private final byte priority;
+        private final byte value;
+
+        Badge(final int priority, final int offset)
+        {
+            this.priority = (byte) priority;
+            this.offset = (byte) offset;
+            this.value = (byte) (1 << offset);
+        }
+
+        public byte getValue()
+        {
+            return value;
+        }
+
+        public byte getOffset()
+        {
+            return offset;
+        }
+
+        public byte getPriority()
         {
             return this.priority;
         }
