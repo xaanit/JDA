@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.handle;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import net.dv8tion.jda.core.events.message.MessageBulkDeleteEvent;
+import net.dv8tion.jda.core.utils.data.DataArray;
 import net.dv8tion.jda.core.utils.data.DataObject;
 
 import java.util.LinkedList;
@@ -35,10 +36,12 @@ public class MessageBulkDeleteHandler extends SocketHandler
     {
         final long channelId = content.getLong("channel_id");
 
+        DataArray ids = content.getArray("ids");
+
         if (api.isBulkDeleteSplittingEnabled())
         {
             SocketHandler handler = api.getClient().getHandler("MESSAGE_DELETE");
-            content.getArray("ids").forEach(id ->
+            ids.forEach(id ->
             {
                 handler.handle(responseNumber, new DataObject()
                     .put("d", new DataObject()
@@ -61,8 +64,12 @@ public class MessageBulkDeleteHandler extends SocketHandler
                 return channel.getGuild().getIdLong();
             }
 
-            LinkedList<String> msgIds = new LinkedList<>();
-            content.getArray("ids").forEach(id -> msgIds.add((String) id));
+            LinkedList<Long> msgIds = new LinkedList<>();
+            for (int i = 0; i < ids.size(); i++)
+            {
+                msgIds.add(ids.getLong(i));
+            }
+
             api.getEventManager().handle(
                     new MessageBulkDeleteEvent(
                             api, responseNumber,
