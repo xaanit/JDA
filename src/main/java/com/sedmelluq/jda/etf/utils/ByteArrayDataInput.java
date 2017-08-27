@@ -83,7 +83,7 @@ public class ByteArrayDataInput implements BoundedDataInput
     @Override
     public int readInt() throws IOException
     {
-        return this.data[this.position++] << 24 | this.data[this.position++] << 16 | this.data[this.position++] << 8 | this.data[this.position++] << 0;
+        return (this.data[this.position++] & 0xFF) << 24 | (this.data[this.position++] & 0xFF) << 16 | (this.data[this.position++] & 0xFF) << 8 | (this.data[this.position++] & 0xFF) << 0;
     }
 
     @Override

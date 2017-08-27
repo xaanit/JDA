@@ -899,9 +899,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 onMessage(reader.readMessage(new ByteArrayDataInput(binary, binary.length)));
                 break;
             case JSON:
-                try
+                try (final InputStream in = new InflaterInputStream(new ByteArrayInputStream(binary)))
                 {
-                    final InputStream in = new InflaterInputStream(new ByteArrayInputStream(binary));
                     final DataObject object = DataObject.fromJson(in);
                     onMessage(object);
                 }
