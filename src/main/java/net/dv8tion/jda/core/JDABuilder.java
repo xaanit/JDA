@@ -25,8 +25,9 @@ import net.dv8tion.jda.core.exceptions.RateLimitedException;
 import net.dv8tion.jda.core.hooks.IEventManager;
 import net.dv8tion.jda.core.managers.impl.PresenceImpl;
 import net.dv8tion.jda.core.requests.GatewayEncoding;
-import okhttp3.OkHttpClient;
+import net.dv8tion.jda.core.requests.SessionReconnectQueue;
 import net.dv8tion.jda.core.utils.Checks;
+import okhttp3.OkHttpClient;
 
 import javax.security.auth.login.LoginException;
 import java.util.Arrays;
@@ -49,6 +50,7 @@ public class JDABuilder
 {
     protected final List<Object> listeners;
 
+    protected SessionReconnectQueue reconnectQueue = null;
     protected OkHttpClient.Builder httpClientBuilder = null;
     protected WebSocketFactory wsFactory = null;
     protected AccountType accountType;
@@ -127,6 +129,21 @@ public class JDABuilder
     @Deprecated
     public JDABuilder setWebSocketTimeout(int websocketTimeout)
     {
+        return this;
+    }
+
+    /**
+     * Sets the queue that will be used to reconnect sessions.
+     * <br>This will ensure that sessions do not reconnect at the same time!
+     *
+     * @param  queue
+     *         {@link java.util.concurrent.BlockingQueue BlockingQueue} to use
+     *
+     * @return The {@link net.dv8tion.jda.core.JDABuilder JDABuilder} instance. Useful for chaining.
+     */
+    public JDABuilder setReconnectQueue(SessionReconnectQueue queue)
+    {
+        this.reconnectQueue = queue;
         return this;
     }
 
@@ -544,7 +561,7 @@ public class JDABuilder
                 .setCacheGame(game)
                 .setCacheIdle(idle)
                 .setCacheStatus(status);
-        jda.login(token, shardInfo);
+        jda.login(token, shardInfo, reconnectQueue);
         return jda;
     }
 
