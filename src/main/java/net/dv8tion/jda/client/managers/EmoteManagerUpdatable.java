@@ -217,7 +217,7 @@ public class EmoteManagerUpdatable
         if (roles.shouldUpdate())
             body.put("roles", roles.getValue().stream().map(ISnowflake::getId).collect(Collectors.toList()));
 
-        reset(); //reset because we built the JSONObject needed to update
+        reset(); //reset because we built the DataObject needed to update
         Route.CompiledRoute route = Route.Emotes.MODIFY_EMOTE.compile(getGuild().getId(), emote.getId());
         return new AuditableRestAction<Void>(getJDA(), route, body)
         {

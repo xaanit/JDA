@@ -90,7 +90,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
                 oldRoles.remove(role);
             }
 
-            //cleanup old cached roles that were not found in the JSONArray
+            //cleanup old cached roles that were not found in the DataArray
             for (Role r : oldRoles)
             {
                 // newRoles directly writes to the set contained in the emote

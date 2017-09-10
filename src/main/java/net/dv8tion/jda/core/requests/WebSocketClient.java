@@ -352,6 +352,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             }
         });
+        ratelimitThread.setUncaughtExceptionHandler((thread, throwable) ->
+        {
+            handleCallbackError(socket, throwable);
+            setupSendingThread();
+        });
         ratelimitThread.setName(api.getIdentifierString() + " MainWS-Sending Thread");
         ratelimitThread.start();
     }
@@ -681,6 +686,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 }
             }
         });
+        keepAliveThread.setUncaughtExceptionHandler((thread, throwable) ->
+        {
+            handleCallbackError(socket, throwable);
+            setupKeepAlive(timeout);
+        });
         keepAliveThread.setName(api.getIdentifierString() + " MainWS-KeepAlive Thread");
         keepAliveThread.setPriority(Thread.MAX_PRIORITY);
         keepAliveThread.setDaemon(true);
@@ -740,8 +750,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("d", new DataObject()
                 .put("session_id", sessionId)
                 .put("token", getToken())
-                .put("seq", api.getResponseTotal())
-            );
+                .put("seq", api.getResponseTotal()));
         send(resume, true);
         sentAuthInfo = true;
     }
@@ -883,12 +892,12 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 //        // Needs special handling due to content of "d" being an array
 //        if(type.equals("PRESENCE_REPLACE"))
 //        {
-//            JSONArray presences = raw.getJSONArray("d");
+//            DataArray presences = raw.getDataArray("d");
 //            LOG.trace(String.format("%s -> %s", type, presences.toString()));
 //            PresenceUpdateHandler handler = new PresenceUpdateHandler(api, responseTotal);
 //            for (int i = 0; i < presences.length(); i++)
 //            {
-//                JSONObject presence = presences.getJSONObject(i);
+//                DataObject presence = presences.getDataObject(i);
 //                handler.handle(presence);
 //            }
 //            return;
@@ -974,7 +983,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        api.getEventManager().handle(new ExceptionEvent(api, cause, false));
+        LOG.log(cause);
+        api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
 
     @Override
@@ -1112,6 +1122,10 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("VOICE_SERVER_UPDATE",         new VoiceServerUpdateHandler(api));
         handlers.put("VOICE_STATE_UPDATE",          new VoiceStateUpdateHandler(api));
 
+        // Unused events
+        handlers.put("CHANNEL_PINS_UPDATE",         new SocketHandler.NOPHandler(api));
+        handlers.put("WEBHOOKS_UPDATE",             new SocketHandler.NOPHandler(api));
+
         if (api.getAccountType() == AccountType.CLIENT)
         {
             handlers.put("CALL_CREATE",              new CallCreateHandler(api));
@@ -1122,14 +1136,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             handlers.put("RELATIONSHIP_ADD",         new RelationshipAddHandler(api));
             handlers.put("RELATIONSHIP_REMOVE",      new RelationshipRemoveHandler(api));
 
-            handlers.put("MESSAGE_ACK", new SocketHandler(api)
-            {
-                @Override
-                protected Long handleInternally(DataObject content)
-                {
-                    return null;
-                }
-            });
+            // Unused client events
+            handlers.put("MESSAGE_ACK", new SocketHandler.NOPHandler(api));
         }
     }
 
