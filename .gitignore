@@ -13,6 +13,7 @@ tokens.json
 # gradle
 /build/
 /.gradle/
+/out/
 
 # eclipse files
 .classpath

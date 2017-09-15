@@ -14,21 +14,9 @@
  * limitations under the License.
  */
 
-package net.dv8tion.jda.core.events.channel.category;
+package net.dv8tion.jda.core.audio;
 
-import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.entities.Category;
-
-/**
- * <b><u>CategoryDeleteEvent</u></b>
- * <p>Fired when a {@link net.dv8tion.jda.core.entities.Category Category} is deleted.
- *
- * <p>Use: Retrieve the old Category
- */
-public class CategoryDeleteEvent extends GenericCategoryEvent
+public enum ConnectionStage
 {
-    public CategoryDeleteEvent(JDA api, long responseNumber, Category category)
-    {
-        super(api, responseNumber, category);
-    }
+    CONNECT, RECONNECT, DISCONNECT
 }

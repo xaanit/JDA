@@ -17,7 +17,6 @@
 package net.dv8tion.jda.core.audio;
 
 import com.neovisionaries.ws.client.*;
-import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.hooks.ConnectionListener;
 import net.dv8tion.jda.core.audio.hooks.ConnectionStatus;
 import net.dv8tion.jda.core.entities.Guild;
@@ -456,18 +455,11 @@ public class AudioWebSocket extends WebSocketAdapter
                 && closeStatus != ConnectionStatus.AUDIO_REGION_CHANGE) //Already handled.
         {
             manager.setQueuedAudioConnection(disconnectedChannel);
-            api.getClient().queueAudioConnect(disconnectedChannel, true);
+            api.getClient().queueAudioReconnect(disconnectedChannel);
         }
         else if (closeStatus != ConnectionStatus.AUDIO_REGION_CHANGE)
         {
-            DataObject closeFrame = new DataObject()
-                .put("op", WebSocketCode.VOICE_STATE)
-                .put("d", new DataObject()
-                    .put("guild_id", guild.getId())
-                    .put("channel_id", null)
-                    .put("self_mute", false)
-                    .put("self_deaf", false));
-            api.getClient().send(closeFrame);
+            api.getClient().queueAudioDisconnect(guild);
         }
     }
 
@@ -660,7 +652,9 @@ public class AudioWebSocket extends WebSocketAdapter
         @Override
         public Thread newThread(Runnable r)
         {
-            return new Thread(AudioManagerImpl.AUDIO_THREADS, r, identifier + " - Thread " + threadCount.getAndIncrement());
+            final Thread t = new Thread(AudioManagerImpl.AUDIO_THREADS, r, identifier + " - Thread " + threadCount.getAndIncrement());
+            t.setDaemon(true);
+            return t;
         }
     }
 }

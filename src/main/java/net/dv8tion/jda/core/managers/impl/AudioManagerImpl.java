@@ -18,7 +18,6 @@ package net.dv8tion.jda.core.managers.impl;
 import com.sun.jna.Platform;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.WebSocketCode;
 import net.dv8tion.jda.core.audio.AudioConnection;
 import net.dv8tion.jda.core.audio.AudioReceiveHandler;
 import net.dv8tion.jda.core.audio.AudioSendHandler;
@@ -36,23 +35,15 @@ import net.dv8tion.jda.core.managers.AudioManager;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.NativeUtil;
 import net.dv8tion.jda.core.utils.PermissionUtil;
-import net.dv8tion.jda.core.utils.data.DataObject;
-
 import java.io.IOException;
 
 public class AudioManagerImpl implements AudioManager
 {
-    public static final ThreadGroup AUDIO_THREADS;
+    public static final ThreadGroup AUDIO_THREADS = new ThreadGroup("jda-audio");
     //These values are set at the bottom of this file.
     public static boolean AUDIO_SUPPORTED;
     public static String OPUS_LIB_NAME;
     protected static boolean initialized = false;
-
-    static
-    {
-        AUDIO_THREADS = new ThreadGroup("jda-audio");
-        AUDIO_THREADS.setDaemon(true);
-    }
 
     public final Object CONNECTION_LOCK = new Object();
 
@@ -105,7 +96,7 @@ public class AudioManagerImpl implements AudioManager
         {
             //Start establishing connection, joining provided channel
             queuedAudioConnection = channel;
-            api.getClient().queueAudioConnect(channel, false);
+            api.getClient().queueAudioConnect(channel);
         }
         else
         {
@@ -127,7 +118,7 @@ public class AudioManagerImpl implements AudioManager
                             "Unable to connect to VoiceChannel due to userlimit! Requires permission VOICE_MOVE_OTHERS to bypass");
             }
 
-            api.getClient().queueAudioConnect(channel, false);
+            api.getClient().queueAudioConnect(channel);
             audioConnection.setChannel(channel);
         }
     }
@@ -142,11 +133,11 @@ public class AudioManagerImpl implements AudioManager
     {
         synchronized (CONNECTION_LOCK)
         {
-            api.getClient().getQueuedAudioConnectionMap().remove(guild.getIdLong());
             this.queuedAudioConnection = null;
-            if (audioConnection == null)
-                return;
-            this.audioConnection.close(reason);
+            if (audioConnection != null)
+                this.audioConnection.close(reason);
+            else
+                this.api.getClient().queueAudioDisconnect(guild);
             this.audioConnection = null;
         }
     }
@@ -344,15 +335,7 @@ public class AudioManagerImpl implements AudioManager
             VoiceChannel channel = isConnected() ? getConnectedChannel() : getQueuedAudioConnection();
 
             //This is technically equivalent to an audio open/move packet.
-            DataObject voiceStateChange = new DataObject()
-                    .put("op", WebSocketCode.VOICE_STATE)
-                    .put("d", new DataObject()
-                            .put("guild_id", guild.getIdLong())
-                            .put("channel_id", channel.getIdLong())
-                            .put("self_mute", isSelfMuted())
-                            .put("self_deaf", isSelfDeafened())
-                    );
-            api.getClient().send(voiceStateChange);
+            api.getClient().queueAudioConnect(channel);
         }
     }
 

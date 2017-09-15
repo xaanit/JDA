@@ -217,12 +217,6 @@ public class GroupImpl implements Group
         return this;
     }
 
-    private void checkNull(Object obj, String name)
-    {
-        if (obj == null)
-            throw new NullPointerException("Provided " + name + " was null!");
-    }
-
     @Override
     public long getIdLong()
     {
