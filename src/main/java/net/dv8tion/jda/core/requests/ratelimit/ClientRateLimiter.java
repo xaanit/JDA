@@ -210,8 +210,7 @@ public class ClientRateLimiter extends RateLimiter
                         }
                         catch (Throwable t)
                         {
-                            Requester.LOG.fatal("Requester system encountered an internal error");
-                            Requester.LOG.log(t);
+                            Requester.LOG.fatal(t);
                             it.remove();
                             if (request != null)
                                 request.onFailure(t);
@@ -237,8 +236,7 @@ public class ClientRateLimiter extends RateLimiter
             }
             catch (Throwable err)
             {
-                Requester.LOG.fatal("Requester system encountered an internal error from beyond the synchronized execution blocks. NOT GOOD!");
-                Requester.LOG.log(err);
+                Requester.LOG.fatal(err);
                 if (err instanceof Error)
                 {
                     JDAImpl api = requester.getJDA();

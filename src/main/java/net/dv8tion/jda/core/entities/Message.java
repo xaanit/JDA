@@ -811,7 +811,7 @@ public interface Message extends ISnowflake, Formattable
             }
             catch (Exception e)
             {
-                JDAImpl.LOG.log(e);
+                JDAImpl.LOG.fatal(e);
             }
             finally
             {

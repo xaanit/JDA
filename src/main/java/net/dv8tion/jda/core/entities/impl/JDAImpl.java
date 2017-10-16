@@ -24,6 +24,7 @@ import net.dv8tion.jda.client.JDAClient;
 import net.dv8tion.jda.client.entities.impl.JDAClientImpl;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.ShardedRateLimiter;
 import net.dv8tion.jda.core.audio.AudioWebSocket;
 import net.dv8tion.jda.core.audio.factory.DefaultSendFactory;
 import net.dv8tion.jda.core.audio.factory.IAudioSendFactory;
@@ -45,6 +46,9 @@ import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.OkHttpClient;
+import net.dv8tion.jda.core.utils.cache.CacheView;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 
 import javax.security.auth.login.LoginException;
 import java.util.*;
@@ -55,16 +59,16 @@ import java.util.stream.Collectors;
 
 public class JDAImpl implements JDA
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDA");
+    public static final SimpleLog LOG = SimpleLog.getLog(JDA.class);
 
     public final ScheduledThreadPoolExecutor pool;
 
-    protected final TLongObjectMap<User> users = MiscUtil.newLongMap();
-    protected final TLongObjectMap<Guild> guilds = MiscUtil.newLongMap();
-    protected final TLongObjectMap<CategoryImpl> categories = MiscUtil.newLongMap();
-    protected final TLongObjectMap<TextChannel> textChannels = MiscUtil.newLongMap();
-    protected final TLongObjectMap<VoiceChannel> voiceChannels = MiscUtil.newLongMap();
-    protected final TLongObjectMap<PrivateChannel> privateChannels = MiscUtil.newLongMap();
+    protected final SnowflakeCacheViewImpl<User> userCache = new SnowflakeCacheViewImpl<>(User::getName);
+    protected final SnowflakeCacheViewImpl<Guild> guildCache = new SnowflakeCacheViewImpl<>(Guild::getName);
+    protected final SnowflakeCacheViewImpl<Category> categories = new SnowflakeCacheViewImpl<>(Channel::getName);
+    protected final SnowflakeCacheViewImpl<TextChannel> textChannelCache = new SnowflakeCacheViewImpl<>(Channel::getName);
+    protected final SnowflakeCacheViewImpl<VoiceChannel> voiceChannelCache = new SnowflakeCacheViewImpl<>(Channel::getName);
+    protected final SnowflakeCacheViewImpl<PrivateChannel> privateChannelCache = new SnowflakeCacheViewImpl<>(MessageChannel::getName);
 
     protected final TLongObjectMap<User> fakeUsers = MiscUtil.newLongMap();
     protected final TLongObjectMap<PrivateChannel> fakePrivateChannels = MiscUtil.newLongMap();
@@ -100,8 +104,9 @@ public class JDAImpl implements JDA
     protected long responseTotal;
     protected long ping = -1;
 
-    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, boolean autoReconnect, boolean audioEnabled,
-            boolean useShutdownHook, boolean bulkDeleteSplittingEnabled, int corePoolSize, int maxReconnectDelay, GatewayEncoding gatewayEncoding)
+    public JDAImpl(AccountType accountType, OkHttpClient.Builder httpClientBuilder, WebSocketFactory wsFactory, ShardedRateLimiter rateLimiter,
+                   boolean autoReconnect, boolean audioEnabled, boolean useShutdownHook, boolean bulkDeleteSplittingEnabled,
+                   int corePoolSize, int maxReconnectDelay, GatewayEncoding gatewayEncoding)
     {
         this.accountType = accountType;
         this.httpClientBuilder = httpClientBuilder;
@@ -115,7 +120,7 @@ public class JDAImpl implements JDA
         this.gatewayEncoding = gatewayEncoding;
 
         this.presence = new PresenceImpl(this);
-        this.requester = new Requester(this);
+        this.requester = new Requester(this, rateLimiter);
 
         this.jdaClient = accountType == AccountType.CLIENT ? new JDAClientImpl(this) : null;
         this.jdaBot = accountType == AccountType.BOT ? new JDABotImpl(this) : null;
@@ -210,12 +215,12 @@ public class JDAImpl implements JDA
             if (getAccountType() == AccountType.BOT)
             {
                 token = token.replace("Bot ", "");
-                requester = new Requester(this, AccountType.CLIENT);
+                requester = new Requester(this, AccountType.CLIENT, null);
             }
             else    //If we attempted to login as a Client, prepend the "Bot " prefix and set the Requester to be a Bot
             {
                 token = "Bot " + token;
-                requester = new Requester(this, AccountType.BOT);
+                requester = new Requester(this, AccountType.BOT, null);
             }
 
             try
@@ -315,24 +320,6 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public List<User> getUsers()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(users.valueCollection()));
-    }
-
-    @Override
-    public User getUserById(String id)
-    {
-        return users.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public User getUserById(long id)
-    {
-        return users.get(id);
-    }
-
-    @Override
     public List<Guild> getMutualGuilds(User... users)
     {
         Checks.notNull(users, "users");
@@ -350,16 +337,6 @@ public class JDAImpl implements JDA
         return Collections.unmodifiableList(getGuilds().stream()
                 .filter(guild -> users.stream().allMatch(guild::isMember))
                 .collect(Collectors.toList()));
-    }
-
-    @Override
-    public List<User> getUsersByName(String name, boolean ignoreCase)
-    {
-        return users.valueCollection().stream().filter(u ->
-            ignoreCase
-            ? name.equalsIgnoreCase(u.getName())
-            : name.equals(u.getName()))
-        .collect(Collectors.toList());
     }
 
     @Override
@@ -397,202 +374,51 @@ public class JDAImpl implements JDA
     }
 
     @Override
-    public List<Guild> getGuilds()
+    public SnowflakeCacheView<Guild> getGuildCache()
     {
-        return Collections.unmodifiableList(new ArrayList<>(guilds.valueCollection()));
+        return guildCache;
     }
 
     @Override
-    public Guild getGuildById(String id)
+    public SnowflakeCacheView<Role> getRoleCache()
     {
-        return guilds.get(MiscUtil.parseSnowflake(id));
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getRoleCache));
     }
 
     @Override
-    public Guild getGuildById(long id)
+    public SnowflakeCacheView<Emote> getEmoteCache()
     {
-        return guilds.get(id);
+        return CacheView.allSnowflakes(() -> guildCache.stream().map(Guild::getEmoteCache));
     }
 
     @Override
-    public List<Guild> getGuildsByName(String name, boolean ignoreCase)
+    public SnowflakeCacheView<Category> getCategoryCache()
     {
-        return guilds.valueCollection().stream().filter(g ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(g.getName())
-                        : name.equals(g.getName()))
-                .collect(Collectors.toList());
+        return categories;
     }
 
     @Override
-    public List<Role> getRoles()
+    public SnowflakeCacheView<TextChannel> getTextChannelCache()
     {
-        return guilds.valueCollection().stream()
-                .flatMap(guild -> guild.getRoles().stream())
-                .collect(Collectors.toList());
+        return textChannelCache;
     }
 
     @Override
-    public Role getRoleById(String id)
+    public SnowflakeCacheView<VoiceChannel> getVoiceChannelCache()
     {
-        return getRoleById(MiscUtil.parseSnowflake(id));
+        return voiceChannelCache;
     }
 
     @Override
-    public Role getRoleById(long id)
+    public SnowflakeCacheView<PrivateChannel> getPrivateChannelCache()
     {
-        for (Guild guild : guilds.valueCollection())
-        {
-            Role r = guild.getRoleById(id);
-            if (r != null)
-                return r;
-        }
-        return null;
+        return privateChannelCache;
     }
 
     @Override
-    public List<Role> getRolesByName(String name, boolean ignoreCase)
+    public SnowflakeCacheView<User> getUserCache()
     {
-        return guilds.valueCollection().stream()
-                .flatMap(guild -> guild.getRolesByName(name, ignoreCase).stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Category getCategoryById(String id)
-    {
-        return categories.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public Category getCategoryById(long id)
-    {
-        return categories.get(id);
-    }
-
-    @Override
-    public List<Category> getCategories()
-    {
-        return Arrays.asList(categories.values(new CategoryImpl[categories.size()]));
-    }
-
-    @Override
-    public List<Category> getCategoriesByName(String name, boolean ignoreCase)
-    {
-        Checks.notNull(name, "Name");
-        return Collections.unmodifiableList(categories.valueCollection().stream()
-                .filter(category -> ignoreCase
-                        ? category.getName().equalsIgnoreCase(name)
-                        : category.getName().equals(name))
-                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public List<TextChannel> getTextChannels()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(textChannels.valueCollection()));
-    }
-
-    @Override
-    public TextChannel getTextChannelById(String id)
-    {
-        return textChannels.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public TextChannel getTextChannelById(long id)
-    {
-        return textChannels.get(id);
-    }
-
-    @Override
-    public List<TextChannel> getTextChannelsByName(String name, boolean ignoreCase)
-    {
-        return textChannels.valueCollection().stream().filter(tc ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(tc.getName())
-                        : name.equals(tc.getName()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<VoiceChannel> getVoiceChannels()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(voiceChannels.valueCollection()));
-    }
-
-    @Override
-    public VoiceChannel getVoiceChannelById(String id)
-    {
-        return voiceChannels.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public VoiceChannel getVoiceChannelById(long id)
-    {
-        return voiceChannels.get(id);
-    }
-
-    @Override
-    public List<VoiceChannel> getVoiceChannelByName(String name, boolean ignoreCase)
-    {
-        return voiceChannels.valueCollection().stream().filter(vc ->
-                ignoreCase
-                        ? name.equalsIgnoreCase(vc.getName())
-                        : name.equals(vc.getName()))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<PrivateChannel> getPrivateChannels()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(privateChannels.valueCollection()));
-    }
-
-    @Override
-    public PrivateChannel getPrivateChannelById(String id)
-    {
-        return privateChannels.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public PrivateChannel getPrivateChannelById(long id)
-    {
-        return privateChannels.get(id);
-    }
-
-    @Override
-    public List<Emote> getEmotes()
-    {
-        return guilds.valueCollection().stream()
-                .flatMap(guild -> guild.getEmotes().stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<Emote> getEmotesByName(String name, boolean ignoreCase)
-    {
-        return guilds.valueCollection().stream()
-                .flatMap(guild -> guild.getEmotesByName(name, ignoreCase).stream())
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public Emote getEmoteById(String id)
-    {
-        return getEmoteById(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public Emote getEmoteById(long id)
-    {
-        for (Guild guild : getGuilds())
-        {
-            Emote emote = guild.getEmoteById(id);
-            if (emote != null)
-                return emote;
-        }
-        return null;
+        return userCache;
     }
 
     public SelfUser getSelfUser()
@@ -770,32 +596,32 @@ public class JDAImpl implements JDA
 
     public TLongObjectMap<User> getUserMap()
     {
-        return users;
+        return userCache.getMap();
     }
 
     public TLongObjectMap<Guild> getGuildMap()
     {
-        return guilds;
+        return guildCache.getMap();
     }
 
-    public TLongObjectMap<CategoryImpl> getCategoryMap()
+    public TLongObjectMap<Category> getCategoryMap()
     {
-        return categories;
+        return categories.getMap();
     }
 
     public TLongObjectMap<TextChannel> getTextChannelMap()
     {
-        return textChannels;
+        return textChannelCache.getMap();
     }
 
     public TLongObjectMap<VoiceChannel> getVoiceChannelMap()
     {
-        return voiceChannels;
+        return voiceChannelCache.getMap();
     }
 
     public TLongObjectMap<PrivateChannel> getPrivateChannelMap()
     {
-        return privateChannels;
+        return privateChannelCache.getMap();
     }
 
     public TLongObjectMap<User> getFakeUserMap()

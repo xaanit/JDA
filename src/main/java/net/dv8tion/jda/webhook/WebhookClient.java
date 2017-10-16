@@ -53,7 +53,7 @@ public class WebhookClient implements AutoCloseable
 {
     public static final String WEBHOOK_URL = "https://discordapp.com/api/v6/webhooks/%s/%s";
     public static final String USER_AGENT = "JDA Webhook(https://github.com/DV8FromTheWorld/JDA | " + JDAInfo.VERSION + ")";
-    public static final SimpleLog LOG = SimpleLog.getLog("WebhookClient");
+    public static final SimpleLog LOG = SimpleLog.getLog(WebhookClient.class);
 
     protected final String url;
     protected final long id;
@@ -402,7 +402,7 @@ public class WebhookClient implements AutoCloseable
                 else if (!response.isSuccessful())
                 {
                     final HttpException exception = failure(response);
-                    LOG.log(exception);
+                    LOG.fatal(exception);
                     queue.poll().getRight().completeExceptionally(exception);
                     continue;
                 }
@@ -415,7 +415,7 @@ public class WebhookClient implements AutoCloseable
             }
             catch (IOException e)
             {
-                LOG.log(e);
+                LOG.fatal(e);
                 queue.poll().getRight().completeExceptionally(e);
             }
         }
@@ -492,7 +492,7 @@ public class WebhookClient implements AutoCloseable
             }
             catch (Exception ex)
             {
-                LOG.log(ex);
+                LOG.fatal(ex);
             }
         }
     }

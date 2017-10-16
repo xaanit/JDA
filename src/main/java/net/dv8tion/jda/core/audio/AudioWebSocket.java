@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AudioWebSocket extends WebSocketAdapter
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDAAudioSocket");
+    public static final SimpleLog LOG = SimpleLog.getLog(AudioWebSocket.class);
     public static final int DISCORD_SECRET_KEY_LENGTH = 32;
     public static final int AUDIO_GATEWAY_VERSION = 3;
 
@@ -138,7 +138,7 @@ public class AudioWebSocket extends WebSocketAdapter
         catch (IOException e)
         {
             LOG.fatal("Could not parse");
-            LOG.log(e);
+            LOG.fatal(e);
         }
         int opCode = contentAll.getInt("op");
 
@@ -312,7 +312,7 @@ public class AudioWebSocket extends WebSocketAdapter
     @Override
     public void handleCallbackError(WebSocket websocket, Throwable cause)
     {
-        LOG.log(cause);
+        LOG.fatal(cause);
         api.getEventManager().handle(new ExceptionEvent(api, cause, true));
     }
 
@@ -592,7 +592,7 @@ public class AudioWebSocket extends WebSocketAdapter
                 }
                 catch (IOException e)
                 {
-                    LOG.log(e);
+                    LOG.fatal(e);
                 }
             }
         };

@@ -50,9 +50,7 @@ public class GuildMembersChunkHandler extends SocketHandler
 
         int currentTotal = 0;
         for (DataArray arr : memberChunks)
-        {
             currentTotal += arr.length();
-        }
 
         if (currentTotal >= expectMemberCount)
         {

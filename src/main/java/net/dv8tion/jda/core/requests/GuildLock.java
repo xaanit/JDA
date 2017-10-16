@@ -29,7 +29,7 @@ import java.util.List;
 
 public class GuildLock
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("JDAGuildLock");
+    public static final SimpleLog LOG = SimpleLog.getLog(GuildLock.class);
 
     private final JDA api;
     private final TLongObjectMap<List<DataObject>> cache = new TLongObjectHashMap<>();

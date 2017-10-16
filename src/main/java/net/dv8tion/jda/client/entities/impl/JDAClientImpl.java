@@ -35,6 +35,8 @@ import net.dv8tion.jda.core.requests.Route;
 import net.dv8tion.jda.core.utils.Checks;
 import net.dv8tion.jda.core.utils.MiscUtil;
 import net.dv8tion.jda.core.utils.data.DataArray;
+import net.dv8tion.jda.core.utils.cache.SnowflakeCacheView;
+import net.dv8tion.jda.core.utils.cache.impl.SnowflakeCacheViewImpl;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -44,7 +46,7 @@ import java.util.stream.Collectors;
 public class JDAClientImpl implements JDAClient
 {
     protected final JDAImpl api;
-    protected final TLongObjectMap<Group> groups = MiscUtil.newLongMap();
+    protected final SnowflakeCacheViewImpl<Group> groups = new SnowflakeCacheViewImpl<>(Group::getName);
     protected final TLongObjectMap<Relationship> relationships = MiscUtil.newLongMap();
     protected final TLongObjectMap<CallUser> callUsers = MiscUtil.newLongMap();
     protected UserSettingsImpl userSettings;
@@ -62,34 +64,9 @@ public class JDAClientImpl implements JDAClient
     }
 
     @Override
-    public List<Group> getGroups()
+    public SnowflakeCacheView<Group> getGroupCache()
     {
-        return Collections.unmodifiableList(
-                new ArrayList<>(
-                        groups.valueCollection()));
-    }
-
-    @Override
-    public List<Group> getGroupsByName(String name, boolean ignoreCase)
-    {
-        return Collections.unmodifiableList(groups.valueCollection().stream()
-                .filter(g -> g.getName() != null
-                        && (ignoreCase
-                            ? g.getName().equalsIgnoreCase(name)
-                            : g.getName().equals(name)))
-                .collect(Collectors.toList()));
-    }
-
-    @Override
-    public Group getGroupById(String id)
-    {
-        return groups.get(MiscUtil.parseSnowflake(id));
-    }
-
-    @Override
-    public Group getGroupById(long id)
-    {
-        return groups.get(id);
+        return groups;
     }
 
     @Override
@@ -235,7 +212,7 @@ public class JDAClientImpl implements JDAClient
 
     public TLongObjectMap<Group> getGroupMap()
     {
-        return groups;
+        return groups.getMap();
     }
 
     public TLongObjectMap<Relationship> getRelationshipMap()

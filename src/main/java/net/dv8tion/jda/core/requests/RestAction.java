@@ -27,6 +27,7 @@ import net.dv8tion.jda.core.utils.data.DataArray;
 import net.dv8tion.jda.core.utils.data.DataObject;
 import okhttp3.RequestBody;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
+import org.slf4j.event.Level;
 
 import java.util.concurrent.*;
 import java.util.function.Consumer;
@@ -146,14 +147,14 @@ import java.util.function.Consumer;
  */
 public abstract class RestAction<T>
 {
-    public static final SimpleLog LOG = SimpleLog.getLog("RestAction");
+    public static final SimpleLog LOG = SimpleLog.getLog(RestAction.class);
 
     public static Consumer DEFAULT_SUCCESS = o -> {};
     public static Consumer<Throwable> DEFAULT_FAILURE = t ->
     {
-        if (LOG.getEffectiveLevel().getPriority() <= SimpleLog.Level.DEBUG.getPriority())
+        if (LOG.getEffectiveLevel().ordinal() >= Level.DEBUG.ordinal())
         {
-            LOG.log(t);
+            LOG.fatal(t);
         }
         else
         {
