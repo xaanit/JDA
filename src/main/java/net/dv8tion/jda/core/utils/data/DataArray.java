@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DataArray implements List<Object>
 {
@@ -41,6 +42,13 @@ public class DataArray implements List<Object>
     public DataArray(List<Object> data)
     {
         this.data = data;
+    }
+
+    public DataArray(SerializableData... data)
+    {
+        this.data = Arrays.stream(data)
+                        .map(SerializableData::toDataObject)
+                        .collect(Collectors.toList());
     }
 
     public DataArray(int length)

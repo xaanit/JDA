@@ -38,6 +38,11 @@ public class DataObject implements Map<String, Object>
         this.data = new HashMap<>();
     }
 
+    public DataObject(SerializableData data)
+    {
+        this.data = data.toDataObject().data;
+    }
+
     public DataObject(Map<String, Object> data)
     {
         this.data = data;
