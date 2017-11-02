@@ -227,6 +227,8 @@ public class EtfReader implements Closeable
                 return this.readCompressedObject(input);
             case EtfTag.INTEGER_EXT:
                 return input.readInt();
+            case EtfTag.NEW_FLOAT_EXT:
+                return input.readDouble();
             case EtfTag.ATOM_EXT:
                 return this.readAtomElement(input, useKeyCache);
             case EtfTag.NIL_EXT:

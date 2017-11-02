@@ -15,6 +15,9 @@
  */
 package net.dv8tion.jda.core.handle;
 
+import net.dv8tion.jda.client.JDAClient;
+import net.dv8tion.jda.client.entities.impl.FriendImpl;
+import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.impl.*;
@@ -37,12 +40,21 @@ public class PresenceUpdateHandler extends SocketHandler
     @Override
     protected Long handleInternally(DataObject content)
     {
-        //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked.
-        if (content.containsKey("guild_id"))
+        GuildImpl guild = null;
+        //Do a pre-check to see if this is for a Guild, and if it is, if the guild is currently locked or not cached.
+        if (!content.isNull("guild_id"))
         {
             final long guildId = content.getLong("guild_id");
             if (api.getGuildLock().isLocked(guildId))
                 return guildId;
+            guild = (GuildImpl) api.getGuildById(guildId);
+            if (guild == null)
+            {
+                api.getEventCache().cache(EventCache.Type.GUILD, guildId, () -> handle(responseNumber, allContent));
+                EventCache.LOG.debug("Received a PRESENCE_UPDATE for a guild that is not yet cached! " +
+                    "GuildId: " + guildId + " UserId: " + content.getObject("user").get("id"));
+                return null;
+            }
         }
 
         DataObject jsonUser = content.getObject("user");
@@ -69,19 +81,19 @@ public class PresenceUpdateHandler extends SocketHandler
                     user.setName(name);
                     user.setDiscriminator(discriminator);
                     api.getEventManager().handle(
-                            new UserNameUpdateEvent(
-                                    api, responseNumber,
-                                    user, oldUsername, oldDiscriminator));
+                        new UserNameUpdateEvent(
+                            api, responseNumber,
+                            user, oldUsername, oldDiscriminator));
                 }
                 String oldAvatar = user.getAvatarId();
-                if (!(avatarId == null && oldAvatar == null) && !Objects.equals(avatarId, oldAvatar))
+                if (!Objects.equals(avatarId, oldAvatar))
                 {
                     String oldAvatarId = user.getAvatarId();
                     user.setAvatarId(avatarId);
                     api.getEventManager().handle(
-                            new UserAvatarUpdateEvent(
-                                    api, responseNumber,
-                                    user, oldAvatarId));
+                        new UserAvatarUpdateEvent(
+                            api, responseNumber,
+                            user, oldAvatarId));
                 }
             }
 
@@ -90,31 +102,29 @@ public class PresenceUpdateHandler extends SocketHandler
             String gameName = null;
             String gameUrl = null;
             Game.GameType type = null;
-            if ( !content.isNull("game") && !content.getObject("game").isNull("name") )
+            final DataObject game = content.isNull("game") ? null : content.getObject("game");
+            if (game != null && !game.isNull("name"))
             {
-                gameName = content.getObject("game").get("name").toString();
-                gameUrl = ( content.getObject("game").isNull("url") ? null : content.getObject("game").get("url").toString() );
+                gameName = game.get("name").toString();
+                gameUrl = game.isNull("url") ? null : game.get("url").toString();
                 try
                 {
-                    type = content.getObject("game").isNull("type")
-                            ? Game.GameType.DEFAULT
-                            : Game.GameType.fromKey(Integer.parseInt(content.getObject("game").get("type").toString()));
+                    type = game.isNull("type")
+                        ? Game.GameType.DEFAULT
+                        : Game.GameType.fromKey(Integer.parseInt(game.get("type").toString()));
                 }
                 catch (NumberFormatException ex)
                 {
                     type = Game.GameType.DEFAULT;
                 }
             }
-            Game nextGame = (gameName == null
-                    ? null
-                    : api.getEntityBuilder().createGame(gameName, gameUrl, type));
+            Game nextGame = gameName == null ? null : api.getEntityBuilder().createGame(gameName, gameUrl, type);
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
 
             //If we are in a Guild, then we will use Member.
             // If we aren't we'll be dealing with the Relation system.
-            if (content.containsKey("guild_id"))
+            if (guild != null)
             {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
                 MemberImpl member = (MemberImpl) guild.getMember(user);
 
                 //If the Member is null, then User isn't in the Guild.
@@ -140,25 +150,50 @@ public class PresenceUpdateHandler extends SocketHandler
                         OnlineStatus oldStatus = member.getOnlineStatus();
                         member.setOnlineStatus(status);
                         api.getEventManager().handle(
-                                new UserOnlineStatusUpdateEvent(
-                                        api, responseNumber,
-                                        user, guild, oldStatus));
+                            new UserOnlineStatusUpdateEvent(
+                                api, responseNumber,
+                                user, guild, oldStatus));
                     }
-                    if(member.getGame() == null ? nextGame != null : !member.getGame().equals(nextGame))
+                    if (!Objects.equals(member.getGame(), nextGame))
                     {
                         Game oldGame = member.getGame();
                         member.setGame(nextGame);
                         api.getEventManager().handle(
-                                new UserGameUpdateEvent(
-                                        api, responseNumber,
-                                        user, guild, oldGame));
+                            new UserGameUpdateEvent(
+                                api, responseNumber,
+                                user, guild, oldGame));
                     }
                 }
             }
             else
             {
                 //In this case, this PRESENCE_UPDATE is for a Relation.
+                if (api.getAccountType() != AccountType.CLIENT)
+                    return null;
+                JDAClient client = api.asClient();
+                FriendImpl friend = (FriendImpl) client.getFriendById(userId);
 
+                if (friend != null)
+                {
+                    if (!friend.getOnlineStatus().equals(status))
+                    {
+                        OnlineStatus oldStatus = friend.getOnlineStatus();
+                        friend.setOnlineStatus(status);
+                        api.getEventManager().handle(
+                            new UserOnlineStatusUpdateEvent(
+                                api, responseNumber,
+                                user, null, oldStatus));
+                    }
+                    if (!Objects.equals(friend.getGame(), nextGame))
+                    {
+                        Game oldGame = friend.getGame();
+                        friend.setGame(nextGame);
+                        api.getEventManager().handle(
+                            new UserGameUpdateEvent(
+                                api, responseNumber,
+                                user, null, oldGame));
+                    }
+                }
             }
         }
         else
@@ -173,19 +208,10 @@ public class PresenceUpdateHandler extends SocketHandler
 
             //If the OnlineStatus is OFFLINE, ignore the event and return.
             OnlineStatus status = OnlineStatus.fromKey(content.getString("status"));
-            if (status == OnlineStatus.OFFLINE)
-                return null;
 
             //If this was for a Guild, cache it in the Guild for later use in GUILD_MEMBER_ADD
-            if (content.containsKey("guild_id"))
-            {
-                GuildImpl guild = (GuildImpl) api.getGuildById(content.getLong("guild_id"));
+            if (status != OnlineStatus.OFFLINE && guild != null)
                 guild.getCachedPresenceMap().put(userId, content);
-            }
-            else
-            {
-                //cache in relationship stuff
-            }
         }
         return null;
     }

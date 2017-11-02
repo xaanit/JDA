@@ -154,7 +154,7 @@ public class EtfWriter
             else if (object instanceof Double || object instanceof Float)
             {
                 output.write(EtfTag.NEW_FLOAT_EXT);
-                output.writeFloat(((Number) object).floatValue());
+                output.writeDouble(((Number) object).doubleValue());
             }
             else
             {

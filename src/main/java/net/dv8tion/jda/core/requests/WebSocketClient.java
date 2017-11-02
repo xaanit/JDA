@@ -47,23 +47,25 @@ import net.dv8tion.jda.core.utils.SimpleLog;
 import net.dv8tion.jda.core.utils.data.DataArray;
 import net.dv8tion.jda.core.utils.data.DataObject;
 import net.dv8tion.jda.core.utils.data.DataReadException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.OffsetDateTime;
 import java.util.*;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.Semaphore;
 import java.util.zip.DataFormatException;
-import java.util.zip.InflaterInputStream;
 import java.util.zip.Inflater;
+import java.util.zip.InflaterOutputStream;
 
 public class WebSocketClient extends WebSocketAdapter implements WebSocketListener
 {
     public static final SimpleLog LOG = SimpleLog.getLog(WebSocketClient.class);
     public static final int DISCORD_GATEWAY_VERSION = 6;
     public static final int IDENTIFY_DELAY = 5;
+    public static final int ZLIB_SUFFIX = 0x0000FFFF;
 
     private static final String INVALIDATE_REASON = "INVALIDATE_SESSION";
 
@@ -78,7 +80,8 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
     protected WebSocket socket;
     protected String gatewayUrl = null;
     protected String sessionId = null;
-    protected Inflater zlibContext;
+    protected Inflater zlibContext = new Inflater();
+    protected ByteArrayOutputStream readBuffer;
 
     protected volatile Thread keepAliveThread;
     protected boolean initiating;             //cache all events?
@@ -155,6 +158,18 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         traces.clear();
         for (Object o : arr)
             traces.add(String.valueOf(o));
+    }
+
+    protected void allocateBuffer(byte[] binary) throws IOException
+    {
+        this.readBuffer = new ByteArrayOutputStream(binary.length * 2);
+        this.readBuffer.write(binary);
+    }
+
+    protected void extendBuffer(byte[] binary) throws IOException
+    {
+        if (this.readBuffer != null)
+            this.readBuffer.write(binary);
     }
 
     public void setAutoReconnect(boolean reconnect)
@@ -525,7 +540,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         reconnectTimeoutS = 2;
         messagesSent = 0;
         ratelimitResetTime = System.currentTimeMillis() + 60000;
-        zlibContext = new Inflater();
         if (sessionId == null)
             sendIdentify();
         else
@@ -591,6 +605,9 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
         else
         {
+            //reset our zlib decompression tools
+            zlibContext = new Inflater();
+            readBuffer = null;
             if (isInvalidate)
                 invalidate(); // 1000 means our session is dropped so we cannot resume
             api.getEventManager().handle(new DisconnectEvent(api, serverCloseFrame, clientCloseFrame, closedByServer, OffsetDateTime.now()));
@@ -815,10 +832,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             .put("token", getToken())
             .put("properties", connectionProperties)
             .put("v", DISCORD_GATEWAY_VERSION)
-            .put("large_threshold", 250)
-            //Used to make the READY event be given
-            // as compressed binary data when over a certain size. TY @ShadowLordAlpha
-            .put("compress", true);
+            .put("large_threshold", 250);
         DataObject identify = new DataObject()
                 .put("op", WebSocketCode.IDENTIFY)
                 .put("d", payload);
@@ -883,17 +897,17 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     protected void updateAudioManagerReferences()
     {
-        final TLongObjectMap<AudioManagerImpl> managerMap = api.getAudioManagerMap();
+        final TLongObjectMap<AudioManager> managerMap = api.getAudioManagerMap();
         if (managerMap.size() > 0)
             LOG.trace("Updating AudioManager references");
 
         synchronized (managerMap)
         {
-            for (TLongObjectIterator<AudioManagerImpl> it = managerMap.iterator(); it.hasNext(); )
+            for (TLongObjectIterator<AudioManager> it = managerMap.iterator(); it.hasNext(); )
             {
                 it.advance();
                 final long guildId = it.key();
-                final AudioManagerImpl mng = it.value();
+                final AudioManagerImpl mng = (AudioManagerImpl) it.value();
                 ConnectionListener listener = mng.getConnectionListener();
 
                 GuildImpl guild = (GuildImpl) api.getGuildById(guildId);
@@ -976,7 +990,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             {
                 type = "GUILD_CREATE";
                 raw.put("t", "GUILD_CREATE")
-                        .put("jda-field","This event was originally a GUILD_DELETE but was converted to GUILD_CREATE for WS init Guild streaming");
+                   .put("jda-field","This event was originally a GUILD_DELETE but was converted to GUILD_CREATE for WS init Guild streaming");
             }
             else
             {
@@ -985,20 +999,23 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 return;
             }
         }
-
-//        // Needs special handling due to content of "d" being an array
-//        if(type.equals("PRESENCE_REPLACE"))
-//        {
-//            DataArray presences = raw.getDataArray("d");
-//            LOG.trace(String.format("%s -> %s", type, presences.toString()));
-//            PresenceUpdateHandler handler = new PresenceUpdateHandler(api, responseTotal);
-//            for (int i = 0; i < presences.length(); i++)
-//            {
-//                DataObject presence = presences.getDataObject(i);
-//                handler.handle(presence);
-//            }
-//            return;
-//        }
+        // Needs special handling due to content of "d" being an array
+        if (type.equals("PRESENCES_REPLACE"))
+        {
+            DataArray presences = raw.getArray("d");
+            LOG.trace(String.format("%s -> %s", type, presences.toString()));
+            PresenceUpdateHandler handler = getHandler("PRESENCE_UPDATE");
+            for (int i = 0; i < presences.length(); i++)
+            {
+                DataObject presence = presences.getObject(i);
+                final DataObject obj = new DataObject();
+                obj.put("jda-field", "This was constructed from a PRESENCES_REPLACE payload")
+                   .put("d", presence)
+                   .put("t", "PRESENCE_UPDATE");
+                handler.handle(responseTotal, obj);
+            }
+            return;
+        }
 
         DataObject content = raw.getObject("d");
         LOG.trace(String.format("%s -> %s", type, content.toString()));
@@ -1010,7 +1027,6 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
                 //INIT types
                 case "READY":
                     api.setStatus(JDA.Status.LOADING_SUBSYSTEMS);
-                    //LOG.debug(String.format("%s -> %s", type, content.toString())); already logged on trace level
                     processingReady = true;
                     handleIdentifyRateLimit = false;
                     sessionId = content.getString("session_id");
@@ -1051,29 +1067,69 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         }
     }
 
-    @Override
-    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws UnsupportedEncodingException, DataFormatException
+    protected boolean onBufferMessage(byte[] binary) throws IOException
     {
-        switch (api.getGatewayEncoding())
+        if (binary.length >= 4 && getInt(binary, binary.length - 4) == ZLIB_SUFFIX)
         {
-            case ETF:
-                onMessage(reader.readMessage(new ByteArrayDataInput(binary, binary.length)));
-                break;
-            case JSON:
-                try (final InputStream in = new InflaterInputStream(new ByteArrayInputStream(binary)))
-                {
-                    final DataObject object = DataObject.fromJson(in);
-                    onMessage(object);
-                }
-                catch (IOException e)
-                {
-                    WebSocketClient.LOG.fatal("An error occurred while parsing a compressed websocket message!");
-                    WebSocketClient.LOG.fatal(e);
-                }
-                break;
-            default:
-                throw new RuntimeException("No appropriate action for encoding " + api.getGatewayEncoding().getKey() + " found!");
+            extendBuffer(binary);
+            return true;
         }
+
+        if (readBuffer != null)
+            extendBuffer(binary);
+        else
+            allocateBuffer(binary);
+
+        return false;
+    }
+
+    @Override
+    public void onBinaryMessage(WebSocket websocket, byte[] binary) throws IOException, DataFormatException
+    {
+        if (!onBufferMessage(binary))
+            return;
+        //Thanks to ShadowLordAlpha and Shredder121 for code and debugging.
+        //Get the compressed message and inflate it
+        final int size = readBuffer != null ? readBuffer.size() : binary.length;
+        ByteArrayOutputStream out = new ByteArrayOutputStream(size * 2);
+        try (InflaterOutputStream decompressor = new InflaterOutputStream(out, zlibContext))
+        {
+            if (readBuffer != null)
+                readBuffer.writeTo(decompressor);
+            else
+                decompressor.write(binary);
+
+            byte[] data = out.toByteArray();
+
+            // send the inflated message to the TextMessage method
+            switch (api.getGatewayEncoding())
+            {
+                case ETF:
+                    onMessage(reader.readMessage(new ByteArrayDataInput(data)));
+                    break;
+                case JSON:
+                    onMessage(DataObject.fromJson(data));
+                    break;
+                default:
+                    throw new RuntimeException("No appropriate action for encoding " + api.getGatewayEncoding().getKey() + " found!");
+            }
+        }
+        catch (IOException e)
+        {
+            throw (DataFormatException) new DataFormatException("Malformed").initCause(e);
+        }
+        finally
+        {
+            readBuffer = null;
+        }
+    }
+
+    private static int getInt(byte[] sink, int offset)
+    {
+        return sink[offset + 3] & 0xFF
+            | (sink[offset + 2] & 0xFF) << 8
+            | (sink[offset + 1] & 0xFF) << 16
+            | (sink[offset    ] & 0xFF) << 24;
     }
 
     @Override
@@ -1359,6 +1415,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
 
     private void setupHandlers()
     {
+        final SocketHandler.NOPHandler nopHandler = new SocketHandler.NOPHandler(api);
         handlers.put("CHANNEL_CREATE",              new ChannelCreateHandler(api));
         handlers.put("CHANNEL_DELETE",              new ChannelDeleteHandler(api));
         handlers.put("CHANNEL_UPDATE",              new ChannelUpdateHandler(api));
@@ -1391,8 +1448,11 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
         handlers.put("VOICE_STATE_UPDATE",          new VoiceStateUpdateHandler(api));
 
         // Unused events
-        handlers.put("CHANNEL_PINS_UPDATE",         new SocketHandler.NOPHandler(api));
-        handlers.put("WEBHOOKS_UPDATE",             new SocketHandler.NOPHandler(api));
+        handlers.put("CHANNEL_PINS_ACK",          nopHandler);
+        handlers.put("CHANNEL_PINS_UPDATE",       nopHandler);
+        handlers.put("GUILD_INTEGRATIONS_UPDATE", nopHandler);
+        handlers.put("PRESENCES_REPLACE",         nopHandler);
+        handlers.put("WEBHOOKS_UPDATE",           nopHandler);
 
         if (api.getAccountType() == AccountType.CLIENT)
         {
@@ -1405,7 +1465,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             handlers.put("RELATIONSHIP_REMOVE",      new RelationshipRemoveHandler(api));
 
             // Unused client events
-            handlers.put("MESSAGE_ACK", new SocketHandler.NOPHandler(api));
+            handlers.put("MESSAGE_ACK", nopHandler);
         }
     }
 

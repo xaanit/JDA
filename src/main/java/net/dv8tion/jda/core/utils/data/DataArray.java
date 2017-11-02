@@ -39,14 +39,14 @@ public class DataArray implements List<Object>
         this.data = new ArrayList<>();
     }
 
-    public DataArray(List<Object> data)
+    DataArray(List<Object> data)
     {
         this.data = data;
     }
 
-    public DataArray(SerializableData... data)
+    public DataArray(Collection<? extends SerializableData> data)
     {
-        this.data = Arrays.stream(data)
+        this.data = data.stream()
                         .map(SerializableData::toDataObject)
                         .collect(Collectors.toList());
     }

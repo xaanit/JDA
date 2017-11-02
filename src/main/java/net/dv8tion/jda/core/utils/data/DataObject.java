@@ -19,6 +19,7 @@ package net.dv8tion.jda.core.utils.data;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.MapType;
+import net.dv8tion.jda.core.utils.Checks;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,6 +46,7 @@ public class DataObject implements Map<String, Object>
 
     public DataObject(Map<String, Object> data)
     {
+        Checks.notNull(data, "data");
         this.data = data;
     }
 
@@ -131,6 +133,12 @@ public class DataObject implements Map<String, Object>
             e.printStackTrace();
         }
         return "{}";
+    }
+
+    public static DataObject fromJson(byte[] json) throws IOException
+    {
+        Map<String, Object> map = jsonMapper.readValue(json, jacksonType);
+        return new DataObject(map);
     }
 
     public static DataObject fromJson(String json) throws IOException

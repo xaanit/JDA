@@ -30,6 +30,11 @@ public class ByteArrayDataInput implements BoundedDataInput
     private final int length;
     private int position;
 
+    public ByteArrayDataInput(final byte[] data)
+    {
+        this(data, data.length);
+    }
+
     public ByteArrayDataInput(final byte[] data, final int length)
     {
         this.data = data;

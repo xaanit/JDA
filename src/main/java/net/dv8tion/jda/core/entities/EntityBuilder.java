@@ -160,17 +160,24 @@ public class EntityBuilder
             for (int i = 0; i < array.length(); i++)
             {
                 DataObject object = array.getObject(i);
-                DataArray emoteRoles = object.getArray("roles");
+                if (object.isNull("id"))
+                {
+                    LOG.fatal("Received GUILD_CREATE with an emoji with a null ID. JSON: " + object);
+                    continue;
+                }
+                DataArray emoteRoles = object.isNull("roles") ? new DataArray() : object.getArray("roles");
                 final long emoteId = object.getLong("id");
 
                 EmoteImpl emoteObj = new EmoteImpl(emoteId, guildObj);
                 Set<Role> roleSet = emoteObj.getRoleSet();
 
                 for (int j = 0; j < emoteRoles.length(); j++)
-                    roleSet.add(guildObj.getRoleById(emoteRoles.getLong(j)));
+                    roleSet.add(guildObj.getRoleById(emoteRoles.getString(j)));
+                final String name = object.isNull("name") ? "" : object.getString("name");
+                final boolean managed = !object.isNull("managed") && object.getBoolean("managed");
                 emoteMap.put(emoteId, emoteObj
-                        .setName(object.getString("name"))
-                        .setManaged(object.getBoolean("managed")));
+                            .setName(name)
+                            .setManaged(managed));
             }
         }
 
@@ -854,7 +861,7 @@ public class EntityBuilder
                 final Long emojiId = emoji.isNull("id") ? null : emoji.getLong("id");
                 String emojiName = emoji.getString("name");
 
-                boolean self = obj.containsKey("self") && obj.getBoolean("self");
+                boolean self = obj.containsKey("me") && obj.getBoolean("me");
                 int count = obj.getInt("count");
                 Emote emote = null;
                 if (emojiId != null)
