@@ -200,10 +200,6 @@ String getProjectProperty(String propertyName)
     return property
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.2.1'
-}
-
 build {
     dependsOn clean
     dependsOn jar
