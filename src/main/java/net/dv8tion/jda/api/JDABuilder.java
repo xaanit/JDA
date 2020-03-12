@@ -251,7 +251,7 @@ public class JDABuilder
      *     <li>{@link #setEnabledIntents(Collection)} is set to {@link GatewayIntent#DEFAULT}</li>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@link CacheFlag#channels()}</li>
      * </ul>
      *
      * @param  token
@@ -273,7 +273,7 @@ public class JDABuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@link CacheFlag#channels()}</li>
      * </ul>
      *
      * @param  token
@@ -297,7 +297,7 @@ public class JDABuilder
      * <ul>
      *     <li>{@link #setMemberCachePolicy(MemberCachePolicy)} is set to {@link MemberCachePolicy#NONE}</li>
      *     <li>{@link #setChunkingFilter(ChunkingFilter)} is set to {@link ChunkingFilter#NONE}</li>
-     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to none</li>
+     *     <li>{@link #setEnabledCacheFlags(EnumSet)} is set to {@link CacheFlag#channels()}</li>
      * </ul>
      *
      * @param  token
@@ -320,7 +320,7 @@ public class JDABuilder
     {
         return this.setMemberCachePolicy(MemberCachePolicy.NONE)
                    .setChunkingFilter(ChunkingFilter.NONE)
-                   .setEnabledCacheFlags(EnumSet.noneOf(CacheFlag.class))
+                   .setEnabledCacheFlags(CacheFlag.channels())
                    .setLargeThreshold(50);
     }
 
