@@ -258,6 +258,8 @@ public class EntityBuilder
 
         if (guildObj.getOwner() == null)
             LOG.debug("Finished setup for guild with a null owner. GuildId: {} OwnerId: {}", guildId, guildJson.opt("owner_id").orElse(null));
+        if (guildObj.getMember(getJDA().getSelfUser()) == null)
+            LOG.error("Finished setup for guild with a null self member. GuildId: {} Payload: {}", guildId, guildJson);
 
 
         createGuildEmotePass(guildObj, emotesArray);
