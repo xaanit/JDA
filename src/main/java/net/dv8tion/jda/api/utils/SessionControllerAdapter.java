@@ -188,6 +188,7 @@ public class SessionControllerAdapter implements SessionController
         }
 
         @Override
+        @SuppressWarnings("java:S2142") // "InterruptedException" should not be ignored
         public void run()
         {
             try
@@ -212,6 +213,7 @@ public class SessionControllerAdapter implements SessionController
             }
         }
 
+        @SuppressWarnings("java:S2142") // "InterruptedException" should not be ignored
         protected void processQueue()
         {
             boolean isMultiple = connectQueue.size() > 1;

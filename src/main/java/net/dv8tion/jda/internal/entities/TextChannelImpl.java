@@ -48,6 +48,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("java:S2160") // Subclasses that add fields should override "equals"
 public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChannelImpl> implements TextChannel
 {
     private String topic;
@@ -171,6 +172,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     public List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
@@ -361,6 +363,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         checkPermission(Permission.MESSAGE_READ);
@@ -389,6 +392,7 @@ public class TextChannelImpl extends AbstractChannelImpl<TextChannel, TextChanne
 
     @Nonnull
     @Override
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         checkPermission(Permission.MESSAGE_READ);

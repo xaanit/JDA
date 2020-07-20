@@ -97,7 +97,7 @@ public class MiscUtil
      */
     public static <T> TLongObjectMap<T> newLongMap()
     {
-        return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<T>(), new Object());
+        return new TSynchronizedLongObjectMap<>(new TLongObjectHashMap<>(), new Object());
     }
 
     public static long parseSnowflake(String input)
@@ -117,6 +117,7 @@ public class MiscUtil
         }
     }
 
+    @SuppressWarnings("java:S2142") // "InterruptedException" should not be ignored
     public static <E> E locked(ReentrantLock lock, Supplier<E> task)
     {
         try
@@ -135,6 +136,7 @@ public class MiscUtil
         }
     }
 
+    @SuppressWarnings("java:S2142") // "InterruptedException" should not be ignored
     public static void locked(ReentrantLock lock, Runnable task)
     {
         try

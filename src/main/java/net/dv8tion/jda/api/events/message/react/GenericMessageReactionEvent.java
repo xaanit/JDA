@@ -42,7 +42,7 @@ public class GenericMessageReactionEvent extends GenericMessageEvent
     protected Member member;
     protected MessageReaction reaction;
 
-    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nonnull User user,
+    public GenericMessageReactionEvent(@Nonnull JDA api, long responseNumber, @Nullable User user,
                                        @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, reaction.getMessageIdLong(), reaction.getChannel());

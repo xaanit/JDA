@@ -30,6 +30,7 @@ import java.util.Arrays;
  *
  * @see <a href="https://tools.ietf.org/html/rfc3550" target="_blank">RFC 3350 - RTP: A Transport Protocol for Real-Time Applications</a>
  */
+@SuppressWarnings("java:S1905") // Redundant casts should not be used
 public class AudioPacket
 {
     public static final int RTP_HEADER_BYTE_LENGTH = 12;

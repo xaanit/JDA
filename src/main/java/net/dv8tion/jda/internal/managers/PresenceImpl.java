@@ -183,6 +183,7 @@ public class PresenceImpl implements Presence
               .put("status", getStatus().getKey());
     }
 
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     private DataObject getGameJson(Activity activity)
     {
         if (activity == null || activity.getName() == null || activity.getType() == null)

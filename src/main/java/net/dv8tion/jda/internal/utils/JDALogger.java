@@ -166,6 +166,7 @@ public class JDALogger
          *
          * @return The String for log message
          */
+        @SuppressWarnings("java:S112") // Generic exceptions should never be thrown
         String getString() throws Exception;
     }
 }

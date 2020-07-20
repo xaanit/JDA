@@ -82,7 +82,7 @@ public class GuildEmojisUpdateHandler extends SocketHandler
                 {
                     // emote is in our cache which is why we don't want to remove it in cleanup later
                     oldEmotes.remove(emote);
-                    oldEmote = emote.clone();
+                    oldEmote = new EmoteImpl(emote);
                 }
 
                 emote.setName(current.getString("name"))

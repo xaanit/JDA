@@ -34,6 +34,11 @@ import java.util.FormattableFlags;
 import java.util.Formatter;
 import java.util.List;
 
+@SuppressWarnings({
+    "java:S1168", // Empty arrays and collections should be returned instead of null
+    "java:S4144", // Methods should not have identical implementations
+    "java:S2637", // "@NonNull" values should not be set to null
+})
 public abstract class AbstractMessage implements Message
 {
     protected static final String UNSUPPORTED = "This operation is not supported for Messages of this type!";

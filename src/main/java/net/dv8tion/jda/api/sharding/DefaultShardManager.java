@@ -156,6 +156,7 @@ public class DefaultShardManager implements ShardManager
         this(token, shardIds, null, null, null, null, null, null, null);
     }
 
+    @SuppressWarnings("java:S107") // Methods should not have too many parameters
     public DefaultShardManager(
         @Nonnull String token, @Nullable Collection<Integer> shardIds,
         @Nullable ShardingConfig shardingConfig, @Nullable EventConfig eventConfig,
@@ -256,6 +257,7 @@ public class DefaultShardManager implements ShardManager
         return this.shards;
     }
 
+    @SuppressWarnings("java:S2142") // "InterruptedException" should not be ignored
     public void login() throws LoginException
     {
         // building the first one in the current thread ensures that LoginException and IllegalArgumentException can be thrown on login
@@ -418,6 +420,7 @@ public class DefaultShardManager implements ShardManager
         });
     }
 
+    @SuppressWarnings("java:S2142") // "InterruptedException" should not be ignored
     protected void processQueue()
     {
         int shardId;

@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 
 import java.util.Iterator;
 
-@SuppressWarnings("rawtypes")
+@SuppressWarnings({"rawtypes", "java:S3740"})
 public abstract class RateLimiter
 {
     //Implementations of this class exist in the net.dv8tion.jda.api.requests.ratelimit package.

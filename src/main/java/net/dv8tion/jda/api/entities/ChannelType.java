@@ -129,6 +129,7 @@ public enum ChannelType
      * @return Possibly-empty {@link java.util.EnumSet} for the bucket
      */
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<ChannelType> fromSortBucket(int bucket)
     {
         EnumSet<ChannelType> types = EnumSet.noneOf(ChannelType.class);

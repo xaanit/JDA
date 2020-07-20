@@ -20,6 +20,9 @@ import net.dv8tion.jda.annotations.DeprecatedSince;
 import net.dv8tion.jda.annotations.ForRemoval;
 import net.dv8tion.jda.api.entities.Guild;
 
+/**
+ * @deprecated This is never used
+ */
 @Deprecated
 @ForRemoval
 @DeprecatedSince("4.2.0")

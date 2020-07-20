@@ -1013,7 +1013,7 @@ public interface RestAction<T>
                         onFailure = ContextException.here(task::completeExceptionally);
                     else
                         onFailure = task::completeExceptionally;
-                    return new ContextRunnable<T>(() -> queue(task::complete, onFailure));
+                    return new ContextRunnable<>(() -> queue(task::complete, onFailure));
                 });
     }
 
@@ -1035,6 +1035,7 @@ public interface RestAction<T>
      *
      * @return The response value
      */
+    @SuppressWarnings({"java:S2142", "java:S112"}) // "InterruptedException" should not be ignored
     default T completeAfter(long delay, @Nonnull TimeUnit unit)
     {
         Checks.notNull(unit, "TimeUnit");

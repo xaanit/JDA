@@ -29,6 +29,7 @@ import java.util.EnumSet;
  *
  * <p>Can be used to retrieve the updated override and old {@link #getOldAllow() allow} and {@link #getOldDeny() deny}.
  */
+@SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
 public class PermissionOverrideUpdateEvent extends GenericPermissionOverrideEvent
 {
     private final long oldAllow, oldDeny;

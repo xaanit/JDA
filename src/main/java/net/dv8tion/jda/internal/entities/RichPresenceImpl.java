@@ -37,6 +37,7 @@ public class RichPresenceImpl extends ActivityImpl implements RichPresence
     protected final String syncId;
     protected final int flags;
 
+    @SuppressWarnings("java:S107") // Methods should not have too many parameters
     protected RichPresenceImpl(
         ActivityType type, String name, String url, long applicationId,
         Emoji emoji, Party party, String details, String state, Timestamps timestamps, String syncId, String sessionId,

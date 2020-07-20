@@ -110,7 +110,11 @@ import javax.annotation.Nonnull;
  * @see net.dv8tion.jda.api.hooks.EventListener EventListener
  * @see net.dv8tion.jda.api.hooks.InterfacedEventManager InterfacedEventManager
  */
-@SuppressWarnings("deprecation")
+@SuppressWarnings({
+    "deprecation",
+    "java:S1123",  // Deprecated elements should have both the annotation and the Javadoc tag
+    "java:S3740"   // Raw types should not be used
+})
 public abstract class ListenerAdapter implements EventListener
 {
     //Deprecated/Unused events
@@ -364,6 +368,7 @@ public abstract class ListenerAdapter implements EventListener
     public void onGenericPermissionOverride(@Nonnull GenericPermissionOverrideEvent event) {}
 
     @Override
+    @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
     public final void onEvent(@Nonnull GenericEvent event)
     {
         onGenericEvent(event);

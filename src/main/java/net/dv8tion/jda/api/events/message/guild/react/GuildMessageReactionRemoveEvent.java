@@ -30,6 +30,7 @@ import javax.annotation.Nullable;
  */
 public class GuildMessageReactionRemoveEvent extends GenericGuildMessageReactionEvent
 {
+    @SuppressWarnings("java:S2637") // "@NonNull" values should not be set to null (i don't get it)
     public GuildMessageReactionRemoveEvent(@Nonnull JDA api, long responseNumber, @Nullable Member member, @Nonnull MessageReaction reaction, long userId)
     {
         super(api, responseNumber, member, reaction, userId);

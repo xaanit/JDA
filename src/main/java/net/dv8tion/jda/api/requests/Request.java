@@ -56,6 +56,7 @@ public class Request<T>
     private boolean done = false;
     private boolean isCancelled = false;
 
+    @SuppressWarnings("java:S107") // Methods should not have too many parameters
     public Request(
             RestActionImpl<T> restAction, Consumer<? super T> onSuccess, Consumer<? super Throwable> onFailure,
             BooleanSupplier checks, boolean shouldQueue, RequestBody body, Object rawBody, long deadline, boolean priority,
@@ -82,6 +83,7 @@ public class Request<T>
         this.localReason = ThreadLocalReason.getCurrent();
     }
 
+    @SuppressWarnings("java:S1181") // Throwable and Error should not be caught
     public void onSuccess(T successObj)
     {
         if (done)
@@ -119,6 +121,7 @@ public class Request<T>
         }
     }
 
+    @SuppressWarnings("java:S1181") // Throwable and Error should not be caught
     public void onFailure(Throwable failException)
     {
         if (done)

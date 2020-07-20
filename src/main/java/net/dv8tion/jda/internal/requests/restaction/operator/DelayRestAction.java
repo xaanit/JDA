@@ -51,6 +51,10 @@ public class DelayRestAction<T> extends RestActionOperator<T, T>
     }
 
     @Override
+    @SuppressWarnings({
+        "java:S2142",  // "InterruptedException" should not be ignored
+        "java:S112"    // Generic exceptions should never be thrown
+    })
     public T complete(boolean shouldQueue) throws RateLimitedException
     {
         T result = action.complete(shouldQueue);

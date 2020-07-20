@@ -94,15 +94,12 @@ public class MessageReactionHandler extends SocketHandler
         User user = getJDA().getUserById(userId);
         if (user == null && member != null)
             user = member.getUser(); // this happens when we have guild subscriptions disabled
-        if (user == null)
+        if (user == null && add && guild != null)
         {
-            if (add && guild != null)
-            {
-                getJDA().getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
-                EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached. " +
-                        "UserID: {} ChannelId: {} MessageId: {}", userId, channelId, messageId);
-                return null;
-            }
+            getJDA().getEventCache().cache(EventCache.Type.USER, userId, responseNumber, allContent, this::handle);
+            EventCache.LOG.debug("Received a reaction for a user that JDA does not currently have cached. " +
+                    "UserID: {} ChannelId: {} MessageId: {}", userId, channelId, messageId);
+            return null;
         }
 
         MessageChannel channel = getJDA().getTextChannelById(channelId);
@@ -147,6 +144,7 @@ public class MessageReactionHandler extends SocketHandler
         return null;
     }
 
+    @SuppressWarnings("java:S131") // "switch" statements should have "default" clauses
     private void onAdd(MessageReaction reaction, User user, Member member, long userId)
     {
         JDAImpl jda = getJDA();
@@ -175,6 +173,7 @@ public class MessageReactionHandler extends SocketHandler
                 user, member, reaction, userId));
     }
 
+    @SuppressWarnings("java:S131") // "switch" statements should have "default" clauses
     private void onRemove(MessageReaction reaction, User user, Member member, long userId)
     {
         JDAImpl jda = getJDA();

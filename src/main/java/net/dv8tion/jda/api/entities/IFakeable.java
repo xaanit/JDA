@@ -35,6 +35,8 @@ import net.dv8tion.jda.annotations.ForRemoval;
  * JDA will construct a fake {@link net.dv8tion.jda.api.entities.Emote Emote} object for it.
  *
  * @since 3.0
+ *
+ * @deprecated This is no longer used
  */
 @Deprecated
 @DeprecatedSince("4.2.1")
@@ -46,6 +48,8 @@ public interface IFakeable
      * Describes whether an entity is fake or not.
      *
      * @return False, if this is an actual JDA entity.
+     *
+     * @deprecated This is no longer used
      */
     @Deprecated
     @DeprecatedSince("4.2.1")

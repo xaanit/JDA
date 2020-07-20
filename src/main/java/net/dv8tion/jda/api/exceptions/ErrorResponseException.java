@@ -34,6 +34,7 @@ import java.util.function.Consumer;
  *
  * @see net.dv8tion.jda.api.exceptions.ErrorHandler
  */
+@SuppressWarnings("java:S1948") // Fields in a "Serializable" class should either be transient or serializable
 public class ErrorResponseException extends RuntimeException
 {
     private final ErrorResponse errorResponse;

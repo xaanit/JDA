@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
+@SuppressWarnings("java:S1123") // Deprecated elements should have both the annotation and the Javadoc tag
 public class MemberImpl implements Member
 {
     private static final ZoneOffset OFFSET = ZoneOffset.of("+00:00");

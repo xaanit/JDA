@@ -114,6 +114,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull List<String> messageIds)
     {
         if (messageIds == null || messageIds.isEmpty())
@@ -140,6 +141,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull String... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
@@ -168,6 +170,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     default List<CompletableFuture<Void>> purgeMessages(@Nonnull Message... messages)
     {
         if (messages == null || messages.length == 0)
@@ -196,6 +199,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     default List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
@@ -236,6 +240,7 @@ public interface MessageChannel extends ISnowflake, Formattable
      * @see    CompletableFuture#allOf(java.util.concurrent.CompletableFuture[])
      */
     @Nonnull
+    @SuppressWarnings({"ConstantConditions", "java:S2589", "java:S3012"})
     default List<CompletableFuture<Void>> purgeMessagesById(@Nonnull long... messageIds)
     {
         if (messageIds == null || messageIds.length == 0)
@@ -2525,7 +2530,7 @@ public interface MessageChannel extends ISnowflake, Formattable
         Checks.isSnowflake(messageId, "Message ID");
 
         Route.CompiledRoute route = Route.Messages.REMOVE_PINNED_MESSAGE.compile(getId(), messageId);
-        return new RestActionImpl<Void>(getJDA(), route);
+        return new RestActionImpl<>(getJDA(), route);
     }
 
     /**

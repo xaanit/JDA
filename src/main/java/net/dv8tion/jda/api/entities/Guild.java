@@ -361,6 +361,8 @@ public interface Guild extends ISnowflake
      *
      * @see    #getFeatures()
      * @see    #getVanityCode()
+     *
+     * @deprecated Use {@link #getVanityCode()} instead
      */
     @Nonnull
     @Deprecated
@@ -1093,8 +1095,9 @@ public interface Guild extends ISnowflake
                 return getStoreChannelById(id);
             case CATEGORY:
                 return getCategoryById(id);
+            default:
+                return null;
         }
-        return null;
     }
 
     /**

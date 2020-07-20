@@ -29,6 +29,7 @@ public class RestFuture<T> extends CompletableFuture<T>
 {
     final Request<T> request;
 
+    @SuppressWarnings("java:S107") // Methods should not have too many parameters
     public RestFuture(final RestActionImpl<T> restAction, final boolean shouldQueue,
                       final BooleanSupplier checks, final RequestBody data, final Object rawData, final long deadline, final boolean priority,
                       final Route.CompiledRoute route, final CaseInsensitiveMap<String, String> headers)

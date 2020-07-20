@@ -34,7 +34,7 @@ import java.util.function.BiConsumer;
 
 public class MemberChunkManager
 {
-    private static final long MAX_CHUNK_AGE = 10 * 1000; // 10 seconds
+    private static final long MAX_CHUNK_AGE = 10000; // 10 seconds
     private final WebSocketClient client;
     private final ReentrantLock lock = new ReentrantLock();
     private final TLongObjectMap<ChunkRequest> requests = new TLongObjectHashMap<>();
@@ -109,7 +109,7 @@ public class MemberChunkManager
         return chunkRequest;
     }
 
-    public boolean handleChunk(long guildId, DataObject response)
+    public boolean handleChunk(DataObject response)
     {
         return MiscUtil.locked(lock, () -> {
             String nonce = response.getString("nonce", null);

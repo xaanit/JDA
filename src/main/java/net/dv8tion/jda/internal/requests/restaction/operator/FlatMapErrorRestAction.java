@@ -30,13 +30,13 @@ import java.util.function.Predicate;
 
 public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
 {
-    private final Predicate<? super Throwable> check;
+    private final Predicate<? super Throwable> condition;
     private final Function<? super Throwable, ? extends RestAction<? extends T>> map;
 
-    public FlatMapErrorRestAction(RestAction<T> action, Predicate<? super Throwable> check, Function<? super Throwable, ? extends RestAction<? extends T>> map)
+    public FlatMapErrorRestAction(RestAction<T> action, Predicate<? super Throwable> condition, Function<? super Throwable, ? extends RestAction<? extends T>> map)
     {
         super(action);
-        this.check = check;
+        this.condition = condition;
         this.map = map;
     }
 
@@ -47,7 +47,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
         action.queue(success, contextWrap((error) -> {
             try
             {
-                if (check.test(error))
+                if (condition.test(error))
                 {
                     // If check passed we can apply the fallback function and flatten it
                     RestAction<? extends T> then = map.apply(error);
@@ -76,7 +76,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
         {
             try
             {
-                if (check.test(error))
+                if (condition.test(error))
                 {
                     RestAction<? extends T> then = map.apply(error);
                     if (then == null)
@@ -104,7 +104,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
     {
         return action.submit(shouldQueue)
                 .handle((result, error) -> {
-                    if (check.test(error))
+                    if (condition.test(error))
                         return map.apply(error).submit(shouldQueue).thenApply(x -> (T) x);
                     else
                         return CompletableFuture.completedFuture(result);
@@ -112,6 +112,7 @@ public class FlatMapErrorRestAction<T> extends RestActionOperator<T, T>
     }
 
     @Contract("_ -> fail")
+    @SuppressWarnings("java:S112") // Generic exceptions should never be thrown
     private void fail(Throwable error)
     {
         if (error instanceof RuntimeException)

@@ -619,7 +619,7 @@ public class WebSocketClient extends WebSocketAdapter implements WebSocketListen
             int delay = reconnectTimeoutS;
             // Exponential backoff, reset on session creation (ready/resume)
             reconnectTimeoutS = reconnectTimeoutS == 0 ? 2 : Math.min(reconnectTimeoutS << 1, api.getMaxReconnectDelay());
-            Thread.sleep(delay * 1000);
+            Thread.sleep(delay * 1000L);
             handleIdentifyRateLimit = false;
             api.setStatus(JDA.Status.ATTEMPTING_TO_RECONNECT);
             LOG.debug("Attempting to reconnect!");

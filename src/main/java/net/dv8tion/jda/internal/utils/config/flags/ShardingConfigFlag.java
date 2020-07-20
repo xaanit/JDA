@@ -22,6 +22,7 @@ public enum ShardingConfigFlag
 {
     SHUTDOWN_NOW;
 
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<ShardingConfigFlag> getDefault()
     {
         return EnumSet.noneOf(ShardingConfigFlag.class);

@@ -44,11 +44,11 @@ import java.util.regex.Pattern;
  */
 public class EmbedBuilder
 {
-    public final static String ZERO_WIDTH_SPACE = "\u200E";
-    public final static Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://\\S+\\s*", Pattern.CASE_INSENSITIVE);
+    public static final String ZERO_WIDTH_SPACE = "\u200E";
+    public static final Pattern URL_PATTERN = Pattern.compile("\\s*(https?|attachment)://\\S+\\s*", Pattern.CASE_INSENSITIVE);
 
     private final List<MessageEmbed.Field> fields = new LinkedList<>();
-    private final StringBuilder description = new StringBuilder();
+    private final StringBuilder descriptionBuilder = new StringBuilder();
     private int color = Role.DEFAULT_COLOR_RAW;
     private String url, title;
     private OffsetDateTime timestamp;
@@ -68,7 +68,7 @@ public class EmbedBuilder
     {
         if (builder != null)
         {
-            setDescription(builder.description.toString());
+            setDescription(builder.descriptionBuilder.toString());
             this.fields.addAll(builder.fields);
             this.url = builder.url;
             this.title = builder.title;
@@ -87,6 +87,7 @@ public class EmbedBuilder
      * @param  embed
      *         the existing embed
      */
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     public EmbedBuilder(@Nullable MessageEmbed embed)
     {
         if(embed != null)
@@ -119,11 +120,11 @@ public class EmbedBuilder
     {
         if (isEmpty())
             throw new IllegalStateException("Cannot build an empty embed!");
-        if (description.length() > MessageEmbed.TEXT_MAX_LENGTH)
+        if (descriptionBuilder.length() > MessageEmbed.TEXT_MAX_LENGTH)
             throw new IllegalStateException(String.format("Description is longer than %d! Please limit your input!", MessageEmbed.TEXT_MAX_LENGTH));
         if (length() > MessageEmbed.EMBED_MAX_LENGTH_BOT)
             throw new IllegalStateException("Cannot build an embed with more than " + MessageEmbed.EMBED_MAX_LENGTH_BOT + " characters!");
-        final String description = this.description.length() < 1 ? null : this.description.toString();
+        final String description = this.descriptionBuilder.length() < 1 ? null : this.descriptionBuilder.toString();
 
         return EntityBuilder.createMessageEmbed(url, title, description, EmbedType.RICH, timestamp,
                 color, thumbnail, null, author, null, footer, image, new LinkedList<>(fields));
@@ -138,7 +139,7 @@ public class EmbedBuilder
     @Nonnull
     public EmbedBuilder clear()
     {
-        description.setLength(0);
+        descriptionBuilder.setLength(0);
         fields.clear();
         url = null;
         title = null;
@@ -165,7 +166,7 @@ public class EmbedBuilder
             && footer == null
             && image == null
             && color == Role.DEFAULT_COLOR_RAW
-            && description.length() == 0
+            && descriptionBuilder.length() == 0
             && fields.isEmpty();
     }
 
@@ -177,7 +178,7 @@ public class EmbedBuilder
      */
     public int length()
     {
-        int length = description.length();
+        int length = descriptionBuilder.length();
         synchronized (fields)
         {
             length = fields.stream().map(f -> f.getName().length() + f.getValue().length()).reduce(length, Integer::sum);
@@ -316,7 +317,7 @@ public class EmbedBuilder
     @Nonnull
     public StringBuilder getDescriptionBuilder()
     {
-        return description;
+        return descriptionBuilder;
     }
 
     /**
@@ -335,7 +336,7 @@ public class EmbedBuilder
     @Nonnull
     public final EmbedBuilder setDescription(@Nullable CharSequence description)
     {
-        this.description.setLength(0);
+        this.descriptionBuilder.setLength(0);
         if (description != null && description.length() >= 1)
             appendDescription(description);
         return this;
@@ -361,9 +362,9 @@ public class EmbedBuilder
     public EmbedBuilder appendDescription(@Nonnull CharSequence description)
     {
         Checks.notNull(description, "description");
-        Checks.check(this.description.length() + description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
+        Checks.check(this.descriptionBuilder.length() + description.length() <= MessageEmbed.TEXT_MAX_LENGTH,
                 "Description cannot be longer than %d characters.", MessageEmbed.TEXT_MAX_LENGTH);
-        this.description.append(description);
+        this.descriptionBuilder.append(description);
         return this;
     }
 

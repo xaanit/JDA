@@ -52,8 +52,6 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
     @Override
     public void setConcurrency(int level)
     {
-        // assertions are ignored at runtime by default, this is a sanity check
-        assert level > 0 && level < Integer.MAX_VALUE;
         workers = new Worker[level];
     }
 
@@ -124,6 +122,7 @@ public class ConcurrentSessionController extends SessionControllerAdapter implem
         }
 
         @Override
+        @SuppressWarnings("java:S2142") // "InterruptedException" should not be ignored
         public void run()
         {
             try

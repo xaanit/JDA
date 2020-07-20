@@ -20,6 +20,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.jfrog.bintray.gradle.BintrayExtension
 import com.jfrog.bintray.gradle.tasks.BintrayUploadTask
+import name.remal.gradle_plugins.plugins.code_quality.sonar.SonarLintExtension
 import org.apache.tools.ant.filters.ReplaceTokens
 import java.util.*
 
@@ -31,6 +32,7 @@ plugins {
     id("com.jfrog.bintray") version "1.8.1"
     id("com.github.ben-manes.versions") version "0.19.0"
     id("com.github.johnrengelman.shadow") version "5.1.0"
+    id("name.remal.sonarlint") version "1.0.208"
 }
 
 val versionObj = Version(major = "4", minor = "2", revision = "0")
@@ -49,6 +51,55 @@ configure<SourceSetContainer> {
         java.srcDir("src/examples/java")
         compileClasspath += sourceSets["main"].output
         runtimeClasspath += sourceSets["main"].output
+    }
+}
+
+configure<SonarLintExtension> {
+    reportsDir = file("$buildDir/sonarlint")
+    excludes {
+        message("java:S3776") // Cognitive Complexity of methods should not be too high
+        // Technically this is correct but we kinda need it anyway
+        message("java:S2139") // Exceptions should be either logged or rethrown but not both
+
+        message("java:S108")  // Nested blocks of code should not be left empty
+        message("java:S115")  // Constant names should comply with a naming convention
+        message("java:S117")  // Local variable and method parameter names should comply with a naming convention
+        message("java:S125")  // Sections of code should not be commented out
+        message("java:S127")  // "for" loop stop conditions should be invariant
+        message("java:S128")  // Switch cases should end with an unconditional "break" statement
+        message("java:S135")  // Loops should not contain more than a single "break" or "continue" statement
+        message("java:S1113") // The Object.finalize() method should not be overridden
+        message("java:S1192") // String literals should not be duplicated
+        message("java:S1186") // Methods should not be empty
+        message("java:S1452") // Generic wildcard types should not be used in return types (this is nonsense)
+        message("java:S1117") // Local variables should not shadow class fields
+        message("java:S1118") // Utility classes should not have public constructors
+        message("java:S1119") // Labels should not be used
+        message("java:S1133") // Deprecated code should be removed
+        message("java:S1141") // Try-catch blocks should not be nested
+        message("java:S1191") // Classes from "sun.*" packages should not be used
+        message("java:S1193") // Exception types should not be tested using "instanceof" in catch blocks
+        message("java:S1199") // Nested code blocks should not be used
+        // this is incorrect, the suggestion in effective java is to not have interfaces dedicated to constants
+        message("java:S1214") // Constants should not be defined in interfaces
+        message("java:S1301") // "switch" statements should have at least 3 "case" clauses
+        message("java:S1602") // Lambdas containing only one statement should not nest this statement in a block
+        message("java:S1611") // Parentheses should be removed from a single lambda input parameter when its type is inferred
+        message("java:S1659") // Multiple variables should not be declared on the same line
+        message("java:S1700") // A field should not duplicate the name of its containing class
+        message("java:S1845") // signatures differ only by capitalization
+        message("java:S1874") // Deprecated code should not be used
+        // We don't use serializable
+        message("java:S1948") // Fields in a "Serializable" class should either be transient or serializable
+        message("java:S2142") // "InterruptedException" should not be ignored
+        message("java:S2147") // Catches should be combined
+        message("java:S2165") // "finalize" should not set fields to "null"
+        message("java:S2445") // Blocks should be synchronized on "private final" fields
+        message("java:S3077") // Non-primitive fields should not be "volatile"
+        message("java:S3358") // Ternary operators should not be nested
+        message("java:S3516") // Methods returns should not be invariant
+        // Nobody cares about this lol
+        message("java:S4524") // "default" clauses should be last
     }
 }
 

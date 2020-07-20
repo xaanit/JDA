@@ -230,6 +230,7 @@ public class ChannelActionImpl<T extends GuildChannel> extends AuditableRestActi
     }
 
     @Override
+    @SuppressWarnings("java:S131") // "switch" statements should have "default" clauses
     protected RequestBody finalizeData()
     {
         DataObject object = DataObject.empty();

@@ -40,6 +40,7 @@ public enum ConfigFlag
         this.isDefault = isDefault;
     }
 
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<ConfigFlag> getDefault()
     {
         EnumSet<ConfigFlag> set = EnumSet.noneOf(ConfigFlag.class);

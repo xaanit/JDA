@@ -52,6 +52,7 @@ public class AuditLogEntry implements ISnowflake
     protected final ActionType type;
     protected final int rawType;
 
+    @SuppressWarnings("java:S107") // Methods should not have too many parameters
     public AuditLogEntry(ActionType type, int rawType, long id, long targetId, GuildImpl guild, UserImpl user, WebhookImpl webhook,
                          String reason, Map<String, AuditLogChange> changes, Map<String, Object> options)
     {
@@ -214,6 +215,7 @@ public class AuditLogEntry implements ISnowflake
      * @return Possibly-empty, never-null immutable list of {@link AuditLogChange AuditLogChanges}
      */
     @Nonnull
+    @SuppressWarnings("java:S1117")
     public List<AuditLogChange> getChangesForKeys(@Nonnull AuditLogKey... keys)
     {
         Checks.notNull(keys, "Keys");

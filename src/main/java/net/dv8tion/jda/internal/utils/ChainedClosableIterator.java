@@ -27,7 +27,7 @@ import java.util.Set;
 
 public class ChainedClosableIterator<T> implements ClosableIterator<T>
 {
-    private final static Logger log = JDALogger.getLog(ClosableIterator.class);
+    private static final Logger log = JDALogger.getLog(ClosableIterator.class);
     private final Set<T> items;
     private final Iterator<? extends CacheView<T>> generator;
     private ClosableIterator<T> currentIterator;
@@ -125,6 +125,7 @@ public class ChainedClosableIterator<T> implements ClosableIterator<T>
 
     @Override
     @Deprecated
+    @SuppressWarnings({"deprecated", "java:S1123"})
     protected void finalize()
     {
         if (currentIterator != null)

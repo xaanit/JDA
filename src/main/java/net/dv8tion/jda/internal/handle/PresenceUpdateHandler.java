@@ -81,7 +81,7 @@ public class PresenceUpdateHandler extends SocketHandler
             if (jsonUser.isNull("username") || "offline".equals(content.get("status")))
                 return null;
             // We should have somewhat enough information to create this member, so lets do it!
-            user = (UserImpl) createMember(content, guildId, guild, jsonUser).getUser();
+            user = (UserImpl) createMember(content, guild, jsonUser).getUser();
         }
 
         if (jsonUser.hasKey("username"))
@@ -106,7 +106,7 @@ public class PresenceUpdateHandler extends SocketHandler
                 log.trace("Ignoring incomplete PRESENCE_UPDATE for member with id {} in guild with id {}", userId, guildId);
                 return null;
             }
-            member = createMember(content, guildId, guild, jsonUser);
+            member = createMember(content, guild, jsonUser);
         }
 
         if (getJDA().isCacheFlagSet(CacheFlag.CLIENT_STATUS) && !content.isNull("client_status"))
@@ -153,7 +153,7 @@ public class PresenceUpdateHandler extends SocketHandler
         return parsedActivity;
     }
 
-    private MemberImpl createMember(DataObject content, long guildId, GuildImpl guild, DataObject jsonUser)
+    private MemberImpl createMember(DataObject content, GuildImpl guild, DataObject jsonUser)
     {
         DataObject memberJson = DataObject.empty();
 

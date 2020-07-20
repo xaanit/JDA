@@ -27,6 +27,7 @@ package net.dv8tion.jda.internal.utils.tuple;
  *
  * @since Lang 3.0
  */
+@SuppressWarnings("java:S1104") // Class variable fields should not have public accessibility
 public class MutablePair<L, R> extends Pair<L, R>
 {
     /** Left object */

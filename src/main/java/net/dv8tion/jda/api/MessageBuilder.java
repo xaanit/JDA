@@ -62,6 +62,7 @@ public class MessageBuilder implements Appendable
             builder.append(content);
     }
 
+    @SuppressWarnings({"ConstantConditions", "java:S2589"}) // Boolean expressions should not be gratuitous
     public MessageBuilder(@Nullable Message message)
     {
         if (message != null)
@@ -844,6 +845,7 @@ public class MessageBuilder implements Appendable
     }
 
     @Nonnull
+    @SuppressWarnings("all")
     private MessageBuilder stripMentions(JDA jda, Guild guild, Message.MentionType... types)
     {
         if (types == null)
@@ -986,6 +988,7 @@ public class MessageBuilder implements Appendable
      * @return the index of the first occurrence of the specified substring between
      *         the specified indices or {@code -1} if there is no such occurrence.
      */
+    @SuppressWarnings("java:S3776")
     public int indexOf(@Nonnull CharSequence target, int fromIndex, int endIndex)
     {
         if (fromIndex < 0)
@@ -1052,6 +1055,7 @@ public class MessageBuilder implements Appendable
      * @return the index of the last occurrence of the specified substring between
      *         the specified indices or {@code -1} if there is no such occurrence.
      */
+    @SuppressWarnings("java:S3776")
     public int lastIndexOf(@Nonnull CharSequence target, int fromIndex, int endIndex)
     {
         if (fromIndex < 0)
@@ -1127,6 +1131,7 @@ public class MessageBuilder implements Appendable
     @DeprecatedSince("4.2.1")
     @ForRemoval(deadline="4.3.0")
     @ReplaceWith("channel.sendMessage(builder.build())")
+    @SuppressWarnings("java:S131")
     public MessageAction sendTo(@Nonnull MessageChannel channel)
     {
         Checks.notNull(channel, "Target Channel");

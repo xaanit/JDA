@@ -17,7 +17,6 @@
 package net.dv8tion.jda.internal;
 
 import com.neovisionaries.ws.client.WebSocketFactory;
-import gnu.trove.map.TLongObjectMap;
 import gnu.trove.set.TLongSet;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.GatewayEncoding;
@@ -249,6 +248,7 @@ public class JDAImpl implements JDA
         return login(null, shardInfo, compression, validateToken, intents, encoding);
     }
 
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     public int login(String gatewayUrl, ShardInfo shardInfo, Compression compression, boolean validateToken, int intents, GatewayEncoding encoding) throws LoginException
     {
         this.shardInfo = shardInfo;
@@ -322,6 +322,7 @@ public class JDAImpl implements JDA
         this.authConfig.setToken(token);
     }
 
+    @SuppressWarnings("java:S2445") // Blocks should be synchronized on "private final" fields
     public void setStatus(Status status)
     {
         //noinspection SynchronizeOnNonFinalField
@@ -334,6 +335,7 @@ public class JDAImpl implements JDA
         }
     }
 
+    @SuppressWarnings("java:S1181") // Throwable and Error should not be caught
     public void verifyToken() throws LoginException
     {
         RestActionImpl<DataObject> login = new RestActionImpl<DataObject>(this, Route.Self.GET_SELF.compile())
@@ -431,6 +433,7 @@ public class JDAImpl implements JDA
     }
 
     @Override
+    @SuppressWarnings("ReplaceInefficientStreamCount")
     public boolean unloadUser(long userId)
     {
         if (userId == selfUser.getIdLong())
@@ -1008,6 +1011,7 @@ public class JDAImpl implements JDA
         return eventCache;
     }
 
+    @SuppressWarnings("java:S1121") // Assignments should not be made from within sub-expressions
     public String getGatewayUrl()
     {
         if (gatewayUrl == null)

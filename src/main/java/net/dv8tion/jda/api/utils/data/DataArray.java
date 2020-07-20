@@ -49,6 +49,7 @@ import java.util.stream.Stream;
  */
 public class DataArray implements Iterable<Object>
 {
+    @SuppressWarnings("java:S3416") // Loggers should be named for their enclosing classes
     private static final Logger log = LoggerFactory.getLogger(DataObject.class);
     private static final ObjectMapper mapper;
     private static final SimpleModule module;
@@ -263,7 +264,7 @@ public class DataArray implements Iterable<Object>
      * @return The resolved DataObject
      */
     @Nonnull
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "java:S1905"})
     public DataObject getObject(int index)
     {
         Map<String, Object> child = null;
@@ -292,7 +293,7 @@ public class DataArray implements Iterable<Object>
      * @return The resolved DataArray
      */
     @Nonnull
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "java:S1905"})
     public DataArray getArray(int index)
     {
         List<Object> child = null;

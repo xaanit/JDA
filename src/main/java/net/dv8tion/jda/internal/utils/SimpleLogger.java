@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
 
+@SuppressWarnings("all")
 class SimpleLogger extends MarkerIgnoringBase {
 
     private static final long serialVersionUID = -632788891211436180L;

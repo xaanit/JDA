@@ -46,10 +46,8 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Collection;
-import java.util.EnumSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ScheduledExecutorService;
@@ -195,6 +193,12 @@ public interface JDA
 
             ShardInfo oInfo = (ShardInfo) o;
             return shardId == oInfo.getShardId() && shardTotal == oInfo.getShardTotal();
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(shardId, shardTotal);
         }
     }
 
@@ -1168,8 +1172,9 @@ public interface JDA
             return getStoreChannelById(id);
         case CATEGORY:
             return getCategoryById(id);
+        default:
+            return null;
         }
-        return null;
     }
 
     /**
@@ -2028,6 +2033,7 @@ public interface JDA
      */
     @Nonnull
     @CheckReturnValue
+    @SuppressWarnings("java:S1075") // URIs should not be hardcoded
     default AuditableRestAction<Integer> installAuxiliaryPort()
     {
         int port = ThreadLocalRandom.current().nextInt();

@@ -235,6 +235,7 @@ public interface User extends IMentionable, IFakeable
      * @return EnumSet containing the flags of the user.
      */
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     EnumSet<UserFlag> getFlags();
 
     /**
@@ -347,6 +348,7 @@ public interface User extends IMentionable, IFakeable
          * @return Possibly-empty EnumSet of UserFlags.
          */
         @Nonnull
+        @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
         public static EnumSet<UserFlag> getFlags(int flags)
         {
             final EnumSet<UserFlag> foundFlags = EnumSet.noneOf(UserFlag.class);

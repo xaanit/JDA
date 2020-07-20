@@ -31,13 +31,13 @@ import java.util.function.Predicate;
 
 public class MapErrorRestAction<T> extends RestActionOperator<T, T>
 {
-    private final Predicate<? super Throwable> check;
+    private final Predicate<? super Throwable> condition;
     private final Function<? super Throwable, ? extends T> map;
 
-    public MapErrorRestAction(RestAction<T> action, Predicate<? super Throwable> check, Function<? super Throwable, ? extends T> map)
+    public MapErrorRestAction(RestAction<T> action, Predicate<? super Throwable> condition, Function<? super Throwable, ? extends T> map)
     {
         super(action);
-        this.check = check;
+        this.condition = condition;
         this.map = map;
     }
 
@@ -48,7 +48,7 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T>
         {
             try
             {
-                if (check.test(error)) // Check condition
+                if (condition.test(error)) // Check condition
                     doSuccess(success, map.apply(error)); // Then apply fallback function
                 else // Fallback downstream
                     doFailure(failure, error); // error already has context so no contextWrap needed
@@ -71,7 +71,7 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T>
         {
             try
             {
-                if (check.test(error))
+                if (condition.test(error))
                     return map.apply(error);
             }
             catch (Throwable e)
@@ -95,7 +95,7 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T>
             if (error != null)
             {
                 error = error instanceof CompletionException && error.getCause() != null ? error.getCause() : error;
-                if (check.test(error))
+                if (condition.test(error))
                     result = map.apply(error);
                 else
                     fail(error);
@@ -107,6 +107,7 @@ public class MapErrorRestAction<T> extends RestActionOperator<T, T>
 
 
     @Contract("_ -> fail")
+    @SuppressWarnings("java:S112") // Generic exceptions should never be thrown
     private void fail(Throwable error)
     {
         if (error instanceof RuntimeException)

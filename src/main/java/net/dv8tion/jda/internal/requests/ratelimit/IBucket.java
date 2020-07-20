@@ -22,5 +22,6 @@ import java.util.Queue;
 
 public interface IBucket
 {
+    @SuppressWarnings("java:S3740") // Raw types should not be used
     Queue<Request> getRequests();
 }

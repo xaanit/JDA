@@ -51,6 +51,7 @@ public class DefaultSendSystem implements IAudioSendSystem
     }
 
     @Override
+    @SuppressWarnings("java:S3776") // Cognitive Complexity of methods should not be too high
     public void start()
     {
         final DatagramSocket udpSocket = packetProvider.getUdpSocket();

@@ -104,6 +104,10 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
 
     @Nonnull
     @Override
+    @SuppressWarnings({
+        "java:S2222", // Locks should be released
+        "java:S1181"  // Throwable and Error should not be caught
+    })
     public LockIterator<T> lockedIterator()
     {
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
@@ -242,7 +246,7 @@ public abstract class AbstractCacheView<T> extends ReadWriteLockCache<T> impleme
             return true;
         if (!(obj instanceof AbstractCacheView))
             return false;
-        AbstractCacheView view = (AbstractCacheView) obj;
+        AbstractCacheView<?> view = (AbstractCacheView<?>) obj;
         try (UnlockHook hook = readLock(); UnlockHook otherHook = view.readLock())
         {
             return this.elements.equals(view.elements);

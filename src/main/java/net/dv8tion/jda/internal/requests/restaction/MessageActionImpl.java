@@ -71,6 +71,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     }
 
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<Message.MentionType> getDefaultMentions()
     {
         return defaultMentions.clone();
@@ -138,7 +139,7 @@ public class MessageActionImpl extends RestActionImpl<Message> implements Messag
     @Nonnull
     @Override
     @CheckReturnValue
-    @SuppressWarnings({"ResultOfMethodCallIgnored", "ConstantConditions"})
+    @SuppressWarnings({"ResultOfMethodCallIgnored", "ConstantConditions", "java:S2589"})
     public MessageActionImpl apply(final Message message)
     {
         if (message == null || message.getType() != MessageType.DEFAULT)

@@ -157,6 +157,7 @@ public class UserImpl implements User
 
     @Nonnull
     @Override
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public EnumSet<UserFlag> getFlags()
     {
         return UserFlag.getFlags(flags);

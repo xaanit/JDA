@@ -72,6 +72,7 @@ public enum ActivityFlag
      * @see    EnumSet EnumSet
      */
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<ActivityFlag> getFlags(int raw)
     {
         EnumSet<ActivityFlag> set = EnumSet.noneOf(ActivityFlag.class);

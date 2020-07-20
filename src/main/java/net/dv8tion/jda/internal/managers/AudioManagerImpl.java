@@ -38,8 +38,10 @@ import java.util.Collection;
 import java.util.EnumSet;
 import java.util.concurrent.locks.ReentrantLock;
 
+@SuppressWarnings("java:S1123") // Deprecated elements should have both the annotation and the Javadoc tag
 public class AudioManagerImpl implements AudioManager
 {
+    @SuppressWarnings("java:S116") // Field names should comply with a naming convention
     public final ReentrantLock CONNECTION_LOCK = new ReentrantLock();
 
     protected final ListenerProxy connectionListener = new ListenerProxy();
@@ -93,6 +95,7 @@ public class AudioManagerImpl implements AudioManager
             audioConnection.setChannel(channel);
     }
 
+    @SuppressWarnings("java:S1066") // Collapsible "if" statements should be merged
     private void checkChannel(VoiceChannel channel, Member self)
     {
         EnumSet<Permission> perms = Permission.getPermissions(PermissionUtil.getEffectivePermission(channel, self));

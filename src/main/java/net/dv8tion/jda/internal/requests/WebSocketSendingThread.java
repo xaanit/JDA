@@ -98,6 +98,7 @@ class WebSocketSendingThread implements Runnable
     }
 
     @Override
+    @SuppressWarnings("java:S2142") // "InterruptedException" should not be ignored
     public void run()
     {
         //Make sure that we don't send any packets before sending auth info.

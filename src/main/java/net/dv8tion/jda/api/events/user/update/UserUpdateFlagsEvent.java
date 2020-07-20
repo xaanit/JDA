@@ -19,7 +19,6 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 /**
@@ -40,6 +39,7 @@ import java.util.EnumSet;
  * member was updated and gives us the updated member object. In order to fire a specific event like this we
  * need to have the old member cached to compare against.
  */
+@SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
 public class UserUpdateFlagsEvent extends GenericUserUpdateEvent<EnumSet<User.UserFlag>>
 {
     public static final String IDENTIFIER = "public_flags";

@@ -128,6 +128,7 @@ public class BotRateLimiter extends RateLimiter
         });
     }
 
+    @SuppressWarnings("java:S1871") // Two branches in a conditional structure should not have exactly the same implementation
     private void cleanup()
     {
         // This will remove buckets that are no longer needed every 30 seconds to avoid memory leakage
@@ -139,7 +140,6 @@ public class BotRateLimiter extends RateLimiter
             while (entries.hasNext())
             {
                 Map.Entry<String, Bucket> entry = entries.next();
-                String key = entry.getKey();
                 Bucket bucket = entry.getValue();
                 // Remove cancelled requests
                 bucket.requests.removeIf(Request::isSkipped);
@@ -229,7 +229,6 @@ public class BotRateLimiter extends RateLimiter
                 Bucket bucket = getBucket(route, true);
                 Headers headers = response.headers();
 
-                boolean wasUnlimited = bucket.isUnlimited();
                 boolean global = headers.get(GLOBAL_HEADER) != null;
                 String hash = headers.get(HASH_HEADER);
                 long now = getNow();
@@ -302,6 +301,7 @@ public class BotRateLimiter extends RateLimiter
     }
 
     @Contract("_,true->!null")
+    @SuppressWarnings("java:S1121") // Assignments should not be made from within sub-expressions
     private Bucket getBucket(Route.CompiledRoute route, boolean create)
     {
         return MiscUtil.locked(bucketLock, () ->
@@ -345,7 +345,7 @@ public class BotRateLimiter extends RateLimiter
         return System.currentTimeMillis();
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "java:S3740"})
     private class Bucket implements IBucket, Runnable
     {
         private final String bucketId;

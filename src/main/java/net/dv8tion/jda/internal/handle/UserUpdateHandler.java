@@ -44,12 +44,6 @@ public class UserUpdateHandler extends SocketHandler
         Boolean verified = content.hasKey("verified") ? content.getBoolean("verified") : null;
         Boolean mfaEnabled = content.hasKey("mfa_enabled") ? content.getBoolean("mfa_enabled") : null;
 
-        //Client only
-        String email = content.getString("email", null);
-        Boolean mobile = content.hasKey("mobile") ? content.getBoolean("mobile") : null; // mobile device
-        Boolean nitro = content.hasKey("premium") ? content.getBoolean("premium") : null; // nitro
-        String phoneNumber = content.getString("phone", null); // verified phone number (verification level !)
-
         if (!Objects.equals(name, self.getName()) || !Objects.equals(discriminator, self.getDiscriminator()))
         {
             String oldName = self.getName();

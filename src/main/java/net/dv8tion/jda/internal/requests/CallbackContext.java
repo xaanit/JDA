@@ -18,6 +18,7 @@ package net.dv8tion.jda.internal.requests;
 
 public class CallbackContext implements AutoCloseable
 {
+    @SuppressWarnings("java:S5164") // "ThreadLocal" variables should be cleaned up when no longer used
     private static final ThreadLocal<Boolean> callback = ThreadLocal.withInitial(() -> false);
     private static final CallbackContext instance = new CallbackContext();
 
@@ -40,6 +41,6 @@ public class CallbackContext implements AutoCloseable
     @Override
     public void close()
     {
-        callback.set(false);
+        callback.remove();
     }
 }

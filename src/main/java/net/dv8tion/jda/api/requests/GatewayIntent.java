@@ -207,6 +207,7 @@ public enum GatewayIntent
      * @return {@link EnumSet} of intents
      */
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<GatewayIntent> getIntents(int raw)
     {
         EnumSet<GatewayIntent> set = EnumSet.noneOf(GatewayIntent.class);
@@ -272,6 +273,7 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull CacheFlag flag, @Nonnull CacheFlag... other)
     {
         Checks.notNull(flag, "CacheFlag");
@@ -292,6 +294,7 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<GatewayIntent> fromCacheFlags(@Nonnull Collection<CacheFlag> flags)
     {
         EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
@@ -319,6 +322,7 @@ public enum GatewayIntent
      */
     @Nonnull
     @SafeVarargs
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<GatewayIntent> fromEvents(@Nonnull Class<? extends GenericEvent>... events)
     {
         Checks.noneNull(events, "Event");
@@ -337,6 +341,7 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<GatewayIntent> fromEvents(@Nonnull Collection<Class<? extends GenericEvent>> events)
     {
         EnumSet<GatewayIntent> intents = EnumSet.noneOf(GatewayIntent.class);
@@ -391,6 +396,7 @@ public enum GatewayIntent
      * @return {@link EnumSet} for the required intents
      */
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<GatewayIntent> from(@Nonnull Collection<Class<? extends GenericEvent>> events, @Nonnull Collection<CacheFlag> flags)
     {
         EnumSet<GatewayIntent> intents = fromEvents(events);

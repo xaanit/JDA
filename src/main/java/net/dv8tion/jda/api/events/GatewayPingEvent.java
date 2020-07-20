@@ -28,6 +28,7 @@ import javax.annotation.Nonnull;
  *
  * <p>Identifier: {@code gateway-ping}
  */
+@SuppressWarnings("java:S4144") // Methods should not have identical implementations
 public class GatewayPingEvent extends Event implements UpdateEvent<JDA, Long>
 {
     public static final String IDENTIFIER = "gateway-ping";

@@ -140,6 +140,10 @@ public class Requester
         return execute(apiRequest, false, handleOnRateLimit);
     }
 
+    @SuppressWarnings({
+        "java:S2142", // "InterruptedException" should not be ignored
+        "java:S2093"  // Try-with-resources should be used
+    })
     public Long execute(Request<?> apiRequest, boolean retried, boolean handleOnRatelimit)
     {
         Route.CompiledRoute route = apiRequest.getRoute();
@@ -156,29 +160,8 @@ public class Requester
         String url = DISCORD_API_PREFIX + route.getCompiledRoute();
         builder.url(url);
 
-        String method = apiRequest.getRoute().getMethod().toString();
-        RequestBody body = apiRequest.getBody();
-
-        if (body == null && HttpMethod.requiresRequestBody(method))
-            body = EMPTY_BODY;
-
-        builder.method(method, body)
-                .header("X-RateLimit-Precision", "millisecond")
-                .header("user-agent", USER_AGENT)
-                .header("accept-encoding", "gzip");
-
-        //adding token to all requests to the discord api or cdn pages
-        //we can check for startsWith(DISCORD_API_PREFIX) because the cdn endpoints don't need any kind of authorization
-        if (url.startsWith(DISCORD_API_PREFIX))
-            builder.header("authorization", api.getToken());
-
-        // Apply custom headers like X-Audit-Log-Reason
-        // If customHeaders is null this does nothing
-        if (apiRequest.getHeaders() != null)
-        {
-            for (Entry<String, String> header : apiRequest.getHeaders().entrySet())
-                builder.addHeader(header.getKey(), header.getValue());
-        }
+        applyBody(apiRequest, builder);
+        applyHeaders(apiRequest, builder, url.startsWith(DISCORD_API_PREFIX));
 
         okhttp3.Request request = builder.build();
 
@@ -212,7 +195,7 @@ public class Requester
                         url, lastResponse.code(), attempt);
                 try
                 {
-                    Thread.sleep(50 * attempt);
+                    Thread.sleep(50L * attempt);
                 }
                 catch (InterruptedException ignored) {}
             }

@@ -418,6 +418,12 @@ public class MessageReaction
     }
 
     @Override
+    public int hashCode()
+    {
+        return Objects.hash(emote, self, messageId);
+    }
+
+    @Override
     public String toString()
     {
         return "MR:(M:(" + messageId + ") / " + emote + ")";
@@ -591,9 +597,19 @@ public class MessageReaction
         @Override
         public boolean equals(Object obj)
         {
-            return obj instanceof ReactionEmote
-                    && Objects.equals(((ReactionEmote) obj).id, id)
-                    && ((ReactionEmote) obj).getName().equals(name);
+            if (obj == this)
+                return true;
+            if (!(obj instanceof ReactionEmote))
+                return false;
+            ReactionEmote other = (ReactionEmote) obj;
+            return Objects.equals(other.id, id)
+                && Objects.equals(other.name, name);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hash(id, name);
         }
 
         @Override

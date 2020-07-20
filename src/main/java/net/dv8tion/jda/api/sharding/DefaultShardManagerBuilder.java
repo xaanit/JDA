@@ -589,6 +589,7 @@ public class  DefaultShardManagerBuilder
     @Deprecated
     @ReplaceWith("enableCache(flags) and disableCache(flags)")
     @DeprecatedSince("4.2.0")
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public DefaultShardManagerBuilder setEnabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
@@ -662,6 +663,7 @@ public class  DefaultShardManagerBuilder
     @Deprecated
     @ReplaceWith("enableCache(flags) and disableCache(flags)")
     @DeprecatedSince("4.2.0")
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public DefaultShardManagerBuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
@@ -2207,7 +2209,7 @@ public class  DefaultShardManagerBuilder
      *         to whether or not loading has finished when this returns.
      */
     @Nonnull
-    public ShardManager build() throws LoginException, IllegalArgumentException
+    public ShardManager build() throws LoginException
     {
         checkIntents();
         boolean useShutdownNow = shardingFlags.contains(ShardingConfigFlag.SHUTDOWN_NOW);
@@ -2247,6 +2249,7 @@ public class  DefaultShardManagerBuilder
         return this;
     }
 
+    @SuppressWarnings("java:S2629") // "Preconditions" and logging arguments should not require evaluation
     private void checkIntents()
     {
         boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;

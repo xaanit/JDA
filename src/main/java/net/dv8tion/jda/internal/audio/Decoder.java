@@ -56,6 +56,7 @@ public class Decoder
         return newSeq > lastSeq + 1;
     }
 
+    @SuppressWarnings("java:S1168") // Empty arrays and collections should be returned instead of null
     public short[] decodeFromOpus(AudioPacket decryptedPacket)
     {
         int result;

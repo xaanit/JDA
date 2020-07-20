@@ -16,6 +16,7 @@ import java.util.concurrent.atomic.AtomicLong;
  * @description 
  *   TweetNacl.c Java porting
  * */
+@SuppressWarnings("all")
 public final class TweetNaclFast {
 
     private final static String TAG = "TweetNaclFast";

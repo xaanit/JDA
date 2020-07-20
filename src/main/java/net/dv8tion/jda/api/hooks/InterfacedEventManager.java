@@ -58,18 +58,16 @@ public class InterfacedEventManager implements IEventManager
     public void register(@Nonnull Object listener)
     {
         if (!(listener instanceof EventListener))
-        {
             throw new IllegalArgumentException("Listener must implement EventListener");
-        }
         listeners.add((EventListener) listener);
     }
 
     @Override
+    @SuppressWarnings({"ConstantConditions", "java:S2583"})
     public void unregister(@Nonnull Object listener)
     {
         if (!(listener instanceof EventListener))
         {
-            //noinspection ConstantConditions
             JDALogger.getLog(getClass()).warn(
                     "Trying to remove a listener that does not implement EventListener: {}",
                     listener == null ? "null" : listener.getClass().getName());
@@ -87,6 +85,7 @@ public class InterfacedEventManager implements IEventManager
     }
 
     @Override
+    @SuppressWarnings("java:S1181") // Throwable and Error should not be caught
     public void handle(@Nonnull GenericEvent event)
     {
         for (EventListener listener : listeners)

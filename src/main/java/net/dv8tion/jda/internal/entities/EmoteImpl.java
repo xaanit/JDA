@@ -44,6 +44,7 @@ import java.util.concurrent.locks.ReentrantLock;
  *
  * @since  2.2
  */
+@SuppressWarnings("java:S1123") // Deprecated elements should have both the annotation and the Javadoc tag
 public class EmoteImpl implements ListedEmote
 {
     private final long id;
@@ -62,11 +63,6 @@ public class EmoteImpl implements ListedEmote
 
     public EmoteImpl(long id, GuildImpl guild)
     {
-        this(id, guild, false);
-    }
-
-    public EmoteImpl(long id, GuildImpl guild, boolean fake)
-    {
         this.id = id;
         this.api = guild.getJDA();
         this.guild = new SnowflakeReference<>(guild, api::getGuildById);
@@ -79,6 +75,18 @@ public class EmoteImpl implements ListedEmote
         this.api = api;
         this.guild = null;
         this.roles = null;
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    public EmoteImpl(EmoteImpl copyFrom)
+    {
+        this(copyFrom.getIdLong(), copyFrom.getGuild());
+        managed = copyFrom.managed;
+        available = copyFrom.available;
+        animated = copyFrom.animated;
+        name = copyFrom.name;
+        user = copyFrom.user;
+        copyFrom.roles.addAll(roles);
     }
 
     @Override
@@ -261,6 +269,8 @@ public class EmoteImpl implements ListedEmote
     }
 
     @Override
+    @Deprecated
+    @SuppressWarnings("all")
     public EmoteImpl clone()
     {
         EmoteImpl copy = new EmoteImpl(id, getGuild()).setUser(user).setManaged(managed).setAnimated(animated).setName(name);

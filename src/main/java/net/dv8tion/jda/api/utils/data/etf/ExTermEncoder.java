@@ -30,6 +30,7 @@ import static net.dv8tion.jda.api.utils.data.etf.ExTermTag.*;
  *
  * @see #pack(Object)
  */
+@SuppressWarnings("java:S1905") // Redundant casts should not be used
 public class ExTermEncoder
 {
     /**

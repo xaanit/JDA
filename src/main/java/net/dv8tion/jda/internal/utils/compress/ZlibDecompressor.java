@@ -48,6 +48,7 @@ public class ZlibDecompressor implements Decompressor
         return new SoftReference<>(new ByteArrayOutputStream(Math.min(1024, maxBufferSize)));
     }
 
+    @SuppressWarnings("java:S1121") // Assignments should not be made from within sub-expressions
     private ByteArrayOutputStream getDecompressBuffer()
     {
         // If no buffer has been allocated yet we do that here (lazy init)
@@ -109,6 +110,7 @@ public class ZlibDecompressor implements Decompressor
     }
 
     @Override
+    @SuppressWarnings("java:S1168") // Empty arrays and collections should be returned instead of null
     public byte[] decompress(byte[] data) throws DataFormatException
     {
         //Handle split messages

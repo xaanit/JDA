@@ -80,7 +80,11 @@ public class AnnotatedEventManager implements IEventManager
     }
 
     @Override
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({
+            "unchecked",
+            "java:S1181",   // Throwable and Error should not be caught
+            "java:S3776",   // Cognitive Complexity of methods should not be too high
+            "java:S3011"})  // Reflection should not be used to increase accessibility of classes, methods, or fields
     public void handle(@Nonnull GenericEvent event)
     {
         Class<?> eventClass = event.getClass();

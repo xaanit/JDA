@@ -235,6 +235,7 @@ public enum Permission
      *
      */
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<Permission> getPermissions(long permissions)
     {
         if (permissions == 0)

@@ -76,6 +76,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+@SuppressWarnings({
+    "java:S4144", // Methods should not have identical implementations
+    "java:S1123"  // Deprecated elements should have both the annotation and the Javadoc tag
+})
 public class GuildImpl implements Guild
 {
     private final long id;
@@ -90,6 +94,7 @@ public class GuildImpl implements Guild
     private final MemberCacheViewImpl memberCache = new MemberCacheViewImpl();
 
     private final ReentrantLock mngLock = new ReentrantLock();
+    @SuppressWarnings("java:S3077") // Non-primitive fields should not be "volatile"
     private volatile GuildManager manager;
 
     private Member owner;
@@ -893,6 +898,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    @SuppressWarnings("java:S5411") // Boxed "Boolean" should be avoided in boolean expressions
     public Task<List<Member>> retrieveMembersByIds(boolean includePresence, @Nonnull long... ids)
     {
         Checks.notNull(ids, "ID Array");
@@ -922,6 +928,7 @@ public class GuildImpl implements Guild
     @Nonnull
     @Override
     @CheckReturnValue
+    @SuppressWarnings("java:S5411") // Boxed "Boolean" should be avoided in boolean expressions
     public Task<List<Member>> retrieveMembersByPrefix(@Nonnull String prefix, int limit)
     {
         Checks.notEmpty(prefix, "Prefix");
@@ -1004,6 +1011,7 @@ public class GuildImpl implements Guild
 
     @Nonnull
     @Override
+    @SuppressWarnings("java:S2293") // The diamond operator ("<>") should be used (intellij doesn't like it)
     public AuditableRestAction<Void> modifyNickname(@Nonnull Member member, String nickname)
     {
         Checks.notNull(member, "Member");

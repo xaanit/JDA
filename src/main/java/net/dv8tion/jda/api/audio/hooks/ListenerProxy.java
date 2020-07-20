@@ -27,14 +27,15 @@ import java.util.EnumSet;
 public class ListenerProxy implements ConnectionListener
 {
     private static final Logger log = LoggerFactory.getLogger(ListenerProxy.class);
-    private volatile ConnectionListener listener = null;
+    private volatile ConnectionListener subject = null;
 
     @Override
+    @SuppressWarnings("java:S1181") // Throwable and Error should not be caught
     public void onPing(long ping)
     {
-        if (listener == null)
+        if (subject == null)
             return;
-        ConnectionListener listener = this.listener;
+        ConnectionListener listener = this.subject;
         try
         {
             if (listener != null)
@@ -49,11 +50,12 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
+    @SuppressWarnings("java:S1181") // Throwable and Error should not be caught
     public void onStatusChange(@Nonnull ConnectionStatus status)
     {
-        if (listener == null)
+        if (subject == null)
             return;
-        ConnectionListener listener = this.listener;
+        ConnectionListener listener = this.subject;
         try
         {
             if (listener != null)
@@ -68,11 +70,12 @@ public class ListenerProxy implements ConnectionListener
     }
 
     @Override
+    @SuppressWarnings("java:S1181") // Throwable and Error should not be caught
     public void onUserSpeaking(@Nonnull User user, @Nonnull EnumSet<SpeakingMode> modes)
     {
-        if (listener == null)
+        if (subject == null)
             return;
-        ConnectionListener listener = this.listener;
+        ConnectionListener listener = this.subject;
         try
         {
             if (listener != null)
@@ -95,11 +98,11 @@ public class ListenerProxy implements ConnectionListener
 
     public void setListener(ConnectionListener listener)
     {
-        this.listener = listener;
+        this.subject = listener;
     }
 
     public ConnectionListener getListener()
     {
-        return listener;
+        return subject;
     }
 }

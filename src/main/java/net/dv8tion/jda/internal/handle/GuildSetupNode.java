@@ -210,7 +210,6 @@ public class GuildSetupNode
             }
         }
         boolean unavailable = partialGuild.getBoolean("unavailable");
-        boolean wasMarkedUnavailable = this.markedUnavailable;
         this.markedUnavailable = unavailable;
         if (unavailable)
         {

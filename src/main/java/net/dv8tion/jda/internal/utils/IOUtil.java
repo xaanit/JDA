@@ -123,7 +123,6 @@ public class IOUtil
             }
 
             // Close the input stream and return bytes
-            is.close();
             return bytes;
         }
     }

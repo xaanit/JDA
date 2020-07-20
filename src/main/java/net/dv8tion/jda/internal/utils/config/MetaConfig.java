@@ -34,6 +34,7 @@ public class MetaConfig
     private final boolean useShutdownHook;
     private final int maxBufferSize;
 
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public MetaConfig(
             int maxBufferSize,
             @Nullable ConcurrentMap<String, String> mdcContextMap,
@@ -56,6 +57,7 @@ public class MetaConfig
     }
 
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public EnumSet<CacheFlag> getCacheFlags()
     {
         return cacheFlags;

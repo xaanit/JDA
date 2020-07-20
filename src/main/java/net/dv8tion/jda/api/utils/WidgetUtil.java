@@ -35,7 +35,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -204,7 +203,6 @@ public class WidgetUtil
     {
         Checks.notNull(guildId, "GuildId");
 
-        HttpURLConnection connection;
         OkHttpClient client = new OkHttpClient.Builder().build();
         Request request = new Request.Builder()
                     .url(String.format(WIDGET_URL, guildId))
@@ -881,7 +879,8 @@ public class WidgetUtil
             {
                 this(null, false, false, false, false, false, member, widget);
             }
-            
+
+            @SuppressWarnings("java:S107") // Methods should not have too many parameters
             private VoiceState(@Nullable VoiceChannel channel, boolean muted, boolean deafened, boolean suppress, boolean selfMute, boolean selfDeaf, @Nonnull Member member, @Nonnull Widget widget)
             {
                 this.channel = channel;

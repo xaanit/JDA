@@ -51,7 +51,7 @@ import java.util.concurrent.locks.Lock;
  */
 public class LockIterator<T> implements ClosableIterator<T>
 {
-    private final static Logger log = JDALogger.getLog(ClosableIterator.class);
+    private static final Logger log = JDALogger.getLog(ClosableIterator.class);
     private final Iterator<? extends T> it;
     private Lock lock;
 
@@ -91,6 +91,7 @@ public class LockIterator<T> implements ClosableIterator<T>
 
     @Override
     @Deprecated
+    @SuppressWarnings({"java:S1123", "deprecation"})
     protected void finalize()
     {
         if (lock != null)

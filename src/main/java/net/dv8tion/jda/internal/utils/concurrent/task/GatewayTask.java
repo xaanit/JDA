@@ -23,14 +23,11 @@ import net.dv8tion.jda.internal.utils.Checks;
 import javax.annotation.Nonnull;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class GatewayTask<T> implements Task<T>
 {
     private final Runnable onCancel;
     private final CompletableFuture<T> future;
-    private Consumer<? super T> success;
-    private Consumer<? super Throwable> failure;
 
     public GatewayTask(CompletableFuture<T> future, Runnable onCancel)
     {
@@ -67,6 +64,7 @@ public class GatewayTask<T> implements Task<T>
 
     @Nonnull
     @Override
+    @SuppressWarnings("java:S5411") // Boxed "Boolean" should be avoided in boolean expressions
     public T get()
     {
         if (WebSocketClient.WS_THREAD.get())

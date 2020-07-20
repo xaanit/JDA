@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+@SuppressWarnings("java:S1123") // Deprecated elements should have both the annotation and the Javadoc tag
 public class PrivateChannelImpl implements PrivateChannel
 {
     private final long id;
@@ -107,6 +108,7 @@ public class PrivateChannelImpl implements PrivateChannel
 
     @Nonnull
     @Override
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     public List<CompletableFuture<Void>> purgeMessages(@Nonnull List<? extends Message> messages)
     {
         if (messages == null || messages.isEmpty())
@@ -128,6 +130,7 @@ public class PrivateChannelImpl implements PrivateChannel
 
     @Override
     @Deprecated
+    @SuppressWarnings("deprecation")
     public boolean isFake()
     {
         return user.isFake();
@@ -167,6 +170,7 @@ public class PrivateChannelImpl implements PrivateChannel
 
     @Nonnull
     @Override
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     public MessageAction sendFile(@Nonnull File file, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         checkBot();
@@ -178,6 +182,7 @@ public class PrivateChannelImpl implements PrivateChannel
 
     @Nonnull
     @Override
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     public MessageAction sendFile(@Nonnull byte[] data, @Nonnull String fileName, @Nonnull AttachmentOption... options)
     {
         checkBot();

@@ -42,17 +42,6 @@ public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEve
     }
 
     /**
-     * The {@link TextChannel} where the reaction happened
-     *
-     * @return The TextChannel
-     */
-    @Nonnull
-    public TextChannel getChannel()
-    {
-        return channel;
-    }
-
-    /**
      * The {@link MessageReaction} that was removed.
      *
      * @return The removed MessageReaction
@@ -73,26 +62,5 @@ public class GuildMessageReactionRemoveEmoteEvent extends GenericGuildMessageEve
     public MessageReaction.ReactionEmote getReactionEmote()
     {
         return reaction.getReactionEmote();
-    }
-
-    /**
-     * The id of the affected message
-     *
-     * @return The id of the message
-     */
-    public long getMessageIdLong()
-    {
-        return messageId;
-    }
-
-    /**
-     * The id of the affected message
-     *
-     * @return The id of the message
-     */
-    @Nonnull
-    public String getMessageId()
-    {
-        return Long.toUnsignedString(messageId);
     }
 }

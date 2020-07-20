@@ -27,6 +27,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
 public class DataMessage extends AbstractMessage
 {
     private final EnumSet<MentionType> allowedMentions;

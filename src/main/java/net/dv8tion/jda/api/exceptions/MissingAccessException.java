@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
  *
  * @since 4.2.1
  */
+@SuppressWarnings("java:S110") // Inheritance tree of classes should not be too deep
 public class MissingAccessException extends InsufficientPermissionException
 {
     public MissingAccessException(@Nonnull GuildChannel channel, @Nonnull Permission permission)

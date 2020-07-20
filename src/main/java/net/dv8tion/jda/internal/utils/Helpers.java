@@ -144,6 +144,7 @@ public final class Helpers
         return first.size() == second.size() && second.containsAll(first);
     }
 
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static <E extends Enum<E>> EnumSet<E> copyEnumSet(Class<E> clazz, Collection<E> col)
     {
         return col.isEmpty() ? EnumSet.noneOf(clazz) : EnumSet.copyOf(col);

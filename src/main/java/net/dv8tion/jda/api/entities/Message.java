@@ -1925,6 +1925,7 @@ public interface Message extends ISnowflake, Formattable
          * @return Never-Null EnumSet of MessageFlags being found in the bitfield
          */
         @Nonnull
+        @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
         public static EnumSet<MessageFlag> fromBitField(int bitfield)
         {
             Set<MessageFlag> set = Arrays.stream(MessageFlag.values())
@@ -1973,6 +1974,7 @@ public interface Message extends ISnowflake, Formattable
 
         private final JDAImpl jda;
 
+        @SuppressWarnings("java:S107") // Methods should not have too many parameters
         public Attachment(long id, String url, String proxyUrl, String fileName, int size, int height, int width, JDAImpl jda)
         {
             this.id = id;
@@ -2188,8 +2190,8 @@ public interface Message extends ISnowflake, Formattable
          *
          * @return {@link java.util.concurrent.CompletableFuture} - Type: {@link java.io.File}
          */
-        @SuppressWarnings("ResultOfMethodCallIgnored")
         @Nonnull
+        @SuppressWarnings({"ResultOfMethodCallIgnored", "java:S899"})
         public CompletableFuture<File> downloadToFile(File file)
         {
             Checks.notNull(file, "File");

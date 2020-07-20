@@ -39,6 +39,7 @@ import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Set;
 
+@SuppressWarnings("java:S1123") // Deprecated elements should have both the annotation and the Javadoc tag
 public class InviteImpl implements Invite
 {
     private final JDAImpl api;
@@ -55,6 +56,7 @@ public class InviteImpl implements Invite
     private final int uses;
     private final Invite.InviteType type;
 
+    @SuppressWarnings("java:S107") // Methods should not have too many parameters
     public InviteImpl(final JDAImpl api, final String code, final boolean expanded, final User inviter,
             final int maxAge, final int maxUses, final boolean temporary, final OffsetDateTime timeCreated,
             final int uses, final Channel channel, final Guild guild, final Group group, final Invite.InviteType type)
@@ -323,7 +325,8 @@ public class InviteImpl implements Invite
         private final VerificationLevel verificationLevel;
         private final Set<String> features;
 
-        public GuildImpl(final long id, final String iconId, final String name, final String splashId, 
+        @SuppressWarnings("java:S107") // Methods should not have too many parameters
+        public GuildImpl(final long id, final String iconId, final String name, final String splashId,
                          final VerificationLevel verificationLevel, final int presenceCount, final int memberCount, final Set<String> features)
         {
             this.id = id;

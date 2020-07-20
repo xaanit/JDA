@@ -48,7 +48,6 @@ public class MessageUpdateHandler extends SocketHandler
                 return guildId;
         }
 
-        //TODO: Rewrite this entire handler
         if (content.hasKey("author"))
         {
             if (content.hasKey("type"))

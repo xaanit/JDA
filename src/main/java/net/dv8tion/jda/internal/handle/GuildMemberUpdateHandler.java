@@ -59,13 +59,14 @@ public class GuildMemberUpdateHandler extends SocketHandler
         else
         {
             List<Role> newRoles = toRolesList(guild, content.getArray("roles"));
-            getJDA().getEntityBuilder().updateMember(guild, member, content, newRoles);
+            getJDA().getEntityBuilder().updateMember(member, content, newRoles);
         }
 
         getJDA().getEntityBuilder().updateMemberCache(member);
         return null;
     }
 
+    @SuppressWarnings("java:S1168") // Empty arrays and collections should be returned instead of null
     private List<Role> toRolesList(GuildImpl guild, DataArray array)
     {
         LinkedList<Role> roles = new LinkedList<>();

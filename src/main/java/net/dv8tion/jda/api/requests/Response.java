@@ -66,7 +66,7 @@ public class Response implements Closeable
         {
             this.body = null;
         }
-        else // weird compatibility issue, thinks some final isn't initialized if we return pre-maturely
+        else // weird compatibility issue, thinks some final isn't initialized if we return pre-maturely //NOSONAR
         try
         {
             this.body = IOUtil.getBody(response);
@@ -182,7 +182,7 @@ public class Response implements Closeable
         return parseBody(false, clazz, parser);
     }
 
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({"ConstantConditions", "java:S2259"})
     private <T> Optional<T> parseBody(boolean opt, Class<T> clazz, IOFunction<BufferedReader, T> parser)
     {
         if (attemptedParsing)

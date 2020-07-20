@@ -131,6 +131,7 @@ public class AudioConnection
             setupReceiveSystem();
     }
 
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public void setSpeakingMode(EnumSet<SpeakingMode> mode)
     {
         int raw = SpeakingMode.getRaw(mode);
@@ -340,6 +341,7 @@ public class AudioConnection
         }
     }
 
+    @SuppressWarnings("java:S1121") // Assignments should not be made from within sub-expressions
     private synchronized void setupReceiveThread()
     {
         if (receiveThread == null)
@@ -564,33 +566,6 @@ public class AudioConnection
         }
     }
 
-    private ByteBuffer encodeToOpus(ByteBuffer rawAudio)
-    {
-        ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
-        ByteBuffer encoded = ByteBuffer.allocate(4096);
-        for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2)
-        {
-            int firstByte =  (0x000000FF & rawAudio.get(i));      //Promotes to int and handles the fact that it was unsigned.
-            int secondByte = (0x000000FF & rawAudio.get(i + 1));
-
-            //Combines the 2 bytes into a short. Opus deals with unsigned shorts, not bytes.
-            short toShort = (short) ((firstByte << 8) | secondByte);
-
-            nonEncodedBuffer.put(toShort);
-        }
-        ((Buffer) nonEncodedBuffer).flip();
-
-        int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OpusPacket.OPUS_FRAME_SIZE, encoded, encoded.capacity());
-        if (result <= 0)
-        {
-            LOG.error("Received error code from opus_encode(...): {}", result);
-            return null;
-        }
-
-        ((Buffer) encoded).position(0).limit(result);
-        return encoded;
-    }
-
     private void setSpeaking(int raw)
     {
         this.speaking = raw != 0;
@@ -737,6 +712,7 @@ public class AudioConnection
             return nextPacket;
         }
 
+        @SuppressWarnings("java:S2696") // Instance methods should not write to "static" fields
         private ByteBuffer encodeAudio(ByteBuffer rawAudio)
         {
             if (opusEncoder == null)
@@ -759,6 +735,34 @@ public class AudioConnection
             return encodeToOpus(rawAudio);
         }
 
+        @SuppressWarnings("java:S1905") // Redundant casts should not be used
+        private ByteBuffer encodeToOpus(ByteBuffer rawAudio)
+        {
+            ShortBuffer nonEncodedBuffer = ShortBuffer.allocate(rawAudio.remaining() / 2);
+            ByteBuffer encoded = ByteBuffer.allocate(4096);
+            for (int i = rawAudio.position(); i < rawAudio.limit(); i += 2)
+            {
+                int firstByte =  (0x000000FF & rawAudio.get(i));      //Promotes to int and handles the fact that it was unsigned.
+                int secondByte = (0x000000FF & rawAudio.get(i + 1));
+
+                //Combines the 2 bytes into a short. Opus deals with unsigned shorts, not bytes.
+                short toShort = (short) ((firstByte << 8) | secondByte);
+
+                nonEncodedBuffer.put(toShort);
+            }
+            ((Buffer) nonEncodedBuffer).flip();
+
+            int result = Opus.INSTANCE.opus_encode(opusEncoder, nonEncodedBuffer, OpusPacket.OPUS_FRAME_SIZE, encoded, encoded.capacity());
+            if (result <= 0)
+            {
+                LOG.error("Received error code from opus_encode(...): {}", result);
+                return null;
+            }
+
+            ((Buffer) encoded).position(0).limit(result);
+            return encoded;
+        }
+
         private DatagramPacket getDatagramPacket(ByteBuffer b)
         {
             byte[] data = b.array();
@@ -767,6 +771,7 @@ public class AudioConnection
             return new DatagramPacket(data, offset, length, webSocket.getAddress());
         }
 
+        @SuppressWarnings("java:S1121") // Assignments should not be made from within sub-expressions
         private ByteBuffer getPacketData(ByteBuffer rawAudio)
         {
             ensureEncryptionBuffer(rawAudio);
@@ -794,6 +799,7 @@ public class AudioConnection
             return buffer = packet.asEncryptedPacket(boxer, buffer, nonceBuffer, nlen);
         }
 
+        @SuppressWarnings("java:S1905") // Redundant casts should not be used
         private void ensureEncryptionBuffer(ByteBuffer data)
         {
             ((Buffer) encryptionBuffer).clear();

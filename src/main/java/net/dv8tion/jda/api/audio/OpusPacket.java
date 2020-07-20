@@ -147,6 +147,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      * @see    #getAudioData(double)
      */
     @Nullable
+    @SuppressWarnings("java:S1121") // Assignments should not be made from within sub-expressions
     public synchronized short[] decode()
     {
         if (triedDecode)
@@ -195,7 +196,7 @@ public final class OpusPacket implements Comparable<OpusPacket>
      * @return The stereo PCM audio data as specified by {@link net.dv8tion.jda.api.audio.AudioReceiveHandler#OUTPUT_FORMAT}.
      */
     @Nonnull
-    @SuppressWarnings("ConstantConditions") // the null case is handled with an exception
+    @SuppressWarnings({ "ConstantConditions", "java:S2583"}) // the null case is handled with an exception
     public static byte[] getAudioData(@Nonnull short[] decoded, double volume)
     {
         if (decoded == null)

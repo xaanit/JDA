@@ -305,8 +305,9 @@ public class Icon
                     return WEBP;
                 case "gif":
                     return GIF;
+                default:
+                    return UNKNOWN;
             }
-            return UNKNOWN;
         }
     }
 }

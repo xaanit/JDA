@@ -31,6 +31,7 @@ public abstract class ReadWriteLockCache<T>
     protected WeakReference<List<T>> cachedList;
     protected WeakReference<Set<T>>  cachedSet;
 
+    @SuppressWarnings("java:S2222") // Locks should be released
     public UnlockHook writeLock()
     {
         if (lock.getReadHoldCount() > 0)
@@ -42,6 +43,7 @@ public abstract class ReadWriteLockCache<T>
         return new UnlockHook(writeLock);
     }
 
+    @SuppressWarnings("java:S2222") // Locks should be released
     public UnlockHook readLock()
     {
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();

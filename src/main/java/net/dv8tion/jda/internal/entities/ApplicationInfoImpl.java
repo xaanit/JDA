@@ -39,6 +39,7 @@ public class ApplicationInfoImpl implements ApplicationInfo
     private final User owner;
     private final ApplicationTeam team;
 
+    @SuppressWarnings("java:S107") // Methods should not have too many parameters
     public ApplicationInfoImpl(JDA api, String description, boolean doesBotRequireCodeGrant, String iconId, long id,
             boolean isBotPublic, String name, User owner, ApplicationTeam team)
     {

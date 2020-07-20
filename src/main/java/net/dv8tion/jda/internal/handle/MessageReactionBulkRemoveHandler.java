@@ -31,6 +31,7 @@ public class MessageReactionBulkRemoveHandler extends SocketHandler
     }
 
     @Override
+    @SuppressWarnings("java:S131") // "switch" statements should have "default" clauses
     protected Long handleInternally(DataObject content)
     {
         final long messageId = content.getLong("message_id");

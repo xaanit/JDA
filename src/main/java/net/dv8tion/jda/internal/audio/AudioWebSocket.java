@@ -176,11 +176,8 @@ class AudioWebSocket extends WebSocketAdapter
                 //Get guild from JDA, don't use [guild] field to make sure that we don't have
                 // a problem of an out of date guild stored in [guild] during a possible mWS invalidate.
                 Guild connGuild = api.getGuildById(guild.getIdLong());
-                if (connGuild != null)
-                {
-                    if (connGuild.getVoiceChannelById(audioConnection.getChannel().getIdLong()) == null)
-                        status = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
-                }
+                if (connGuild != null && connGuild.getVoiceChannelById(audioConnection.getChannel().getIdLong()) == null)
+                    status = ConnectionStatus.DISCONNECTED_CHANNEL_DELETED;
             }
 
             changeStatus(status);
@@ -414,7 +411,7 @@ class AudioWebSocket extends WebSocketAdapter
                 }
                 else
                 {
-                    LOG.debug("Using encryption mode " + encryption.getKey());
+                    LOG.debug("Using encryption mode {}", encryption.getKey());
                 }
 
                 //Find our external IP and Port using Discord

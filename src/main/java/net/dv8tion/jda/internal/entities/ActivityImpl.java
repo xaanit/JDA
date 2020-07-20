@@ -22,6 +22,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+@SuppressWarnings("java:S3252") // "static" base class members should not be accessed via derived types
 public class ActivityImpl implements Activity
 {
     protected final String name;

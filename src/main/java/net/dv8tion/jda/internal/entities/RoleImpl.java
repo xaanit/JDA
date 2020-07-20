@@ -50,6 +50,7 @@ public class RoleImpl implements Role
     private final JDAImpl api;
 
     private final ReentrantLock mngLock = new ReentrantLock();
+    @SuppressWarnings("java:S3077") // Non-primitive fields should not be "volatile"
     private volatile RoleManager manager;
 
     private String name;

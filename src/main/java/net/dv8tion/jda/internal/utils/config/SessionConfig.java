@@ -37,6 +37,7 @@ public class SessionConfig
     private EnumSet<ConfigFlag> flags;
     private int maxReconnectDelay;
 
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public SessionConfig(
         @Nullable SessionController sessionController, @Nullable OkHttpClient httpClient,
         @Nullable WebSocketFactory webSocketFactory, @Nullable VoiceDispatchInterceptor interceptor,
@@ -123,6 +124,7 @@ public class SessionConfig
         return largeThreshold;
     }
 
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public EnumSet<ConfigFlag> getFlags()
     {
         return flags;

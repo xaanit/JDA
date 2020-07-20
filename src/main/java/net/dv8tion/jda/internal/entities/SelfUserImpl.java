@@ -27,6 +27,7 @@ import net.dv8tion.jda.internal.managers.AccountManagerImpl;
 import javax.annotation.Nonnull;
 import java.util.concurrent.locks.ReentrantLock;
 
+@SuppressWarnings("java:S2160") // Subclasses that add fields should override "equals"
 public class SelfUserImpl extends UserImpl implements SelfUser
 {
     protected final ReentrantLock mngLock = new ReentrantLock();

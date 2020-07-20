@@ -291,6 +291,7 @@ public class RestActionImpl<T> implements RestAction<T>
     {
         public static final CheckWrapper EMPTY = new CheckWrapper(null, null)
         {
+            @Override
             public boolean getAsBoolean() { return true; }
         };
 

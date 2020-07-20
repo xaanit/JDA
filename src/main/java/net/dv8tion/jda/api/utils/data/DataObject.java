@@ -283,7 +283,7 @@ public class DataObject implements SerializableData
      * @return The resolved instance of DataObject for the key, wrapped in {@link java.util.Optional}
      */
     @Nonnull
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "java:S1905"})
     public Optional<DataObject> optObject(@Nonnull String key)
     {
         Map<String, Object> child = null;
@@ -327,7 +327,7 @@ public class DataObject implements SerializableData
      * @return The resolved instance of DataArray for the key, wrapped in {@link java.util.Optional}
      */
     @Nonnull
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "java:S1905"})
     public Optional<DataArray> optArray(@Nonnull String key)
     {
         List<Object> child = null;

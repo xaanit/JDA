@@ -106,15 +106,6 @@ public class VoiceChannelImpl extends AbstractChannelImpl<VoiceChannel, VoiceCha
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-        if (!(o instanceof VoiceChannel))
-            return false;
-        VoiceChannel oVChannel = (VoiceChannel) o;
-        return this == oVChannel || this.getIdLong() == oVChannel.getIdLong();
-    }
-
-    @Override
     public String toString()
     {
         return "VC:" + getName() + '(' + id + ')';

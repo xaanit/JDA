@@ -79,6 +79,7 @@ public class ReceivedMessage extends AbstractMessage
     protected List<TextChannel> channelMentions = null;
     protected List<String> invites = null;
 
+    @SuppressWarnings("java:S107") // Methods should not have too many parameters
     public ReceivedMessage(
         long id, MessageChannel channel, MessageType type,
         boolean fromWebhook, boolean mentionsEveryone, TLongSet mentionedUsers, TLongSet mentionedRoles, boolean tts, boolean pinned,
@@ -395,6 +396,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
+    @SuppressWarnings({"ConstantConditions", "java:S2589"})
     public List<IMentionable> getMentions(@Nonnull MentionType... types)
     {
         if (types == null || types.length == 0)
@@ -474,20 +476,14 @@ public class ReceivedMessage extends AbstractMessage
                 }
                 case CHANNEL:
                 {
-                    if (mentionable instanceof TextChannel)
-                    {
-                        if (getMentionedChannels().contains(mentionable))
-                            return true;
-                    }
+                    if (mentionable instanceof TextChannel && getMentionedChannels().contains(mentionable))
+                        return true;
                     break;
                 }
                 case EMOTE:
                 {
-                    if (mentionable instanceof Emote)
-                    {
-                        if (getEmotes().contains(mentionable))
-                            return true;
-                    }
+                    if (mentionable instanceof Emote && getEmotes().contains(mentionable))
+                        return true;
                     break;
                 }
 //              default: continue;
@@ -567,6 +563,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
+    @SuppressWarnings("java:S1121") // Assignments should not be made from within sub-expressions
     public String getContentStripped()
     {
         if (strippedContent != null)
@@ -581,6 +578,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
+    @SuppressWarnings("java:S1121") // Assignments should not be made from within sub-expressions
     public String getContentDisplay()
     {
         if (altContent != null)
@@ -624,6 +622,7 @@ public class ReceivedMessage extends AbstractMessage
 
     @Nonnull
     @Override
+    @SuppressWarnings("java:S1121") // Assignments should not be made from within sub-expressions
     public List<String> getInvites()
     {
         if (invites != null)
@@ -919,17 +918,5 @@ public class ReceivedMessage extends AbstractMessage
             catch (NumberFormatException ignored) {}
         }
         return collection;
-    }
-
-    private static class FormatToken
-    {
-        public final String format;
-        public final int start;
-
-        public FormatToken(String format, int start)
-        {
-            this.format = format;
-            this.start = start;
-        }
     }
 }

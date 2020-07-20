@@ -65,6 +65,7 @@ public final class AudioNatives
      *
      * @return True, if the library could be loaded.
      */
+    @SuppressWarnings({"java:S1181", "java:S1121"})
     public static synchronized boolean ensureOpus()
     {
         if (initialized)

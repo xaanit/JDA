@@ -121,6 +121,7 @@ public class ShardCacheViewImpl extends ReadWriteLockCache<JDA> implements Shard
 
     @Nonnull
     @Override
+    @SuppressWarnings("java:S2222") // Locks should be released
     public LockIterator<JDA> lockedIterator()
     {
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();

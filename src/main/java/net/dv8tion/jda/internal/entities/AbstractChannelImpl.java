@@ -57,6 +57,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
     protected final TLongObjectMap<PermissionOverride> overrides = MiscUtil.newLongMap();
 
     protected final ReentrantLock mngLock = new ReentrantLock();
+    @SuppressWarnings("java:S3077") // Non-primitive fields should not be "volatile"
     protected volatile ChannelManager manager;
 
     protected long parentId;
@@ -83,6 +84,7 @@ public abstract class AbstractChannelImpl<T extends GuildChannel, M extends Abst
 
     @Nonnull
     @Override
+    @SuppressWarnings("java:S3038") // Abstract methods should not be redundant
     public abstract ChannelAction<T> createCopy(@Nonnull Guild guild);
 
     @Nonnull

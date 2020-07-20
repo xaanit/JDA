@@ -54,6 +54,7 @@ public enum SpeakingMode
      * @return {@link EnumSet EnumSet} containing the speaking modes
      */
     @Nonnull
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public static EnumSet<SpeakingMode> getModes(int mask)
     {
         final EnumSet<SpeakingMode> modes = EnumSet.noneOf(SpeakingMode.class);

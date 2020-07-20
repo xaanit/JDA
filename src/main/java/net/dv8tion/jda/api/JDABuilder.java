@@ -614,6 +614,7 @@ public class JDABuilder
     @Deprecated
     @ReplaceWith("enableCache(flags) and disableCache(flags)")
     @DeprecatedSince("4.2.0")
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public JDABuilder setEnabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         this.cacheFlags = flags == null ? EnumSet.noneOf(CacheFlag.class) : EnumSet.copyOf(flags);
@@ -687,6 +688,7 @@ public class JDABuilder
     @Deprecated
     @ReplaceWith("enableCache(flags) and disableCache(flags)")
     @DeprecatedSince("4.2.0")
+    @SuppressWarnings("java:S1319") // Declarations should use Java collection interfaces such as "List" rather than specific implementation classes such as "LinkedList"
     public JDABuilder setDisabledCacheFlags(@Nullable EnumSet<CacheFlag> flags)
     {
         return setEnabledCacheFlags(flags == null ? EnumSet.allOf(CacheFlag.class) : EnumSet.complementOf(flags));
@@ -1305,7 +1307,7 @@ public class JDABuilder
      * @see    net.dv8tion.jda.api.managers.Presence#setStatus(OnlineStatus) Presence.setStatus(OnlineStatus)
      */
     @Nonnull
-    @SuppressWarnings("ConstantConditions") // we have to enforce the nonnull at runtime
+    @SuppressWarnings({"ConstantConditions", "java:S2589"}) // we have to enforce the nonnull at runtime
     public JDABuilder setStatus(@Nonnull OnlineStatus status)
     {
         if (status == null || status == OnlineStatus.UNKNOWN)
@@ -1822,7 +1824,7 @@ public class JDABuilder
     public JDA build() throws LoginException
     {
         checkIntents();
-        OkHttpClient httpClient = this.httpClient;
+        OkHttpClient httpClient = this.httpClient; //NOSONAR
         if (httpClient == null)
         {
             if (this.httpClientBuilder == null)
@@ -1830,7 +1832,7 @@ public class JDABuilder
             httpClient = this.httpClientBuilder.build();
         }
 
-        WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory;
+        WebSocketFactory wsFactory = this.wsFactory == null ? new WebSocketFactory() : this.wsFactory; //NOSONAR
 
         if (controller == null && shardInfo != null)
             controller = new ConcurrentSessionController();
@@ -1879,6 +1881,7 @@ public class JDABuilder
         return this;
     }
 
+    @SuppressWarnings("java:S2629") // "Preconditions" and logging arguments should not require evaluation
     private void checkIntents()
     {
         boolean membersIntent = (intents & GatewayIntent.GUILD_MEMBERS.getRawValue()) != 0;

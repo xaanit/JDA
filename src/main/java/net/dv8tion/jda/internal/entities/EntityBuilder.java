@@ -287,7 +287,7 @@ public class EntityBuilder
             createStoreChannel(guildObj, channelData, guildObj.getIdLong());
             break;
         default:
-            LOG.debug("Cannot create channel for type " + channelData.getInt("type"));
+            LOG.debug("Cannot create channel for type {}", channelData.getInt("type"));
         }
     }
 
@@ -446,7 +446,6 @@ public class EntityBuilder
 
     public MemberImpl createMember(GuildImpl guild, DataObject memberJson, DataObject voiceStateJson, DataObject presence)
     {
-        boolean playbackCache = false;
         User user = createUser(memberJson.getObject("user"));
         DataArray roleArray = memberJson.getArray("roles");
         MemberImpl member = (MemberImpl) guild.getMember(user);
@@ -482,7 +481,7 @@ public class EntityBuilder
                 if (role != null)
                     roles.add(role);
             }
-            updateMember(guild, member, memberJson, roles);
+            updateMember(member, memberJson, roles);
         }
 
         // Load joined_at if necessary
@@ -525,7 +524,7 @@ public class EntityBuilder
                   .setConnectedChannel(voiceChannel);
     }
 
-    public void updateMember(GuildImpl guild, MemberImpl member, DataObject content, List<Role> newRoles)
+    public void updateMember(MemberImpl member, DataObject content, List<Role> newRoles)
     {
         //If newRoles is null that means that we didn't find a role that was in the array and was cached this event
         long responseNumber = getJDA().getResponseTotal();
@@ -597,19 +596,19 @@ public class EntityBuilder
             removedRoles.add(role);
         }
 
-        if (removedRoles.size() > 0)
+        if (!removedRoles.isEmpty())
             currentRoles.removeAll(removedRoles);
-        if (newRoles.size() > 0)
+        if (!newRoles.isEmpty())
             currentRoles.addAll(newRoles);
 
-        if (removedRoles.size() > 0)
+        if (!removedRoles.isEmpty())
         {
             getJDA().handleEvent(
                 new GuildMemberRoleRemoveEvent(
                     getJDA(), responseNumber,
                     member, removedRoles));
         }
-        if (newRoles.size() > 0)
+        if (!newRoles.isEmpty())
         {
             getJDA().handleEvent(
                 new GuildMemberRoleAddEvent(
@@ -665,6 +664,7 @@ public class EntityBuilder
         }
     }
 
+    @SuppressWarnings("java:S3252") // "static" base class members should not be accessed via derived types
     public static Activity createActivity(DataObject gameJson)
     {
         String name = String.valueOf(gameJson.get("name"));
@@ -701,13 +701,10 @@ public class EntityBuilder
             emoji = new Activity.Emoji(emojiName, emojiId, emojiAnimated);
         }
 
-        if (type == Activity.ActivityType.CUSTOM_STATUS)
+        if (type == Activity.ActivityType.CUSTOM_STATUS && gameJson.hasKey("state") && name.equalsIgnoreCase("Custom Status"))
         {
-            if (gameJson.hasKey("state") && name.equalsIgnoreCase("Custom Status"))
-            {
-                name = gameJson.getString("state", "");
-                gameJson = gameJson.remove("state");
-            }
+            name = gameJson.getString("state", "");
+            gameJson = gameJson.remove("state");
         }
 
         if (!CollectionUtils.containsAny(gameJson.keys(), richGameFields))
@@ -1361,6 +1358,7 @@ public class EntityBuilder
                 color, thumbnail, provider, author, video, footer, image, fields);
     }
 
+    @SuppressWarnings("java:S107") // Methods should not have too many parameters
     public static MessageEmbed createMessageEmbed(String url, String title, String description, EmbedType type, OffsetDateTime timestamp,
                                            int color, Thumbnail thumbnail, Provider siteProvider, AuthorInfo author,
                                            VideoInfo videoInfo, Footer footer, ImageInfo image, List<Field> fields)

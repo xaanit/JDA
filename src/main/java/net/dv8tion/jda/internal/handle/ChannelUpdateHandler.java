@@ -41,6 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@SuppressWarnings("java:S131") // "switch" statements should have "default" clauses
 public class ChannelUpdateHandler extends SocketHandler
 {
     public ChannelUpdateHandler(JDAImpl api)
