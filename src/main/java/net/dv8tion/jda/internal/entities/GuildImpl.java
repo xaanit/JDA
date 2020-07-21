@@ -533,7 +533,7 @@ public class GuildImpl implements Guild
             for (int i = 0; i < emotes.length(); i++)
             {
                 DataObject emote = emotes.getObject(i);
-                list.add(builder.createEmote(GuildImpl.this, emote, true));
+                list.add(builder.createEmote(GuildImpl.this, emote));
             }
 
             return Collections.unmodifiableList(list);
@@ -562,7 +562,7 @@ public class GuildImpl implements Guild
             return new AuditableRestActionImpl<>(jda, route, (response, request) ->
             {
                 EntityBuilder builder = GuildImpl.this.getJDA().getEntityBuilder();
-                return builder.createEmote(GuildImpl.this, response.getObject(), true);
+                return builder.createEmote(GuildImpl.this, response.getObject());
             });
         });
     }
@@ -1379,7 +1379,7 @@ public class GuildImpl implements Guild
         return new AuditableRestActionImpl<>(jda, route, body, (response, request) ->
         {
             DataObject obj = response.getObject();
-            return jda.getEntityBuilder().createEmote(this, obj, true);
+            return jda.getEntityBuilder().createEmote(this, obj);
         });
     }
 
