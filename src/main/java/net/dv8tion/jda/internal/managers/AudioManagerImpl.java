@@ -125,6 +125,15 @@ public class AudioManagerImpl implements AudioManager
         });
     }
 
+    @Override
+    public void destroy()
+    {
+        getJDA().getAudioLifeCyclePool().execute(() -> {
+            closeAudioConnection();
+            getJDA().getAudioManagersView().remove(guild.getIdLong());
+        });
+    }
+
     public void closeAudioConnection(ConnectionStatus reason)
     {
         MiscUtil.locked(CONNECTION_LOCK, () ->

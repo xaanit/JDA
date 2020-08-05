@@ -88,6 +88,12 @@ public interface AudioManager
     void closeAudioConnection();
 
     /**
+     * Closes the audio connection and removes this manager from cache.
+     * <br>This will remove all settings applied to this manager.
+     */
+    void destroy();
+
+    /**
      * The {@link SpeakingMode} that should be used when sending audio via
      * the provided {@link AudioSendHandler} from {@link #setSendingHandler(AudioSendHandler)}.
      * By default this will use {@link SpeakingMode#VOICE}.
