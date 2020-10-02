@@ -20,12 +20,12 @@ import javax.annotation.Nonnull;
 
 public enum WebhookType
 {
-    /** Placeholder for unsupported types */
-    UNKNOWN(-1),
     /** Normal webhooks that can be used for sending messages */
     INCOMING(1),
     /** Webhook responsible for re-posting messages from another channel */
-    FOLLOWER(2);
+    FOLLOWER(2),
+    /** Placeholder for unsupported types */
+    UNKNOWN(-1);
 
     private final int key;
 
@@ -55,11 +55,8 @@ public enum WebhookType
     @Nonnull
     public static WebhookType fromKey(int key)
     {
-        for (WebhookType type : values())
-        {
-            if (type.key == key)
-                return type;
-        }
-        return UNKNOWN;
+       WebhookType[] values = values();
+       if(key > values[values.length - 1].key) return UNKNOWN;
+       return values[key - 1]; // Webhook keys are 1 based while array indexes are 0 based.
     }
 }

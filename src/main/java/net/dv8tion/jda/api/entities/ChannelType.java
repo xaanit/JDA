@@ -112,12 +112,9 @@ public enum ChannelType
     {
         if (id == 5) // NEWS = TEXT
             return TEXT;
-        for (ChannelType type : values())
-        {
-            if (type.id == id)
-                return type;
-        }
-        return UNKNOWN;
+        ChannelType[] values = values();
+        if (id > values[values.length - 1].id) return UNKNOWN;
+        return values[id];
     }
 
     /**

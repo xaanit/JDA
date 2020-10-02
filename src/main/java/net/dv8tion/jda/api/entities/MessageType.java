@@ -122,11 +122,8 @@ public enum MessageType
     @Nonnull
     public static MessageType fromId(int id)
     {
-        for (MessageType type : values())
-        {
-            if (type.id == id)
-                return type;
-        }
-        return UNKNOWN;
+        MessageType[] values = values();
+        if (id > values[values.length - 1].id) return UNKNOWN;
+        return values[id];
     }
 }
